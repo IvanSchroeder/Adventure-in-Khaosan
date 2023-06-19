@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ad5c05b4def1714589fc62356fb24bc, type: 3}
+  m_Name: TileData_Asphalt45
+  m_EditorClassIdentifier: 
+  isSolid: 1
+  isClimbable: 0
+  isDamaging: 0
+  isSlope: 1
+  isOverlap: 0
+  hasCollisionTile: 1
+  collisionTile: {fileID: 11400000, guid: 58d1dfdbfd78a674689b99805f94a88b, type: 2}
+  hasOverlapTile: 1
+  overlapTile: {fileID: 11400000, guid: d3601ab59801b9646bcdef8d6a353d3a, type: 2}
