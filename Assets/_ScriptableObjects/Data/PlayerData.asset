@@ -12,19 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9aae3865295db8b429b15b321daea11a, type: 3}
   m_Name: PlayerData
   m_EditorClassIdentifier: 
-  currentVelocity: {x: 0.2943, y: -0.14714998}
+  currentVelocity: {x: -0.000008623117, y: 0}
   currentColliderConfiguration:
-    <Offset>k__BackingField: {x: 0, y: 0.375}
-    <Size>k__BackingField: {x: 1, y: 0.75}
+    <Offset>k__BackingField: {x: 0, y: 0.75}
+    <Size>k__BackingField: {x: 1, y: 1.5}
   facingDirection: 0
+  currentHealth: 0
+  currentHearts: 0
   currentLayer: Player
   currentGravityScale: 3
   currentFallSpeed: 12
   amountOfJumpsLeft: 0
   slopeDownAngle: 0
   slopeSideAngle: 0
+  cumulatedKnockbackTime: 0
   xInput: 0
-  lastXInput: 0
+  lastXInput: -1
   yInput: 0
   jumpInput: 0
   jumpInputStop: 1
@@ -32,7 +35,7 @@ MonoBehaviour:
   grabInput: 0
   isGrounded: 1
   isOnSolidGround: 1
-  isOnPlatform: 0
+  isOnPlatform: 1
   isIgnoringPlatforms: 0
   isOnSlope: 0
   isCrouching: 0
@@ -40,7 +43,7 @@ MonoBehaviour:
   isJumping: 0
   isAscending: 0
   isFalling: 0
-  isFallingThrough: 0
+  isFastFalling: 0
   isTouchingCeiling: 0
   isTouchingWall: 0
   isTouchingBackWall: 0
@@ -52,6 +55,8 @@ MonoBehaviour:
   isWallClimbing: 0
   isHanging: 0
   isClimbing: 0
+  isDamaged: 0
+  isInvulnerable: 0
   isAnimationFinished: 0
   isExitingState: 0
   isAbilityDone: 0
@@ -59,6 +64,12 @@ MonoBehaviour:
   hasWallJumpCoyoteTime: 0
   noFrictionMaterial: {fileID: 6200000, guid: 00051301d2c521f4d8cdd8ad41071ae1, type: 2}
   fullFrictionMaterial: {fileID: 6200000, guid: ab5b232c31c2267469ac62a55abfba99, type: 2}
+  healthType: 1
+  maxHealth: 100
+  maxHearts: 3
+  invulnerabilitySeconds: 2
+  minKnockbackTime: 0.5
+  maxKnockbackTime: 1
   stickToGround: 0
   runSpeed: 10
   maxRunSpeed: 10
@@ -69,9 +80,10 @@ MonoBehaviour:
   crouchAcceleration: 40
   crouchDecceleration: 40
   lerpVelocityInAir: 1
-  airDecceleration: 50
   airAcceleration: 65
+  airDecceleration: 50
   collisionEnableDelay: 0.2
+  wallBounceFalloff: 0.8
   standingColliderConfig:
     <Offset>k__BackingField: {x: 0, y: 0.75}
     <Size>k__BackingField: {x: 1, y: 1.5}
@@ -98,8 +110,8 @@ MonoBehaviour:
   lerpVerticalVelocity: 1
   fallAcceleration: 50
   ascensionAcceleration: 90
-  coyoteTime: 0.2
-  wallJumpCoyoteTime: 0.4
+  coyoteTime: 0.3
+  wallJumpCoyoteTime: 0.3
   jumpBufferTime: 0.5
   cumulatedWallJumpCoyoteTime: 0
   autoWallGrab: 1

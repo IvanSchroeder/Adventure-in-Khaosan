@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 826789598}
   - component: {fileID: 7174821088211015114}
+  - component: {fileID: 1657662646862185552}
   m_Layer: 9
   m_Name: Sprite
   m_TagString: Untagged
@@ -52,7 +53,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: a6a0e8b29d967f0489f0f4c10bcb3c9a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -84,6 +85,30 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 1
+--- !u!114 &1657662646862185552
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 826789597}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6f882f0f9ba0ed4f8e3e29575422e85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <PrimaryFlashColor>k__BackingField: {r: 0, g: 0, b: 0, a: 1}
+  <SecondaryFlashColor>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
+  <ColorChangeSeconds>k__BackingField: 0.1
+  <FlashTime>k__BackingField: 0.25
+  <LoopFlash>k__BackingField: 1
+  <IsFlashing>k__BackingField: 0
+  <FlashSpeedCurve>k__BackingField:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &3125253530266267744
 GameObject:
   m_ObjectHideFlags: 0
@@ -481,7 +506,6 @@ MonoBehaviour:
   <InputHandler>k__BackingField: {fileID: 0}
   <Rb>k__BackingField: {fileID: 0}
   <MovementCollider>k__BackingField: {fileID: 0}
-  <HitboxCollider>k__BackingField: {fileID: 0}
   <HealthSystem>k__BackingField: {fileID: 0}
   <CameraTarget>k__BackingField: {fileID: 0}
   groundCheck: {fileID: 3125253531717848553}
@@ -493,6 +517,8 @@ MonoBehaviour:
   cornerPos: {x: 0, y: 0}
   startPos: {x: 0, y: 0}
   stopPos: {x: 0, y: 0}
+  groundHitPos: {x: 0, y: 0}
+  lastContactPoint: {x: 0, y: 0}
 --- !u!95 &3643447841544891557
 Animator:
   serializedVersion: 5
@@ -677,7 +703,7 @@ GameObject:
   - component: {fileID: 4420002499304544901}
   - component: {fileID: 5509863583808375652}
   - component: {fileID: 5362580700939068921}
-  m_Layer: 9
+  m_Layer: 13
   m_Name: HealthSystem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -711,6 +737,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e9bb72ce760812449baa101186d4d2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 0}
+  playerData: {fileID: 11400000, guid: 82651798b0a1f594e9210ad3f643c9b0, type: 2}
+  damagedBy:
+    serializedVersion: 2
+    m_Bits: 4352
+  <HitboxCollider>k__BackingField: {fileID: 0}
+  <HealthType>k__BackingField: 1
+  <MaxHealth>k__BackingField: 0
+  <CurrentHealth>k__BackingField: 0
+  <MaxHearts>k__BackingField: 0
+  <CurrentHearts>k__BackingField: 0
+  <IsDead>k__BackingField: 0
+  <IsInvulnerable>k__BackingField: 0
+  <InvulnerabilitySeconds>k__BackingField: 0
 --- !u!61 &5362580700939068921
 BoxCollider2D:
   m_ObjectHideFlags: 0

@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerKnockbackState : PlayerState {
+    protected Vector2 lastContactPoint;
+    protected int lastFacingDirection;
+    protected bool bounceOffWall;
+
     public PlayerKnockbackState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
     }
 
@@ -15,18 +19,20 @@ public class PlayerKnockbackState : PlayerState {
 
         isDamaged = true;
         isInvulnerable = true;
+        lastFacingDirection = player.FacingDirection;
+
+        cumulatedKnockbackTime = 0f;
 
         player.SetVelocity(playerData.jumpHeight * 0.5f, (Vector2.up + Vector2.right).normalized, -player.FacingDirection);
-
-        player.HitboxCollider.enabled = false;
+        // player.CanMove = false;
     }
 
     public override void Exit() {
         base.Exit();
 
         isDamaged = false;
-        // set invulnerability, set sprite transparency flash, return control to player
-        player.HitboxCollider.enabled = true;
+        player.KnockbackEnd();
+        // player.CanMove = true;
     }
 
     public override void LogicUpdate() {
@@ -34,20 +40,55 @@ public class PlayerKnockbackState : PlayerState {
 
         if (isExitingState) return;
 
-        if (isGrounded && isFalling) {
-            stateMachine.ChangeState(player.IdleState);
+        // if (isTouchingBackWall) {
+        //     lastFacingDirection = player.FacingDirection;
+        //     player.CheckFacingDirection(-lastFacingDirection);
+        //     // player.SetVelocity(playerData.jumpHeight, Vector2.right, -lastFacingDirection);
+        //     player.SetVelocityX(playerData.jumpHeight * -lastFacingDirection);
+        //     isTouchingBackWall = player.CheckBackWall();
+        // }
+
+        if (isTouchingBackWall) {
+            BounceOffWall();
+        }
+
+        if (cumulatedKnockbackTime < playerData.maxKnockbackTime) cumulatedKnockbackTime += Time.deltaTime;
+        if (cumulatedKnockbackTime < playerData.minKnockbackTime) return;
+        
+        if (isGrounded) {
+            stateMachine.ChangeState(player.LandState);
+        }
+        else if (cumulatedKnockbackTime >= playerData.maxKnockbackTime) {
+            stateMachine.ChangeState(player.AirborneState);
         }
     }
 
     public override void PhysicsUpdate() {
         base.PhysicsUpdate();
 
-        player.SetVelocityX(player.CurrentVelocity.x);
+        if (bounceOffWall) {
+            player.SetVelocityX(-player.CurrentVelocity.x * playerData.wallBounceFalloff);
+            bounceOffWall = false;
+        }
+        else {
+            player.SetVelocityX(player.CurrentVelocity.x);
+        }
 
         if (isFalling) {
             playerData.currentFallSpeed = playerData.defaultFallSpeed;
             player.SetVelocityY(player.CurrentVelocity.y, playerData.fallAcceleration, playerData.lerpVerticalVelocity);
         }
         else if (isAscending) player.SetVelocityY(player.CurrentVelocity.y);
+    }
+
+    public void SetLastContactPoint(Vector2 point) {
+
+    }
+
+    public void BounceOffWall() {
+        bounceOffWall = true;
+        lastFacingDirection = player.FacingDirection;
+        player.CheckFacingDirection(-lastFacingDirection);
+        isTouchingBackWall = false;
     }
 }

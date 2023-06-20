@@ -17,8 +17,8 @@ TagManager:
   - Player
   - IgnorePlatforms
   - Particles
-  - 
-  - 
+  - Enemy
+  - Damageable
   - 
   - 
   - 

@@ -14,10 +14,13 @@ public class WorldMapManager : MonoBehaviour {
     public Tilemap groundCollisionTilemap;
     public Tilemap platformTilemap;
     public Tilemap platformCollisionTilemap;
+    public Tilemap spikesTilemap;
+    public Tilemap spikesCollisionTilemap;
     public Tilemap dummyTilemap;
 
     public Dictionary<Vector3, WorldTile> groundFillTiles = new Dictionary<Vector3, WorldTile>();
     public Dictionary<Vector3, WorldTile> platformTiles = new Dictionary<Vector3, WorldTile>();
+    public Dictionary<Vector3, WorldTile> spikesTiles = new Dictionary<Vector3, WorldTile>();
 
     public bool worldIsLoaded = false;
 
@@ -40,6 +43,7 @@ public class WorldMapManager : MonoBehaviour {
         // GetPlatformWorldTiles();
         GetWorldTiles(groundFillTilemap, groundFillTiles);
         GetWorldTiles(platformTilemap, platformTiles);
+        GetWorldTiles(spikesTilemap, spikesTiles);
     }
 
     private void Start() {
@@ -49,12 +53,20 @@ public class WorldMapManager : MonoBehaviour {
 
     public IEnumerator LoadWorld() {
         worldIsLoaded = false;
+        bool[] directionsArray = {false, false, false, false};
         yield return loadSeconds;
         Automapping(groundFillTilemap, groundOverlapTilemap, groundCollisionTilemap, groundFillTiles);
         yield return loadSeconds;
         Automapping(platformTilemap, null, platformCollisionTilemap, platformTiles);
         yield return loadSeconds;
-        SetDummyTiles(platformTilemap, groundFillTilemap, platformTiles);
+        directionsArray = new bool[] {true, false, true, false};
+        SetDummyTiles(platformTilemap, groundFillTilemap, platformTiles, directionsArray);
+        yield return loadSeconds;
+        Automapping(spikesTilemap, null, spikesCollisionTilemap, spikesTiles);
+        yield return loadSeconds;
+        directionsArray = new bool[] {true, true, true, true};
+        SetDummyTiles(spikesTilemap, groundFillTilemap, spikesTiles, directionsArray);
+        SetDummyTiles(spikesCollisionTilemap, groundFillTilemap, spikesTiles, directionsArray);
         worldIsLoaded = true;
         yield return loadSeconds;
         OnWorldLoaded?.Invoke();
@@ -148,7 +160,12 @@ public class WorldMapManager : MonoBehaviour {
         }
     }
 
-    private void SetDummyTiles(Tilemap fillTilemap, Tilemap solidTilemap, Dictionary<Vector3, WorldTile> fillTiles) {
+    private void SetDummyTiles(Tilemap fillTilemap, Tilemap solidTilemap, Dictionary<Vector3, WorldTile> fillTiles, bool[] directions) {
+        bool leftCheck = directions[0];
+        bool upCheck = directions[1];
+        bool rightCheck = directions[2];
+        bool downCheck = directions[3];
+
         foreach (Vector3Int pos in fillTilemap.cellBounds.allPositionsWithin) {
             var localPlace = new Vector3Int(pos.x, pos.y, pos.z);
 
@@ -158,14 +175,24 @@ public class WorldMapManager : MonoBehaviour {
             if (fillTiles.TryGetValue(localPlace, out tile)) {
                 if (tile.TileDataSO.hasDummyTile) {
                     Vector3Int left = tile.LocalPlace + Vector3Int.left;
+                    Vector3Int up = tile.LocalPlace + Vector3Int.up;
                     Vector3Int right = tile.LocalPlace + Vector3Int.right;
+                    Vector3Int down = tile.LocalPlace + Vector3Int.down;
 
-                    if (!fillTilemap.HasTile(left) && !fillTilemap.HasTile(left) && solidTilemap.HasTile(left)) {
+                    if (leftCheck && !fillTilemap.HasTile(left) && solidTilemap.HasTile(left)) {
                         fillTilemap.SetTile(left, tile.TileDataSO.dummyTile);
                     }
 
-                    if (!fillTilemap.HasTile(right) && !fillTilemap.HasTile(right) && solidTilemap.HasTile(right)) {
+                    if (upCheck && !fillTilemap.HasTile(up) && solidTilemap.HasTile(up)) {
+                        fillTilemap.SetTile(up, tile.TileDataSO.dummyTile);
+                    }
+
+                    if (rightCheck && !fillTilemap.HasTile(right) && solidTilemap.HasTile(right)) {
                         fillTilemap.SetTile(right, tile.TileDataSO.dummyTile);
+                    }
+
+                    if (downCheck && !fillTilemap.HasTile(down) && solidTilemap.HasTile(down)) {
+                        fillTilemap.SetTile(down, tile.TileDataSO.dummyTile);
                     }
                 }
             }

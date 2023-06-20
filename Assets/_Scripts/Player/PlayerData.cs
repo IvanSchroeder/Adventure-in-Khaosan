@@ -9,22 +9,23 @@ public enum Direction {
 [CreateAssetMenu(fileName = "newPlayerData", menuName = "Assets/Data/Player Data")]
 public class PlayerData : ScriptableObject {
     [Header("--- Player Info ---")]
-
     [Space(5)]
 
     [Header("Values")]
     public Vector2 currentVelocity;
     public ColliderConfiguration currentColliderConfiguration;
     public Direction facingDirection = Direction.Right;
+    public float currentHealth;
+    public int currentHearts;
     public string currentLayer;
     public float currentGravityScale;
     public float currentFallSpeed;
     public int amountOfJumpsLeft;
     public float slopeDownAngle;
     public float slopeSideAngle;
+    public float cumulatedKnockbackTime;
 
     [Space(5)]
-
     [Header("Inputs")]
     public int xInput;
     public int lastXInput;
@@ -35,7 +36,6 @@ public class PlayerData : ScriptableObject {
     public bool grabInput;
 
     [Space(5)]
-
     [Header("States")]
     public bool isGrounded;
     public bool isOnSolidGround;
@@ -70,7 +70,6 @@ public class PlayerData : ScriptableObject {
     [Space(20)]
 
     [Header("--- References ---")]
-
     [Space(5)]
 
     public PhysicsMaterial2D noFrictionMaterial;
@@ -78,8 +77,19 @@ public class PlayerData : ScriptableObject {
 
     [Space(20)]
 
-    [Header("--- Movement Values ---")]
+    [Header("--- Health Values ---")]
+    [Space(5)]
 
+    public HealthType healthType = HealthType.Hearts;
+    public float maxHealth;
+    public int maxHearts;
+    public float invulnerabilitySeconds;
+    public float minKnockbackTime;
+    public float maxKnockbackTime;
+
+    [Space(20)]
+
+    [Header("--- Movement Values ---")]
     [Space(5)]
 
     [Header("Ground")]
@@ -95,15 +105,14 @@ public class PlayerData : ScriptableObject {
     [Range(0, 100)] public int crouchDecceleration;
 
     [Space(5)]
-
     [Header("Air")]
     public bool lerpVelocityInAir = false;
     [Range(0, 100)] public int airAcceleration;
     [Range(0, 100)] public int airDecceleration;
     [Range(0f, 2f)] public float collisionEnableDelay = 0.5f;
+    [Range(0f, 1f)] public float wallBounceFalloff = 0.5f;
 
     [Space(5)]
-
     [Header("Colliders")]
     public ColliderConfiguration standingColliderConfig;
     public ColliderConfiguration crouchColliderConfig;
@@ -124,7 +133,6 @@ public class PlayerData : ScriptableObject {
     [Space(20)]
 
     [Header("--- Airborne State ---")]
-
     [Space(5)]
 
     [Header("Fall")]
@@ -137,14 +145,17 @@ public class PlayerData : ScriptableObject {
     [Range(0, 100)] public int ascensionAcceleration;
 
     [Space(5)]
-
     [Header("Buffer Timers")]
     [Range(0f, 0.5f)] public float coyoteTime = 0.2f;
     [Range(0f, 0.5f)] public float wallJumpCoyoteTime = 0.15f;
     [Range(0f, 0.5f)] public float jumpBufferTime = 0.2f;
     public float cumulatedWallJumpCoyoteTime;
 
+    [Space(20)]
+
     [Header("--- Wall States ---")]
+    [Space(5)]
+
     public bool autoWallGrab = false;
     public bool autoWallSlide = false;
     public float wallSlideSpeed = 2.5f;
@@ -161,16 +172,18 @@ public class PlayerData : ScriptableObject {
     public Vector2 wallJumpDirectionOffAngle;
     public Vector2 wallHopDirectionOffAngle;
 
-    [Header("--- Ledge Climb State ---")]
+    [Space(20)]
 
+    [Header("--- Ledge Climb State ---")]
     [Space(5)]
 
     [Header("Offsets")]
     public Vector2 startOffset;
     public Vector2 stopOffset;
 
-    [Header("--- Check Variables ---")]
+    [Space(20)]
 
+    [Header("--- Check Variables ---")]
     [Space(5)]
 
     [Header("Values")]
@@ -192,7 +205,6 @@ public class PlayerData : ScriptableObject {
     public float topCheckDistance;
 
     [Space(5)]
-
     [Header("Layers")]
     public LayerMask groundLayer;
     public LayerMask solidsLayer;
