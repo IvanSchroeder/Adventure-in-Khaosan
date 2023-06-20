@@ -12,16 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9aae3865295db8b429b15b321daea11a, type: 3}
   m_Name: PlayerData
   m_EditorClassIdentifier: 
-  currentVelocity: {x: 0, y: 0}
-  facingDirection: 1
+  currentVelocity: {x: 0.2943, y: -0.14714998}
+  currentColliderConfiguration:
+    <Offset>k__BackingField: {x: 0, y: 0.375}
+    <Size>k__BackingField: {x: 1, y: 0.75}
+  facingDirection: 0
   currentLayer: Player
   currentGravityScale: 3
   currentFallSpeed: 12
-  amountOfJumpsLeft: 1
+  amountOfJumpsLeft: 0
   slopeDownAngle: 0
   slopeSideAngle: 0
   xInput: 0
-  lastXInput: 1
+  lastXInput: 0
   yInput: 0
   jumpInput: 0
   jumpInputStop: 1
@@ -39,11 +42,11 @@ MonoBehaviour:
   isFalling: 0
   isFallingThrough: 0
   isTouchingCeiling: 0
-  isTouchingWall: 1
+  isTouchingWall: 0
   isTouchingBackWall: 0
   hasTouchedWall: 0
   hasTouchedWallBack: 0
-  isTouchingLedge: 1
+  isTouchingLedge: 0
   isWallSliding: 0
   isWallGrabing: 0
   isWallClimbing: 0
@@ -56,6 +59,7 @@ MonoBehaviour:
   hasWallJumpCoyoteTime: 0
   noFrictionMaterial: {fileID: 6200000, guid: 00051301d2c521f4d8cdd8ad41071ae1, type: 2}
   fullFrictionMaterial: {fileID: 6200000, guid: ab5b232c31c2267469ac62a55abfba99, type: 2}
+  stickToGround: 0
   runSpeed: 10
   maxRunSpeed: 10
   crouchWalkSpeed: 3
@@ -68,6 +72,18 @@ MonoBehaviour:
   airDecceleration: 50
   airAcceleration: 65
   collisionEnableDelay: 0.2
+  standingColliderConfig:
+    <Offset>k__BackingField: {x: 0, y: 0.75}
+    <Size>k__BackingField: {x: 1, y: 1.5}
+  crouchColliderConfig:
+    <Offset>k__BackingField: {x: 0, y: 0.375}
+    <Size>k__BackingField: {x: 1, y: 0.75}
+  walledColliderConfig:
+    <Offset>k__BackingField: {x: 0.123, y: 0.375}
+    <Size>k__BackingField: {x: 1, y: 0.75}
+  rollColliderConfig:
+    <Offset>k__BackingField: {x: 0, y: 1}
+    <Size>k__BackingField: {x: 1, y: 1}
   standColliderHeight: 1.5
   crouchColliderHeight: 0.8
   amountOfJumps: 1
@@ -85,6 +101,7 @@ MonoBehaviour:
   coyoteTime: 0.2
   wallJumpCoyoteTime: 0.4
   jumpBufferTime: 0.5
+  cumulatedWallJumpCoyoteTime: 0
   autoWallGrab: 1
   autoWallSlide: 1
   wallSlideSpeed: 6

@@ -12,7 +12,8 @@ public class PlayerCrouchMoveState : PlayerGroundedState {
         // player.SetVelocityY(0f);
 
         isCrouching = true;
-        player.SetColliderHeight(playerData.crouchColliderHeight);
+        player.SetColliderParameters(player.MovementCollider, playerData.crouchColliderConfig);
+        // player.CalculateColliderHeight(playerData.crouchColliderHeight);
     }
 
     public override void Exit() {
@@ -32,7 +33,8 @@ public class PlayerCrouchMoveState : PlayerGroundedState {
             stateMachine.ChangeState(player.CrouchIdleState);
         }
         else if (yInput != -1 && !isTouchingCeiling) {
-            player.SetColliderHeight(playerData.standColliderHeight);
+            player.SetColliderParameters(player.MovementCollider, playerData.standingColliderConfig);
+            // player.CalculateColliderHeight(playerData.standColliderHeight);
             stateMachine.ChangeState(player.MoveState);
         }
     }

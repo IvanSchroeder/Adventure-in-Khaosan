@@ -19,6 +19,7 @@ public class PlayerState {
     protected bool isJumping;
     protected bool isAscending;
     protected bool isFalling;
+    protected bool isFastFalling;
     protected bool isTouchingCeiling;
     protected bool isTouchingWall;
     protected bool isTouchingBackWall;
@@ -30,6 +31,8 @@ public class PlayerState {
     protected bool isWallClimbing;
     protected bool isHanging;
     protected bool isClimbing;
+    protected bool isDamaged;
+    protected bool isInvulnerable;
     protected bool isAnimationFinished;
     protected bool isExitingState;
     protected bool isAbilityDone;
@@ -60,6 +63,14 @@ public class PlayerState {
         this.stateMachine = stateMachine;
         this.playerData = playerData;
         this.animBoolName = animBoolName;
+    }
+
+    private void OnEnable() {
+        player.HealthSystem.OnDamaged += KnockbackPlayer;
+    }
+
+    private void OnDisable() {
+        player.HealthSystem.OnDamaged -= KnockbackPlayer;
     }
 
     public virtual void Enter() {
@@ -109,6 +120,10 @@ public class PlayerState {
     public virtual void AnimationTrigger() { }
 
     public virtual void AnimationFinishTrigger() => isAnimationFinished = true;
+
+    public void KnockbackPlayer() {
+
+    }
 
     public void CheckVerticallity() {
         isAscending = player.CheckAscending();
@@ -162,6 +177,7 @@ public class PlayerState {
         playerData.isJumping = isJumping;
         playerData.isAscending = isAscending;
         playerData.isFalling = isFalling;
+        playerData.isFastFalling = isFalling;
         playerData.isTouchingCeiling = isTouchingCeiling;
         playerData.isTouchingWall = isTouchingWall;
         playerData.isTouchingBackWall = isTouchingBackWall;
@@ -173,6 +189,8 @@ public class PlayerState {
         playerData.isWallClimbing = isWallClimbing;
         playerData.isHanging = isHanging;
         playerData.isClimbing = isClimbing;
+        playerData.isDamaged = isDamaged;
+        playerData.isInvulnerable = isInvulnerable;
         playerData.isAnimationFinished = isAnimationFinished;
         playerData.isExitingState = isExitingState;
         playerData.isAbilityDone = isAbilityDone;

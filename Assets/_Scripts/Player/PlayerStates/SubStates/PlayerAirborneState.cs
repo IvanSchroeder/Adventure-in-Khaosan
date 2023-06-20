@@ -34,7 +34,8 @@ public class PlayerAirborneState : PlayerState {
         player.Rb.gravityScale = playerData.defaultGravityScale;
         isAirborne = true;
 
-        player.SetColliderHeight(playerData.standColliderHeight);
+        player.SetColliderParameters(player.MovementCollider, playerData.standingColliderConfig);
+        // player.CalculateColliderHeight(playerData.standColliderHeight);
     }
 
     public override void Exit() {
@@ -100,35 +101,26 @@ public class PlayerAirborneState : PlayerState {
             else return;
         }
         else if (isOnSolidGround && !isJumping) {
-            if (xInput == 0 || isTouchingWall)
-                stateMachine.ChangeState(player.LandState);
-            else if (xInput != 0 && !isTouchingWall)
-                stateMachine.ChangeState(player.MoveState);
+            if (xInput == 0 || isTouchingWall) stateMachine.ChangeState(player.LandState);
+            else if (xInput != 0 && !isTouchingWall) stateMachine.ChangeState(player.MoveState);
         }
         else if (isOnPlatform && isIgnoringPlatforms && !isJumping) {
             return;
         }
         else if (isOnPlatform && !isIgnoringPlatforms && !isJumping) {
             RaycastHit2D detectedPlatform = player.GetPlatformHit();
-            if (detectedPlatform)
-                player.transform.position = detectedPlatform.point + new Vector2(0f, 0.05f);
+            if (detectedPlatform) player.transform.position = detectedPlatform.point + new Vector2(0f, 0.05f);
 
-            if (xInput == 0 || isTouchingWall)
-                stateMachine.ChangeState(player.LandState);
-            else if (xInput != 0 && !isTouchingWall)
-                stateMachine.ChangeState(player.MoveState);
+            if (xInput == 0 || isTouchingWall) stateMachine.ChangeState(player.LandState);
+            else if (xInput != 0 && !isTouchingWall) stateMachine.ChangeState(player.MoveState);
         }
         else if (!playerData.autoWallGrab && isTouchingWall && isTouchingLedge) {
-            if (grabInput)
-                stateMachine.ChangeState(player.WallGrabState);
-            else if (!isJumping && (xInput == player.FacingDirection || playerData.autoWallSlide))
-                stateMachine.ChangeState(player.WallSlideState);
+            if (grabInput) stateMachine.ChangeState(player.WallGrabState);
+            else if (!isJumping && (xInput == player.FacingDirection || playerData.autoWallSlide)) stateMachine.ChangeState(player.WallSlideState);
         }
         else if (playerData.autoWallGrab && isTouchingWall && isTouchingLedge && !isJumping) {
-            if (xInput == player.FacingDirection)
-                stateMachine.ChangeState(player.WallGrabState);
-            else if (xInput == 0)
-                stateMachine.ChangeState(player.WallSlideState);
+            if (xInput == player.FacingDirection) stateMachine.ChangeState(player.WallGrabState);
+            else if (xInput == 0) stateMachine.ChangeState(player.WallSlideState);
         }
     }
 
@@ -142,15 +134,17 @@ public class PlayerAirborneState : PlayerState {
 
         if (isFalling) {
             if (yInput == -1) {
+                isFastFalling = true;
                 playerData.currentFallSpeed = playerData.fastFallSpeed;
                 player.SetVelocityY(player.CurrentVelocity.y, playerData.fallAcceleration / 2f, playerData.lerpVerticalVelocity);
-                player.Anim.SetBool("fastFall", true);
             }
             else {
+                isFastFalling = false;
                 playerData.currentFallSpeed = playerData.defaultFallSpeed;
                 player.SetVelocityY(player.CurrentVelocity.y, playerData.fallAcceleration, playerData.lerpVerticalVelocity);
-                player.Anim.SetBool("fastFall", false);
             }
+
+            player.Anim.SetBool("fastFall", isFastFalling);
         }
         else if (isJumping || isAscending)
             player.SetVelocityY(player.CurrentVelocity.y);
