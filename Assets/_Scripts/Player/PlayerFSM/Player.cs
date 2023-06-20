@@ -2,6 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using ExtensionMethods;
+using System;
+
+
+[Serializable]
+public struct ColliderConfiguration {
+    [field: SerializeField] public Vector2 Offset { get; private set; }
+    [field: SerializeField] public Vector2 Size { get; private set; }
+    
+    public ColliderConfiguration(Vector2 offset, Vector2 size) {
+        Offset = offset;
+        Size = size;
+    }
+}
 
 public class Player : MonoBehaviour {
 #region STATES
@@ -20,16 +33,18 @@ public class Player : MonoBehaviour {
     public PlayerWallClimbState WallClimbState { get; private set; }
     public PlayerWallJumpState WallJumpState { get; private set; }
     public PlayerLedgeClimbState LedgeClimbState { get; private set; }
+    public PlayerKnockbackState KnockbackState { get; private set; }
 #endregion
 
 #region COMPONENTS
-    public Animator Anim { get; private set; }
-    public SpriteRenderer SpriteRenderer { get; private set; }
-    public PlayerInputHandler InputHandler { get; private set; }
-    public Rigidbody2D Rb { get; private set; }
-    public BoxCollider2D MovementCollider { get; private set; }
-    public Transform CameraTarget { get; private set; }
-    // public CapsuleCollider2D MovementCollider { get; private set; }
+    [field: SerializeField] public Animator Anim { get; private set; }
+    [field: SerializeField] public SpriteRenderer PlayerSprite { get; private set; }
+    [field: SerializeField] public PlayerInputHandler InputHandler { get; private set; }
+    [field: SerializeField] public Rigidbody2D Rb { get; private set; }
+    [field: SerializeField] public BoxCollider2D MovementCollider { get; private set; }
+    [field: SerializeField] public BoxCollider2D HitboxCollider { get; private set; }
+    [field: SerializeField] public HealthSystem HealthSystem { get; private set; }
+    [field: SerializeField] public Transform CameraTarget { get; private set; }
     [SerializeField] public Transform groundCheck;
     [SerializeField] public Transform ceilingCheck;
     [SerializeField] public Transform wallCheck;
@@ -43,6 +58,7 @@ public class Player : MonoBehaviour {
     private Vector2 velocityXY;
     public Vector2 CurrentVelocity { get; private set; }
     public int FacingDirection { get; private set; } = 1;
+
     [SerializeField] private bool drawGizmos;
 #endregion
 
@@ -62,22 +78,25 @@ public class Player : MonoBehaviour {
         WallClimbState = new PlayerWallClimbState(this, StateMachine, playerData, "wallClimb");
         WallJumpState = new PlayerWallJumpState(this, StateMachine, playerData, "roll");
         LedgeClimbState = new PlayerLedgeClimbState(this, StateMachine, playerData, "ledgeClimbState");
+        KnockbackState = new PlayerKnockbackState(this, StateMachine, playerData, "damaged");
     }
 
     private void Start() {
         if (Anim == null) Anim = GetComponentInChildren<Animator>();
-        if (SpriteRenderer == null) SpriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        if (PlayerSprite == null) PlayerSprite = GetComponentInChildren<SpriteRenderer>();
         if (InputHandler == null) InputHandler = GetComponent<PlayerInputHandler>();
         if (Rb == null) Rb = GetComponent<Rigidbody2D>();
         if (MovementCollider == null) MovementCollider = GetComponent<BoxCollider2D>();
+        if (HealthSystem == null) HealthSystem = GetComponentInChildren<HealthSystem>();
+        if (HitboxCollider == null) HitboxCollider = HealthSystem.transform.GetComponent<BoxCollider2D>();
         if (CameraTarget == null) CameraTarget = GameObject.Find("CameraTarget").transform;
-        // if (MovementCollider == null) MovementCollider = GetComponent<CapsuleCollider2D>();
 
         StateMachine.Initialize(IdleState);
 
         FacingDirection = 1;
         Rb.gravityScale = playerData.defaultGravityScale;
 
+        SetColliderParameters(MovementCollider, playerData.standingColliderConfig);
         playerData.ResetPlayerInfo();
     }
 
@@ -241,8 +260,8 @@ public class Player : MonoBehaviour {
 
     private void Flip() {
         FacingDirection *= -1;
-        if (FacingDirection == 1) SpriteRenderer.flipX = false;
-        else if (FacingDirection == -1) SpriteRenderer.flipX = true;
+        if (FacingDirection == 1) PlayerSprite.flipX = false;
+        else if (FacingDirection == -1) PlayerSprite.flipX = true;
     }
 
     public void UpdatePlayerValues() {
@@ -252,13 +271,21 @@ public class Player : MonoBehaviour {
         playerData.wallHopDirectionOffAngle = playerData.wallHopAngle.AngleFloatToVector2();
     }
 
-    public void SetColliderHeight(float height) {
+    public void CalculateColliderHeight(float height) {
         Vector2 center = MovementCollider.offset;
         workspace.Set(MovementCollider.size.x, height);
 
         center.y += (height - MovementCollider.size.y) / 2;
         MovementCollider.size = workspace;
         MovementCollider.offset = center;
+
+        ceilingCheck.position = new Vector2(ceilingCheck.position.x, MovementCollider.bounds.max.y);
+    }
+
+    public void SetColliderParameters(BoxCollider2D collider, ColliderConfiguration colliderConfig) {
+        collider.offset = colliderConfig.Offset;
+        collider.size = colliderConfig.Size;
+        playerData.currentColliderConfiguration = colliderConfig;
 
         ceilingCheck.position = new Vector2(ceilingCheck.position.x, MovementCollider.bounds.max.y);
     }
@@ -296,19 +323,20 @@ public class Player : MonoBehaviour {
     }
     
     public Vector2 GetCornerPosition() {
+        Vector2 temp = Vector2.zero;
         RaycastHit2D xHit = Physics2D.Raycast(wallCheck.position.ToVector2(), Vector2.right * FacingDirection, playerData.ledgeCheckDistance, playerData.wallLayer);
         float xDist = xHit.distance;
-        workspace.Set((xDist + 0.05f) * FacingDirection, 0f);
-        RaycastHit2D yHit = Physics2D.Raycast(ledgeCheck.position.ToVector2() + workspace, Vector2.down, ledgeCheck.position.y - wallCheck.position.y + 0.05f, playerData.wallLayer);
+        temp.Set((xDist + 0.05f) * FacingDirection, 0f);
+        RaycastHit2D yHit = Physics2D.Raycast(ledgeCheck.position.ToVector2() + temp, Vector2.down, ledgeCheck.position.y - wallCheck.position.y + 0.05f, playerData.wallLayer);
         float yDist = yHit.distance;
 
-        workspace.Set(wallCheck.position.x + xDist * FacingDirection, ledgeCheck.position.y - yDist);
+        temp.Set(wallCheck.position.x + xDist * FacingDirection, ledgeCheck.position.y - yDist);
 
-        return workspace;
+        return temp;
     }
 
     public RaycastHit2D GetGroundHit() {
-        RaycastHit2D groundHit = Physics2D.Raycast(groundCheck.position, Vector2.down, playerData.groundCheckDistance, playerData.groundLayer);
+        RaycastHit2D groundHit = Physics2D.Raycast(groundCheck.position.ToVector2() + (Vector2.up * playerData.groundCheckOffset.y), Vector2.down, playerData.groundCheckDistance, playerData.groundLayer);
         return groundHit;
     }
 
@@ -322,16 +350,17 @@ public class Player : MonoBehaviour {
         return platformHit;
     }
 
-    public RaycastHit2D[] GetPlatformHits() {
-        RaycastHit2D[] platformHits = Physics2D.RaycastAll(groundCheck.position, Vector2.down, playerData.groundCheckDistance, playerData.platformLayer);
-        return platformHits;
-    }
+    // public RaycastHit2D[] GetPlatformHits() {
+    //     RaycastHit2D[] platformHits = Physics2D.RaycastAll(groundCheck.position, Vector2.down, playerData.groundCheckDistance, playerData.platformLayer);
+    //     return platformHits;
+    // }
 #endregion
 
     public Vector2 detectedPos;
     public Vector2 cornerPos;
     public Vector2 startPos;
     public Vector2 stopPos;
+    public Vector2 groundHitPos;
 
     private void OnDrawGizmos() {
         if (!drawGizmos) return;
@@ -370,6 +399,9 @@ public class Player : MonoBehaviour {
         Gizmos.color = Color.yellow;
         Gizmos.DrawRay(ledgeCheck.position.ToVector2() /*+ (Vector2.right * playerData.ledgeCheckOffset.x * FacingDirection)*/ + (Vector2.up * playerData.ledgeCheckOffset.y), Vector3.right * FacingDirection * playerData.ledgeCheckDistance);
     
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireSphere(groundHitPos, 0.5f);
+
         if (!playerData.isHanging) return;
         Gizmos.color = Color.magenta;
         Gizmos.DrawWireSphere(detectedPos, 0.5f);

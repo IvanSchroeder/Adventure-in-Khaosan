@@ -74,11 +74,13 @@ public class PlayerLedgeClimbState : PlayerState {
             hasSpace = CheckForSpace();
 
             if (hasSpace) {
-                player.SetColliderHeight(playerData.standColliderHeight);
+                player.SetColliderParameters(player.MovementCollider, playerData.standingColliderConfig);
+                // player.CalculateColliderHeight(playerData.standColliderHeight);
                 stateMachine.ChangeState(player.IdleState);
             }
             else {
-                player.SetColliderHeight(playerData.crouchColliderHeight);
+                player.SetColliderParameters(player.MovementCollider, playerData.crouchColliderConfig);
+                // player.CalculateColliderHeight(playerData.crouchColliderHeight);
                 stateMachine.ChangeState(player.CrouchIdleState);
             }
         }

@@ -14,6 +14,7 @@ public class PlayerData : ScriptableObject {
 
     [Header("Values")]
     public Vector2 currentVelocity;
+    public ColliderConfiguration currentColliderConfiguration;
     public Direction facingDirection = Direction.Right;
     public string currentLayer;
     public float currentGravityScale;
@@ -46,7 +47,7 @@ public class PlayerData : ScriptableObject {
     public bool isJumping;
     public bool isAscending;
     public bool isFalling;
-    public bool isFallingThrough;
+    public bool isFastFalling;
     public bool isTouchingCeiling;
     public bool isTouchingWall;
     public bool isTouchingBackWall;
@@ -58,6 +59,8 @@ public class PlayerData : ScriptableObject {
     public bool isWallClimbing;
     public bool isHanging;
     public bool isClimbing;
+    public bool isDamaged;
+    public bool isInvulnerable;
     public bool isAnimationFinished;
     public bool isExitingState;
     public bool isAbilityDone;
@@ -81,6 +84,7 @@ public class PlayerData : ScriptableObject {
 
     [Header("Ground")]
     // public bool enableFriction = true;
+    public bool stickToGround;
     [Range(0f, 10f)] public float runSpeed;
     [Range(0f, 10f)] public float maxRunSpeed;
     [Range(0f, 5f)] public float crouchWalkSpeed;
@@ -94,13 +98,17 @@ public class PlayerData : ScriptableObject {
 
     [Header("Air")]
     public bool lerpVelocityInAir = false;
-    [Range(0, 100)] public int airDecceleration;
     [Range(0, 100)] public int airAcceleration;
+    [Range(0, 100)] public int airDecceleration;
     [Range(0f, 2f)] public float collisionEnableDelay = 0.5f;
 
     [Space(5)]
 
     [Header("Colliders")]
+    public ColliderConfiguration standingColliderConfig;
+    public ColliderConfiguration crouchColliderConfig;
+    public ColliderConfiguration walledColliderConfig;
+    public ColliderConfiguration rollColliderConfig;
     public float standColliderHeight;
     public float crouchColliderHeight;
 
@@ -193,6 +201,7 @@ public class PlayerData : ScriptableObject {
 
     public void ResetPlayerInfo() {
         currentVelocity = Vector2.zero;
+        currentColliderConfiguration = standingColliderConfig;
         facingDirection = Direction.Right;
         amountOfJumpsLeft = amountOfJumps;
         currentLayer = "Player";
@@ -210,7 +219,7 @@ public class PlayerData : ScriptableObject {
         isJumping = false;
         isAscending = false;
         isFalling = false;
-        isFallingThrough = false;
+        isFastFalling = false;
         isTouchingCeiling = false;
         isTouchingWall = false;
         isTouchingBackWall = false;
@@ -222,6 +231,8 @@ public class PlayerData : ScriptableObject {
         isWallClimbing = false;
         isHanging = false;
         isClimbing = false;
+        isDamaged = false;
+        isInvulnerable = false;
         isAnimationFinished = false;
         isExitingState = false;
         isAbilityDone = false;
