@@ -40,14 +40,6 @@ public class PlayerKnockbackState : PlayerState {
 
         if (isExitingState) return;
 
-        // if (isTouchingBackWall) {
-        //     lastFacingDirection = player.FacingDirection;
-        //     player.CheckFacingDirection(-lastFacingDirection);
-        //     // player.SetVelocity(playerData.jumpHeight, Vector2.right, -lastFacingDirection);
-        //     player.SetVelocityX(playerData.jumpHeight * -lastFacingDirection);
-        //     isTouchingBackWall = player.CheckBackWall();
-        // }
-
         if (isTouchingBackWall) {
             BounceOffWall();
         }

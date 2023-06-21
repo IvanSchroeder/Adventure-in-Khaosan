@@ -120,20 +120,20 @@ public class SpriteFlash : MonoBehaviour {
         SetSpriteFlashConfiguration(config);
 
         while ((CurrentFlashConfiguration.LoopFlash) || (!CurrentFlashConfiguration.LoopFlash && CurrentAmountOfFlashes < CurrentFlashConfiguration.MaxAmountOfFlashes)) {
-            if (CurrentFlashConfiguration.ChangeAlpha) {
-                CurrentAlphaAmount = CurrentFlashConfiguration.SelectedAlphasList.ElementAt(CurrentAlphaIndex);
-                SetAlphaAmount(CurrentAlphaAmount);
-
-                CurrentAlphaAmount++;
-                if (CurrentAlphaAmount >= CurrentFlashConfiguration.TotalAlphas) CurrentAlphaAmount = 0;
-            }
-
             if (CurrentFlashConfiguration.ChangeColor) {
                 CurrentFlashColor = CurrentFlashConfiguration.SelectedColorsList.ElementAt(CurrentColorIndex);
                 SetFlashColor(CurrentFlashColor);
 
                 CurrentColorIndex++;
                 if (CurrentColorIndex >= CurrentFlashConfiguration.TotalColors) CurrentColorIndex = 0;
+            }
+
+            if (CurrentFlashConfiguration.ChangeAlpha) {
+                CurrentAlphaAmount = CurrentFlashConfiguration.SelectedAlphasList.ElementAt(CurrentAlphaIndex);
+                SetAlphaAmount(CurrentAlphaAmount);
+
+                CurrentAlphaIndex++;
+                if (CurrentAlphaIndex >= CurrentFlashConfiguration.TotalAlphas) CurrentAlphaIndex = 0;
             }
 
             CurrentAmountOfFlashes++;

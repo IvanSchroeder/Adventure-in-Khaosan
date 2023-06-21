@@ -346,25 +346,25 @@ Tilemap:
   m_TileMatrixArray:
   - m_RefCount: 0
     m_Data:
-      e00: -5.702337e-29
+      e00: 0
       e01: 0
-      e02: 1.6646357e+10
-      e03: 1.6646357e+10
-      e10: 6.47e-43
+      e02: 1.1020282e-38
+      e03: 1.1020282e-38
+      e10: NaN
       e11: 0
-      e12: 6.47e-43
-      e13: 6.47e-43
-      e20: 4.2676943e+14
-      e21: 8.8e-44
-      e22: -5.704128e-29
-      e23: 1.1466e-40
-      e30: 4.5905e-41
+      e12: 8.91e-43
+      e13: 8.91e-43
+      e20: -19593.25
+      e21: 1e-45
+      e22: -6.732478e-29
+      e23: 1.6123141e+29
+      e30: 4.5904e-41
       e31: 0
-      e32: 6.47e-43
-      e33: 6.52e-43
+      e32: 8.91e-43
+      e33: 8.94e-43
   m_TileColorArray:
   - m_RefCount: 0
-    m_Data: {r: 3.9578e-41, g: 3.9578e-41, b: 3.9578e-41, a: 3.9578e-41}
+    m_Data: {r: 3.915e-41, g: 3.915e-41, b: 3.915e-41, a: 3.915e-41}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -1977,7 +1977,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.4999995, y: 1.5000002, z: -10}
+  m_LocalPosition: {x: -1.4999995, y: 1.1500002, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2097,7 +2097,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 604221883}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.4999995, y: 1.5000002, z: -10}
+  m_LocalPosition: {x: -1.4999995, y: 1.1500002, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2518,7 +2518,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8c41bb73d9ec5f44b06b37bab1fad87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shouldDisable: 0
+  shouldDisable: 1
   disableOnStart: 1
   isDisabled: 0
 --- !u!19719996 &858055873
@@ -34160,7 +34160,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8c41bb73d9ec5f44b06b37bab1fad87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shouldDisable: 0
+  shouldDisable: 1
   disableOnStart: 1
   isDisabled: 0
 --- !u!251 &1432081617
@@ -39708,7 +39708,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8c41bb73d9ec5f44b06b37bab1fad87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shouldDisable: 0
+  shouldDisable: 1
   disableOnStart: 1
   isDisabled: 0
 --- !u!1 &1798402692

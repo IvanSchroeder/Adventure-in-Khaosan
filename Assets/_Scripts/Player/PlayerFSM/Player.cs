@@ -44,7 +44,7 @@ public class Player : MonoBehaviour {
     [field: SerializeField] public BoxCollider2D MovementCollider { get; private set; }
     // [field: SerializeField] public BoxCollider2D HitboxCollider { get; private set; }
     [field: SerializeField] public HealthSystem HealthSystem { get; private set; }
-    [field: SerializeField] public Transform CameraTarget { get; private set; }
+    [field: SerializeField] public CameraTarget CameraTarget { get; private set; }
     [SerializeField] public Transform groundCheck;
     [SerializeField] public Transform ceilingCheck;
     [SerializeField] public Transform wallCheck;
@@ -109,7 +109,7 @@ public class Player : MonoBehaviour {
         if (MovementCollider == null) MovementCollider = GetComponent<BoxCollider2D>();
         if (HealthSystem == null) HealthSystem = GetComponentInChildren<HealthSystem>();
         // if (HitboxCollider == null) HitboxCollider = HealthSystem.transform.GetComponent<BoxCollider2D>();
-        if (CameraTarget == null) CameraTarget = GameObject.Find("CameraTarget").transform;
+        if (CameraTarget == null) CameraTarget = GetComponentInChildren<CameraTarget>();
     }
 
     private void Start() {

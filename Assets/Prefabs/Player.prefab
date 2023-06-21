@@ -102,13 +102,45 @@ MonoBehaviour:
   <CurrentFlashConfiguration>k__BackingField: {fileID: 0}
   <DefaultFlashColor>k__BackingField: {r: 1, g: 1, b: 1, a: 0}
   <CurrentFlashColor>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
-  <CurrentFlashAmount>k__BackingField: 0
   <CurrentAlphaAmount>k__BackingField: 1
+  <DefaultAlphaAmount>k__BackingField: 1
   <IsFlashing>k__BackingField: 0
   <CurrentColorIndex>k__BackingField: 0
   <CurrentAmountIndex>k__BackingField: 0
   <CurrentAlphaIndex>k__BackingField: 0
   <CurrentAmountOfFlashes>k__BackingField: 0
+--- !u!1 &443455453067590178
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4896041828834241169}
+  m_Layer: 0
+  m_Name: CameraCenter
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4896041828834241169
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 443455453067590178}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.15, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 3125253531831434804}
+  m_Father: {fileID: 3125253531432767924}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3125253530266267744
 GameObject:
   m_ObjectHideFlags: 0
@@ -349,7 +381,7 @@ Transform:
   - {fileID: 4420002499304544901}
   - {fileID: 826789598}
   - {fileID: 3125253530266267751}
-  - {fileID: 3125253531831434804}
+  - {fileID: 4896041828834241169}
   - {fileID: 3125253531717848553}
   - {fileID: 3125253530865429025}
   - {fileID: 3125253531543866480}
@@ -670,6 +702,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3125253531831434804}
+  - component: {fileID: 5762768655862755544}
   m_Layer: 0
   m_Name: CameraTarget
   m_TagString: Untagged
@@ -684,14 +717,34 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3125253531831434805}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.5, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 3125253531432767924}
-  m_RootOrder: 3
+  m_Father: {fileID: 4896041828834241169}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5762768655862755544
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3125253531831434805}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b20d0e794f5326b4da76ce28b1bf05a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <CameraCenter>k__BackingField: {fileID: 0}
+  <TargetPosition>k__BackingField: {x: 0, y: 0, z: 0}
+  <Lock>k__BackingField: 1
+  <InstantSnapOverride>k__BackingField: 0
+  <IsLerping>k__BackingField: 0
+  <LerpSpeed>k__BackingField: 10
+  <LerpDelay>k__BackingField: 0
+  <ElapsedTime>k__BackingField: 0
 --- !u!1 &8066157739665038557
 GameObject:
   m_ObjectHideFlags: 0

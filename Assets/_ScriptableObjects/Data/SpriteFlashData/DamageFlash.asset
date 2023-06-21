@@ -12,24 +12,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 892d864e4c2cfa74abfa1412eb60364f, type: 3}
   m_Name: DamageFlash
   m_EditorClassIdentifier: 
-  <SecondsBetweenFlashes>k__BackingField: 0.05
+  <SecondsBetweenFlashes>k__BackingField: 0.1
   <LoopFlash>k__BackingField: 0
   <MaxAmountOfFlashes>k__BackingField: 6
   <ChangeColor>k__BackingField: 1
   <ColorsType>k__BackingField: 0
   <SetColorsList>k__BackingField:
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 1, g: 1, b: 1, a: 1}
   - {r: 1, g: 0.06132078, b: 0.123042636, a: 1}
+  - {r: 1, g: 1, b: 1, a: 1}
+  - {r: 0, g: 0, b: 0, a: 1}
   <LerpedColorsList>k__BackingField:
-  - {r: 1, g: 0, b: 0.14576912, a: 1}
-  - {r: 0.75, g: 0.19999993, b: 0.35932684, a: 1}
-  - {r: 0.5, g: 0.39999986, b: 0.57288456, a: 1}
-  - {r: 0.25, g: 0.5999998, b: 0.7864423, a: 1}
-  - {r: 0, g: 0.7999997, b: 1, a: 1}
+  - {r: 1, g: 1, b: 1, a: 1}
+  - {r: 1, g: 0.7990268, b: 0.7892157, a: 1}
+  - {r: 1, g: 0.5980536, b: 0.57843137, a: 1}
+  - {r: 1, g: 0.39708036, b: 0.36764705, a: 1}
+  - {r: 1, g: 0.19610715, b: 0.15686274, a: 1}
   <InvertColors>k__BackingField: 0
-  <StartColor>k__BackingField: {r: 1, g: 0, b: 0.14576912, a: 1}
-  <EndColor>k__BackingField: {r: 0, g: 0.7999997, b: 1, a: 1}
+  <StartColor>k__BackingField: {r: 1, g: 0.19610715, b: 0.15686274, a: 1}
+  <EndColor>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
   <ColorsSteps>k__BackingField: 5
   <FlashesPerColor>k__BackingField: 2
   <TotalColors>k__BackingField: 3
@@ -42,6 +42,6 @@ MonoBehaviour:
   <InvertAlphas>k__BackingField: 0
   <FlashesPerAlpha>k__BackingField: 0
   <AlphasSteps>k__BackingField: 0
-  <TotalAlphas>k__BackingField: 2
+  <TotalAlphas>k__BackingField: 0
   <MinAlphaAmount>k__BackingField: 0
-  <MaxAlphaAmount>k__BackingField: 1
+  <MaxAlphaAmount>k__BackingField: 0

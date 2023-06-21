@@ -117,7 +117,6 @@ public class HealthSystem : MonoBehaviour, IDamageable {
         IsInvulnerable = true;
         HitboxCollider.enabled = false;
         OnInvulnerabilityStart?.Invoke();
-        // set sprite flash or flickering
         yield return invulnerabilityDelay;
         IsInvulnerable = false;
         HitboxCollider.enabled = true;
