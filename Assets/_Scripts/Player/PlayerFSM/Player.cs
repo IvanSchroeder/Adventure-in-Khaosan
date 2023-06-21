@@ -49,6 +49,7 @@ public class Player : MonoBehaviour {
     [SerializeField] public Transform ceilingCheck;
     [SerializeField] public Transform wallCheck;
     [SerializeField] public Transform ledgeCheck;
+    [SerializeField] public Vector3 testVector;
 #endregion
 
 #region VARIABLES
@@ -87,6 +88,8 @@ public class Player : MonoBehaviour {
 
     private void Awake() {
         StateMachine = new PlayerStateMachine();
+
+        testVector = Vector3.zero;
 
         IdleState = new PlayerIdleState(this, StateMachine, playerData, "idle");
         MoveState = new PlayerMoveState(this, StateMachine, playerData, "move");
