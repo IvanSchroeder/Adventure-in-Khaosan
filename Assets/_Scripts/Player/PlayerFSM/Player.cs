@@ -78,11 +78,11 @@ public class Player : MonoBehaviour {
 
 #region UNITY CALLBACK FUNCTIONS
     private void OnEnable() {
-        HealthSystem.OnDamaged += KnockbackStart;
+        HealthSystem.OnDamagedSource += KnockbackStart;
     }
 
     private void OnDisable() {
-        HealthSystem.OnDamaged -= KnockbackStart;
+        HealthSystem.OnDamagedSource -= KnockbackStart;
     }
 
     private void Awake() {

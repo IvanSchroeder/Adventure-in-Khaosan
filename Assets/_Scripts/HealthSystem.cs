@@ -19,7 +19,8 @@ public class HealthSystem : MonoBehaviour, IDamageable {
     [field: SerializeField] public bool IsInvulnerable { get; set; }
     [field: SerializeField] public float InvulnerabilitySeconds { get; set; }
 
-    public event Action<Vector2, DamageDealer> OnDamaged;
+    public event Action<Vector2, DamageDealer> OnDamagedSource;
+    public event Action OnDamaged;
     public event Action OnInvulnerabilityStart;
     public event Action OnInvulnerabilityEnd;
 
@@ -104,7 +105,8 @@ public class HealthSystem : MonoBehaviour, IDamageable {
         if(IsDead) Debug.Log($"Player died");
         else Debug.Log($"Player damaged by {amount}");
 
-        OnDamaged?.Invoke(point, source);
+        OnDamagedSource?.Invoke(point, source);
+        OnDamaged?.Invoke();
     }
 
     public void SetInvulnerability() {

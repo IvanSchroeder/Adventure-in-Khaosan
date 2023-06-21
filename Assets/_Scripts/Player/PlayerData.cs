@@ -6,7 +6,7 @@ public enum Direction {
     Right
 }
 
-[CreateAssetMenu(fileName = "newPlayerData", menuName = "Assets/Data/Player Data")]
+[CreateAssetMenu(fileName = "NewPlayerData", menuName = "Assets/Data/Player Data")]
 public class PlayerData : ScriptableObject {
     [Header("--- Player Info ---")]
     [Space(5)]

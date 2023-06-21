@@ -97,18 +97,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6f882f0f9ba0ed4f8e3e29575422e85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <PrimaryFlashColor>k__BackingField: {r: 0, g: 0, b: 0, a: 1}
-  <SecondaryFlashColor>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
-  <ColorChangeSeconds>k__BackingField: 0.1
-  <FlashTime>k__BackingField: 0.25
-  <LoopFlash>k__BackingField: 1
+  <DamageFlash>k__BackingField: {fileID: 11400000, guid: 0514c15ea549b1f40b1d147ef537951e, type: 2}
+  <InvulnerabilityFlash>k__BackingField: {fileID: 11400000, guid: 4d82b7bcf41c0e646937f0d0d6aca977, type: 2}
+  <CurrentFlashConfiguration>k__BackingField: {fileID: 0}
+  <DefaultFlashColor>k__BackingField: {r: 1, g: 1, b: 1, a: 0}
+  <CurrentFlashColor>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
+  <CurrentFlashAmount>k__BackingField: 0
+  <CurrentAlphaAmount>k__BackingField: 1
   <IsFlashing>k__BackingField: 0
-  <FlashSpeedCurve>k__BackingField:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
+  <CurrentColorIndex>k__BackingField: 0
+  <CurrentAmountIndex>k__BackingField: 0
+  <CurrentAlphaIndex>k__BackingField: 0
+  <CurrentAmountOfFlashes>k__BackingField: 0
 --- !u!1 &3125253530266267744
 GameObject:
   m_ObjectHideFlags: 0
