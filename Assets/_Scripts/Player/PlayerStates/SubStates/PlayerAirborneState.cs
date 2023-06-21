@@ -156,9 +156,9 @@ public class PlayerAirborneState : PlayerState {
                 player.SetVelocityY(player.CurrentVelocity.y * playerData.variableJumpHeightMultiplier);
                 isJumping = false;
             }
-            // else if (isFalling) {
-            //     isJumping = false;
-            // }
+            else if (isFalling) {
+                isJumping = false;
+            }
         }
     }
 

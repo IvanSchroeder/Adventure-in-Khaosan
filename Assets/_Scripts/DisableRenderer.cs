@@ -22,7 +22,7 @@ public class DisableRenderer : MonoBehaviour {
     }
     
     private void Start() {
-        if (shouldDisable && disableOnStart) Disable();
+        if (disableOnStart) Disable();
     }
 
     private void Disable() {

@@ -42,9 +42,9 @@ public class Player : MonoBehaviour {
     [field: SerializeField] public PlayerInputHandler InputHandler { get; private set; }
     [field: SerializeField] public Rigidbody2D Rb { get; private set; }
     [field: SerializeField] public BoxCollider2D MovementCollider { get; private set; }
-    [field: SerializeField] public BoxCollider2D HitboxCollider { get; private set; }
+    // [field: SerializeField] public BoxCollider2D HitboxCollider { get; private set; }
     [field: SerializeField] public HealthSystem HealthSystem { get; private set; }
-    [field: SerializeField] public Transform CameraTarget { get; private set; }
+    [field: SerializeField] public CameraTarget CameraTarget { get; private set; }
     [SerializeField] public Transform groundCheck;
     [SerializeField] public Transform ceilingCheck;
     [SerializeField] public Transform wallCheck;
@@ -62,7 +62,29 @@ public class Player : MonoBehaviour {
     [SerializeField] private bool drawGizmos;
 #endregion
 
+#region EVENTS
+    public event Action OnKnockbackEnd;
+#endregion
+
+    public void KnockbackStart(Vector2 point, DamageDealer source) {
+        lastContactPoint = point;
+        KnockbackState.SetLastContactPoint(point);
+        StateMachine.ChangeState(KnockbackState);
+    }
+
+    public void KnockbackEnd() {
+        OnKnockbackEnd?.Invoke();
+    }
+
 #region UNITY CALLBACK FUNCTIONS
+    private void OnEnable() {
+        HealthSystem.OnDamagedSource += KnockbackStart;
+    }
+
+    private void OnDisable() {
+        HealthSystem.OnDamagedSource -= KnockbackStart;
+    }
+
     private void Awake() {
         StateMachine = new PlayerStateMachine();
 
@@ -79,18 +101,18 @@ public class Player : MonoBehaviour {
         WallJumpState = new PlayerWallJumpState(this, StateMachine, playerData, "roll");
         LedgeClimbState = new PlayerLedgeClimbState(this, StateMachine, playerData, "ledgeClimbState");
         KnockbackState = new PlayerKnockbackState(this, StateMachine, playerData, "damaged");
-    }
 
-    private void Start() {
         if (Anim == null) Anim = GetComponentInChildren<Animator>();
         if (PlayerSprite == null) PlayerSprite = GetComponentInChildren<SpriteRenderer>();
         if (InputHandler == null) InputHandler = GetComponent<PlayerInputHandler>();
         if (Rb == null) Rb = GetComponent<Rigidbody2D>();
         if (MovementCollider == null) MovementCollider = GetComponent<BoxCollider2D>();
         if (HealthSystem == null) HealthSystem = GetComponentInChildren<HealthSystem>();
-        if (HitboxCollider == null) HitboxCollider = HealthSystem.transform.GetComponent<BoxCollider2D>();
-        if (CameraTarget == null) CameraTarget = GameObject.Find("CameraTarget").transform;
+        // if (HitboxCollider == null) HitboxCollider = HealthSystem.transform.GetComponent<BoxCollider2D>();
+        if (CameraTarget == null) CameraTarget = GetComponentInChildren<CameraTarget>();
+    }
 
+    private void Start() {
         StateMachine.Initialize(IdleState);
 
         FacingDirection = 1;
@@ -199,8 +221,8 @@ public class Player : MonoBehaviour {
 #endregion
 
 #region CHECK FUNCTIONS
-    public void CheckFacingDirection(int xInput) {
-        if (xInput != 0 && xInput != FacingDirection) {
+    public void CheckFacingDirection(int direction) {
+        if (direction != 0 && direction != FacingDirection) {
             Flip();
         }
     }
@@ -361,6 +383,7 @@ public class Player : MonoBehaviour {
     public Vector2 startPos;
     public Vector2 stopPos;
     public Vector2 groundHitPos;
+    public Vector2 lastContactPoint;
 
     private void OnDrawGizmos() {
         if (!drawGizmos) return;
@@ -401,6 +424,9 @@ public class Player : MonoBehaviour {
     
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(groundHitPos, 0.5f);
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(lastContactPoint, 0.5f);
 
         if (!playerData.isHanging) return;
         Gizmos.color = Color.magenta;

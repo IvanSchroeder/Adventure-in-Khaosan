@@ -53,6 +53,7 @@ public class PlayerState {
     protected float startTime;
     protected float startWallJumpCoyoteTime;
     protected float cumulatedWallJumpCoyoteTime;
+    protected float cumulatedKnockbackTime;
     protected float startTimeMaxRunSpeed;
     protected float maxRunSpeedThreshold;
 
@@ -63,14 +64,6 @@ public class PlayerState {
         this.stateMachine = stateMachine;
         this.playerData = playerData;
         this.animBoolName = animBoolName;
-    }
-
-    private void OnEnable() {
-        player.HealthSystem.OnDamaged += KnockbackPlayer;
-    }
-
-    private void OnDisable() {
-        player.HealthSystem.OnDamaged -= KnockbackPlayer;
     }
 
     public virtual void Enter() {
@@ -121,10 +114,6 @@ public class PlayerState {
 
     public virtual void AnimationFinishTrigger() => isAnimationFinished = true;
 
-    public void KnockbackPlayer() {
-
-    }
-
     public void CheckVerticallity() {
         isAscending = player.CheckAscending();
         isFalling = player.CheckFalling();
@@ -162,6 +151,7 @@ public class PlayerState {
     public void UpdatePlayerStates() {
         playerData.currentGravityScale = player.Rb.gravityScale;
         playerData.currentLayer = LayerMask.LayerToName(player.gameObject.layer);
+        playerData.cumulatedKnockbackTime = cumulatedKnockbackTime;
         playerData.slopeDownAngle = slopeDownAngle;
         playerData.slopeSideAngle = slopeSideAngle;
         playerData.cumulatedWallJumpCoyoteTime = cumulatedWallJumpCoyoteTime;

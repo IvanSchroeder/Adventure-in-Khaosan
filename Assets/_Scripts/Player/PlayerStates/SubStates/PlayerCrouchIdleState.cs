@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerCrouchIdleState : PlayerGroundedState {
+    protected float cameraOffsetDelay = 1f;
+
     public PlayerCrouchIdleState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
     }
 
@@ -11,13 +13,16 @@ public class PlayerCrouchIdleState : PlayerGroundedState {
 
         isCrouching = true;
         player.SetColliderParameters(player.MovementCollider, playerData.crouchColliderConfig);
-        // player.CalculateColliderHeight(playerData.crouchColliderHeight);
+
+        player.CameraTarget.SetTargetPosition(Vector3.down, 3f, true);
     }
 
     public override void Exit() {
         base.Exit();
 
         isCrouching = false;
+
+        player.CameraTarget.SetTargetPosition(Vector3.zero, 0f, true);
     }
 
     public override void LogicUpdate() {
@@ -26,20 +31,26 @@ public class PlayerCrouchIdleState : PlayerGroundedState {
         if (isExitingState) return;
 
         player.SetColliderParameters(player.MovementCollider, playerData.crouchColliderConfig);
-        // player.CalculateColliderHeight(playerData.crouchColliderHeight);
 
         if (xInput != 0) {
             player.CheckFacingDirection(xInput);
             if(!isTouchingWall) stateMachine.ChangeState(player.CrouchMoveState);
             else if (yInput != -1 && !isTouchingCeiling) {
                 player.SetColliderParameters(player.MovementCollider, playerData.standingColliderConfig);
-                // player.CalculateColliderHeight(playerData.standColliderHeight);
                 stateMachine.ChangeState(player.IdleState);
             }
         }
         else if (yInput != -1 && !isTouchingCeiling) {
             player.CalculateColliderHeight(playerData.standColliderHeight);
             stateMachine.ChangeState(player.IdleState);
+        }
+        else if (isTouchingCeiling) {
+            if (yInput == -1) {
+                player.CameraTarget.SetTargetPosition(Vector3.down, 3f, true);
+            }
+            else if (yInput == 0f) {
+                player.CameraTarget.SetTargetPosition(Vector3.zero, 0f, true);
+            }
         }
     }
 

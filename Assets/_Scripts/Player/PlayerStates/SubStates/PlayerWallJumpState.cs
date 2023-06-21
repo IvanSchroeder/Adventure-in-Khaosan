@@ -16,6 +16,8 @@ public class PlayerWallJumpState : PlayerAbilityState {
         player.SetVelocity(playerData.wallJumpSpeed, playerData.wallJumpDirectionOffAngle, wallJumpDirection);
         player.CheckFacingDirection(wallJumpDirection);
         player.JumpState.DecreaseAmountOfJumpsLeft();
+
+        player.AirborneState.StopWallJumpCoyoteTime();
     }
 
     public override void Exit() {

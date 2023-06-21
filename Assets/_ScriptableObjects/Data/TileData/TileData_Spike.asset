@@ -25,5 +25,5 @@ MonoBehaviour:
   overlapTile: {fileID: 0}
   overlapVariations: 0
   OverlapTilesList: []
-  hasCollisionTile: 0
-  collisionTile: {fileID: 0}
+  hasCollisionTile: 1
+  collisionTile: {fileID: 11400000, guid: 50d517d5c5c76c14ea6322629b387dd8, type: 2}

@@ -32,7 +32,6 @@ public class PlayerLedgeClimbState : PlayerState {
             yInput = 0;
 
         hasSpace = true;
-        // player.Rb.gravityScale = 0f;
         player.SetVelocityX(0f);
         player.SetVelocityY(0f);
         player.transform.position = detectedPos;
@@ -42,21 +41,24 @@ public class PlayerLedgeClimbState : PlayerState {
         stopPos.Set(cornerPos.x + (player.FacingDirection * playerData.stopOffset.x), cornerPos.y + playerData.stopOffset.y);
 
         player.transform.position = startPos;
+
+        player.CameraTarget.SetTargetPosition(Vector3.zero, 0f, true);
+        //player.CameraTarget.OffsetTargetTowards(Vector3.zero, 0f, true);
     }
 
     public override void Exit() {
         base.Exit();
 
-        // player.Rb.gravityScale = playerData.defaultGravityScale;
         isHanging = false;
 
         player.Anim.SetBool("ledgeHoldBack", false);
+        player.CameraTarget.SetTargetPosition(Vector3.zero, 0f, true);
+        // player.CameraTarget.OffsetTargetTowards(Vector3.zero, 0f, true);
 
         if (isClimbing) {
             player.transform.position = stopPos + (Vector2.up * 0.05f);
             isClimbing = false;
             player.SetVelocityX(0f);
-            // player.SetVelocityY(0f);
         }
     }
 
@@ -75,12 +77,10 @@ public class PlayerLedgeClimbState : PlayerState {
 
             if (hasSpace) {
                 player.SetColliderParameters(player.MovementCollider, playerData.standingColliderConfig);
-                // player.CalculateColliderHeight(playerData.standColliderHeight);
                 stateMachine.ChangeState(player.IdleState);
             }
             else {
                 player.SetColliderParameters(player.MovementCollider, playerData.crouchColliderConfig);
-                // player.CalculateColliderHeight(playerData.crouchColliderHeight);
                 stateMachine.ChangeState(player.CrouchIdleState);
             }
         }
@@ -88,14 +88,25 @@ public class PlayerLedgeClimbState : PlayerState {
             player.transform.position = startPos;
 
             if (isHanging && !isClimbing) {
-                if (xInput == -player.FacingDirection) player.Anim.SetBool("ledgeHoldBack", true);
-                else player.Anim.SetBool("ledgeHoldBack", false);
+                if (yInput == 1) {
+                    player.CameraTarget.SetTargetPosition(Vector3.up, 3f, true);
+                }
+                else if (xInput == -player.FacingDirection) {
+                    player.Anim.SetBool("ledgeHoldBack", true);
+                    player.CameraTarget.SetTargetPosition(Vector3.right * xInput, 3f, true);
+                }
+                else {
+                    player.Anim.SetBool("ledgeHoldBack", false);
+                    player.CameraTarget.SetTargetPosition(Vector3.zero, 0f, true);
+                }
+
             }
 
             if (isHanging && !isClimbing && xInput == player.FacingDirection) {
                 // CheckForSpace();
                 isClimbing = true;
                 player.Anim.SetBool("climbLedge", true);
+                player.CameraTarget.SetTargetPosition(stopPos + (Vector2.up * 2f));
             }
             else if (isHanging && !isClimbing && jumpInput && xInput == -player.FacingDirection) {
                 player.WallJumpState.GetWallJumpDirection(isTouchingWall);

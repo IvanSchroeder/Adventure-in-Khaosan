@@ -260,6 +260,16 @@ namespace ExtensionMethods {
 			list[b] = temp;
 		}
 
+		public static IEnumerable<T> Flip<T>(this ICollection<T> list) {
+			var flipedList = new List<T>();
+
+			for (int i = list.Count - 1; i >= 0; i--) {
+				flipedList.Add(list.ElementAt(i));
+			}
+
+			return flipedList;
+		}
+
 		public static void AscendingShuffle<T>(this IList<T> list, int iterations = 1, bool guaranteeDiscontinuity = false) {
 			int n = list.Count * iterations;
 

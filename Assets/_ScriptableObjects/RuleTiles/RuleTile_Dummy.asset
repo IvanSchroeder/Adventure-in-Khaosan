@@ -20,5 +20,5 @@ MonoBehaviour:
   overrideNotThis: 0
   tilesToConnect: []
   checkSelf: 1
-  tileColor: {r: 1, g: 0.3820755, b: 0.72161883, a: 0.6039216}
+  tileColor: {r: 1, g: 0.3820755, b: 0.72161883, a: 0.6}
   tileData: {fileID: 0}
