@@ -49,6 +49,17 @@ public class HealthSystem : MonoBehaviour, IDamageable {
         InitializeHealth();
     }
 
+    public void OnTriggerEnter2D(Collider2D collision) {
+        DamageDealer damageDealerSource = collision.GetComponentInHierarchy<DamageDealer>();
+        Debug.Log($"Detected hazard {damageDealerSource.transform.name}");
+
+        if (damageDealerSource == null) return;
+
+        // if (!IsDamagedBy(damageDealerSource.gameObject.layer)) return;
+
+        Damage(damageDealerSource.damageAmount, collision.ClosestPoint(this.transform.position), damageDealerSource);
+    }
+
     public void InitializeHealth() {
         HealthType = playerData.healthType;
 
@@ -76,6 +87,10 @@ public class HealthSystem : MonoBehaviour, IDamageable {
     }
 
     public void Damage(float amount, Vector2 point, DamageDealer source) {
+        if (IsInvulnerable) return;
+        
+        if (!IsDamagedBy(source.damageSourceLayer)) return;
+
         IsInvulnerable = true;
 
         switch (HealthType) {

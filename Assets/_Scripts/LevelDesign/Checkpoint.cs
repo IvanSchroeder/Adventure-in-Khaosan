@@ -14,7 +14,7 @@ public class Checkpoint : MonoBehaviour, IInteractable {
     public int checkpointOrderID;
 
     [field: SerializeField] public bool RequiresInput { get; set; }
-    [field: SerializeField] public bool IsInteractable { get; set; }
+    [field: SerializeField] public bool IsInteractable { get; set; } = true;
     [field: SerializeField] public Material InteractableOutlineMaterial { get; set; }
     [field: SerializeField] public Material DefaultMaterial { get; set; }
 
@@ -22,7 +22,7 @@ public class Checkpoint : MonoBehaviour, IInteractable {
     public bool isStartingCheckpoint = false;
     public bool isFinalCheckpoint = false;
 
-    public event Action<Checkpoint> OnCheckpointActive;
+    public static event Action<Checkpoint> OnCheckpointActive;
 
     private void Awake() {
         if (CheckpointTransform == null) CheckpointTransform = this.transform;
@@ -32,6 +32,7 @@ public class Checkpoint : MonoBehaviour, IInteractable {
         if (DefaultMaterial == null) DefaultMaterial = SpriteRenderer.material;
 
         isActive = false;
+        IsInteractable = true;
     }
 
     public void Start() {
@@ -49,12 +50,19 @@ public class Checkpoint : MonoBehaviour, IInteractable {
         if (!IsInteractable || isActive) return;
         SetActive();
         SetInteraction(false);
+        SpriteFlash flash = GetComponentInChildren<SpriteFlash>();
+        
         Debug.Log($"Interacted with {this.transform.name}");
     }
 
     public void SetInteraction(bool enable) {
-        if (InteractableOutlineMaterial == null || DefaultMaterial == null) Debug.Log($"Materials not set");
-        if (enable && IsInteractable) SpriteRenderer.material = InteractableOutlineMaterial;
-        else SpriteRenderer.material = DefaultMaterial;
+        IsInteractable = enable;
+        if (enable && IsInteractable && InteractableOutlineMaterial != null)
+        SpriteRenderer.material = InteractableOutlineMaterial;
+        else if (DefaultMaterial != null) {
+            SpriteRenderer.material = DefaultMaterial;
+            SpriteFlash flash = GetComponentInChildren<SpriteFlash>();
+            flash.StartInteractedFlash();
+        }
     }
 }

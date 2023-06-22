@@ -3,7 +3,11 @@ guid: a6f882f0f9ba0ed4f8e3e29575422e85
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - <DamageFlash>k__BackingField: {fileID: 11400000, guid: 0514c15ea549b1f40b1d147ef537951e, type: 2}
+  - <InvulnerabilityFlash>k__BackingField: {fileID: 11400000, guid: 4d82b7bcf41c0e646937f0d0d6aca977, type: 2}
+  - <InteractedFlash>k__BackingField: {fileID: 11400000, guid: fc38e4012282de94bae91f56827ca71a, type: 2}
+  - <CurrentFlashConfiguration>k__BackingField: {instanceID: 0}
   executionOrder: 5
   icon: {instanceID: 0}
   userData: 

@@ -55,32 +55,39 @@ public class WorldMapManager : MonoBehaviour {
 
     public void LoadWorldMap() {
         levelStructure = LevelManagerInstance.currentLevel.levelStructure;
-        
+
         GetWorldTiles(levelStructure.GroundFillTilemap, groundFillTiles);
         GetWorldTiles(levelStructure.PlatformTilemap, platformTiles);
         GetWorldTiles(levelStructure.SpikesTilemap, spikesTiles);
+
         loadWorldMapCoroutine = StartCoroutine(LoadWorldMapRoutine());
     }
 
     public IEnumerator LoadWorldMapRoutine() {
         worldIsLoaded = false;
+
         bool[] directionsArray = {false, false, false, false};
-        yield return loadSeconds;
         Automapping(levelStructure.GroundFillTilemap, levelStructure.GroundOverlapTilemap, levelStructure.GroundCollisionTilemap, groundFillTiles);
         yield return loadSeconds;
+
         Automapping(levelStructure.PlatformTilemap, null, levelStructure.PlatformCollisionTilemap, platformTiles);
         yield return loadSeconds;
+
         directionsArray = new bool[] {true, false, true, false};
         SetDummyTiles(levelStructure.PlatformTilemap, levelStructure.GroundFillTilemap, platformTiles, directionsArray);
         yield return loadSeconds;
+
         Automapping(levelStructure.SpikesTilemap, null, levelStructure.SpikesCollisionTilemap, spikesTiles);
         yield return loadSeconds;
+
         directionsArray = new bool[] {true, true, true, true};
         SetDummyTiles(levelStructure.SpikesTilemap, levelStructure.GroundFillTilemap, spikesTiles, directionsArray);
         SetDummyTiles(levelStructure.SpikesCollisionTilemap, levelStructure.GroundFillTilemap, spikesTiles, directionsArray);
         worldIsLoaded = true;
         yield return loadSeconds;
+
         OnWorldMapLoaded?.Invoke();
+
         yield return null;
     }
 

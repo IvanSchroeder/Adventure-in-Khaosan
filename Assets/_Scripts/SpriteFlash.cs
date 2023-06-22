@@ -8,6 +8,7 @@ public class SpriteFlash : MonoBehaviour {
     private Player player;
     [field: SerializeField] public SpriteFlashConfiguration DamageFlash { get; private set; }
     [field: SerializeField] public SpriteFlashConfiguration InvulnerabilityFlash { get; private set; }
+    [field: SerializeField] public SpriteFlashConfiguration InteractedFlash { get; private set; }
     [field: SerializeField] public SpriteFlashConfiguration CurrentFlashConfiguration { get; private set; }
 
     [field: SerializeField, ColorUsage(true, true)] public Color DefaultFlashColor { get; private set; } = Color.white;
@@ -91,6 +92,10 @@ public class SpriteFlash : MonoBehaviour {
 
     public void StartInvulnerabilityFlash() {
         StartFlash(InvulnerabilityFlash);
+    }
+
+    public void StartInteractedFlash() {
+        StartFlash(InteractedFlash);
     }
 
     private void StartFlash(SpriteFlashConfiguration config) {

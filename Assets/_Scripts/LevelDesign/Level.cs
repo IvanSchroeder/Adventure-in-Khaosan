@@ -51,8 +51,20 @@ public class Level : ScriptableObject {
     [Header("Check Parameters")]
     public float currentRecordTime;
     public bool wasHit = false;
-    
 
+    public void OnEnable() {
+        levelStructure = null;
+        CheckpointsList = new List<Checkpoint>();
+    }
+
+    public void OnDisable() {
+        levelStructure = null;
+        CheckpointsList = new List<Checkpoint>();
+        startingSpawnpoint = null;
+        currentCheckpoint = null;
+        furthestCheckpoint = null;
+    }
+    
     public void CheckCompletion() {
 
     }
@@ -69,8 +81,19 @@ public class Level : ScriptableObject {
 
         Checkpoint[] Checkpoints = GameObject.FindObjectsOfType<Checkpoint>();
 
-        foreach (Checkpoint checkpoint in Checkpoints.OrderBy(ck => ck.checkpointOrderID)) {
+        foreach (Checkpoint checkpoint in Checkpoints) {
             CheckpointsList.Add(checkpoint);
         }
+
+        CheckpointsList.OrderBy(ch => ch.checkpointOrderID);
+
+        Checkpoint firstCheckpoint = CheckpointsList.GetFirstElement();
+        Checkpoint lastCheckpoint = CheckpointsList.GetLastElement();
+        firstCheckpoint.isStartingCheckpoint = true;
+        lastCheckpoint.isFinalCheckpoint = true;
+
+        startingSpawnpoint = firstCheckpoint;
+        currentCheckpoint = firstCheckpoint;
+        furthestCheckpoint = firstCheckpoint;
     }
 }

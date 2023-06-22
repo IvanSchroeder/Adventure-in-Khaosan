@@ -8,6 +8,7 @@ public class LevelManager : MonoBehaviour {
     public static LevelManager instance;
     public WorldMapManager WorldMapManager { get; private set; }
     public Player Player { get; private set; }
+    [field: SerializeField] public GameObject PlayerPrefab { get; private set; }
 
     public List<World> WorldsList;
     public World currentWorld;
@@ -26,10 +27,12 @@ public class LevelManager : MonoBehaviour {
     
     private void OnEnable() {
         WorldMapManager.OnWorldMapLoaded += SpawnPlayer;
+        Checkpoint.OnCheckpointActive += SetCurrentCheckpoint;
     }
 
     private void OnDisable() {
         WorldMapManager.OnWorldMapLoaded -= SpawnPlayer;
+        Checkpoint.OnCheckpointActive -= SetCurrentCheckpoint;
     }
 
     private void Awake() {
@@ -45,7 +48,7 @@ public class LevelManager : MonoBehaviour {
         if (Player == null) Player = FindObjectOfType<Player>();
         if (WorldMapManager == null) WorldMapManager = WorldMapManager.instance;
 
-        Player.transform.gameObject.SetActive(false);
+        // Player.transform.gameObject.SetActive(false);
         LoadLevelData();
     }
 
@@ -55,20 +58,29 @@ public class LevelManager : MonoBehaviour {
         }
     }
 
+    private void SetCurrentCheckpoint(Checkpoint checkpoint) {
+        if (currentLevel.currentCheckpoint.checkpointOrderID < checkpoint.checkpointOrderID) currentLevel.furthestCheckpoint = checkpoint;
+        currentLevel.currentCheckpoint = checkpoint;
+
+        if (currentLevel.currentCheckpoint.isFinalCheckpoint) {
+            Debug.Log($"Level completed!");
+        }
+    }
+
     public void SpawnPlayer() {
-        Player.transform.gameObject.SetActive(true);
-        // Player.transform.position = currentLevel.startingSpawnpoint.transform.position;
+        var playerObj = GameObject.Instantiate(PlayerPrefab, Vector3.zero, Quaternion.identity);
+        Player = playerObj.GetComponent<Player>();
+        Player.transform.SetParent(null);
+        Player.transform.position = currentLevel.startingSpawnpoint.CheckpointTransform.position;
+    }
+
+    public void RespawnPlayer() {
+        Player.transform.position = currentLevel.currentCheckpoint.CheckpointTransform.position;
     }
 
     public void LoadLevelData() {
         currentLevel = selectedLevel;
         selectedLevel = null;
-
-        Checkpoint[] Checkpoints = GameObject.FindObjectsOfType<Checkpoint>();
-
-        foreach (Checkpoint checkpoint in Checkpoints) {
-            currentLevel.CheckpointsList.Add(checkpoint);
-        }
 
         LoadLevel();
     }
@@ -96,7 +108,7 @@ public class LevelManager : MonoBehaviour {
     public IEnumerator LoadLevelRoutine() {
         currentLevel.SpawnLevelStructure();
         // send event to scene manager to enable scene transition
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSecondsRealtime(3f);
         OnLevelLoaded?.Invoke();
         yield return null;
     }

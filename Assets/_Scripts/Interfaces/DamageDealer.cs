@@ -5,15 +5,23 @@ using ExtensionMethods;
 
 public class DamageDealer : MonoBehaviour {
     public LayerMask damageableLayers;
+    public int damageSourceLayer;
     public float damageAmount;
 
-    private void OnTriggerEnter2D(Collider2D collision) {
-        IDamageable damagedEntity = collision.GetComponentInHierarchy<IDamageable>();
-
-        if (damagedEntity == null) return;
-
-        if (damagedEntity.IsDamagedBy(this.gameObject.layer) && !damagedEntity.IsInvulnerable) {
-            damagedEntity.Damage(damageAmount, collision.ClosestPoint(collision.transform.position), this);
-        }
+    private void Awake() {
+        damageSourceLayer = this.gameObject.layer;
     }
+
+    // private void OnTriggerEnter2D(Collider2D collision) {
+    //     IDamageable damagedEntity = collision.GetComponentInHierarchy<IDamageable>();
+    //     Debug.Log($"Detected damageable {collision.transform.name}");
+
+    //     if (damagedEntity == null) return;
+
+    //     if (damagedEntity.IsDamagedBy(this.gameObject.layer)) {
+    //         damagedEntity.Damage(damageAmount, collision.ClosestPoint(collision.transform.position), this);
+    //     }
+
+    //     //damagedEntity.Damage(damageAmount, collision.ClosestPoint(collision.transform.position), this);
+    // }
 }
