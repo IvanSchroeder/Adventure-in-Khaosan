@@ -2,7 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using ExtensionMethods;
+using System.Linq;
 
+[CreateAssetMenu(fileName = "NewLevel", menuName = "Assets/Data/Level Design/Level")]
 public class Level : ScriptableObject {
     [Header("Level Info")]
 
@@ -10,7 +12,9 @@ public class Level : ScriptableObject {
 
     public string levelName;
     public int levelID;
-    public GameObject levelStructure;
+    public int levelNumber;
+    public GameObject worldMap;
+    public LevelStructure levelStructure;
     // public List<CoinItem> CoinItems;
     // public List<FoodItem> FoodItemsList;
     // public List<Enemy> EnemiesList;
@@ -58,4 +62,15 @@ public class Level : ScriptableObject {
     }
 
     public void SetHitStatus() => wasHit = true;
+
+    public void SpawnLevelStructure() {
+        var map = GameObject.Instantiate(worldMap);
+        levelStructure = map.GetComponentInHierarchy<LevelStructure>();
+
+        Checkpoint[] Checkpoints = GameObject.FindObjectsOfType<Checkpoint>();
+
+        foreach (Checkpoint checkpoint in Checkpoints.OrderBy(ck => ck.checkpointOrderID)) {
+            CheckpointsList.Add(checkpoint);
+        }
+    }
 }

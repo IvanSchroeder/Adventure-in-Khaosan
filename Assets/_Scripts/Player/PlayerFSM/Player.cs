@@ -42,9 +42,11 @@ public class Player : MonoBehaviour {
     [field: SerializeField] public PlayerInputHandler InputHandler { get; private set; }
     [field: SerializeField] public Rigidbody2D Rb { get; private set; }
     [field: SerializeField] public BoxCollider2D MovementCollider { get; private set; }
-    // [field: SerializeField] public BoxCollider2D HitboxCollider { get; private set; }
+    [field: SerializeField] public Transform Interactor { get; private set; }
+    [field: SerializeField] public BoxCollider2D InteractTrigger { get; private set; }
     [field: SerializeField] public HealthSystem HealthSystem { get; private set; }
     [field: SerializeField] public CameraTarget CameraTarget { get; private set; }
+    [field: SerializeField] public IInteractable CurrentInteractable { get; private set; }
     [SerializeField] public Transform groundCheck;
     [SerializeField] public Transform ceilingCheck;
     [SerializeField] public Transform wallCheck;
@@ -110,8 +112,9 @@ public class Player : MonoBehaviour {
         if (InputHandler == null) InputHandler = GetComponent<PlayerInputHandler>();
         if (Rb == null) Rb = GetComponent<Rigidbody2D>();
         if (MovementCollider == null) MovementCollider = GetComponent<BoxCollider2D>();
+        if (Interactor == null) Interactor = GameObject.Find("Interactor").transform;
+        if (InteractTrigger == null) InteractTrigger = Interactor.GetComponent<BoxCollider2D>();
         if (HealthSystem == null) HealthSystem = GetComponentInChildren<HealthSystem>();
-        // if (HitboxCollider == null) HitboxCollider = HealthSystem.transform.GetComponent<BoxCollider2D>();
         if (CameraTarget == null) CameraTarget = GetComponentInChildren<CameraTarget>();
     }
 
@@ -133,6 +136,32 @@ public class Player : MonoBehaviour {
     
     private void FixedUpdate() {
         StateMachine.CurrentState.PhysicsUpdate();
+    }
+
+    public void OnTriggerEnter2D(Collider2D collision) {
+        IInteractable interactableEntity = collision.GetComponentInHierarchy<IInteractable>();
+
+        if (interactableEntity == null) return;
+
+        CurrentInteractable = interactableEntity;
+
+        if (!CurrentInteractable.RequiresInput) CurrentInteractable.Interact();
+        else CurrentInteractable.SetInteraction(true);
+    }
+
+    public void OnTriggerStay2D(Collider2D collision) {
+        if (CurrentInteractable.RequiresInput && InputHandler.NormInputY == 1) {
+            CurrentInteractable.Interact();
+        }
+    }
+
+    public void OnTriggerExit2D(Collider2D collision) {
+        IInteractable interactableEntity = collision.GetComponentInHierarchy<IInteractable>();
+
+        if (interactableEntity == null) return;
+
+        CurrentInteractable.SetInteraction(false);
+        CurrentInteractable = null;
     }
 #endregion
 

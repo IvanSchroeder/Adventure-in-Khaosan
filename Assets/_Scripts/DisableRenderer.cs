@@ -10,11 +10,11 @@ public class DisableRenderer : MonoBehaviour {
     public bool isDisabled = false;
 
     private void OnEnable() {
-        WorldMapManager.OnWorldLoaded += Disable;
+        WorldMapManager.OnWorldMapLoaded += Disable;
     }
 
     private void OnDisable() {
-        WorldMapManager.OnWorldLoaded -= Disable;
+        WorldMapManager.OnWorldMapLoaded -= Disable;
     }
 
     private void Awake() {

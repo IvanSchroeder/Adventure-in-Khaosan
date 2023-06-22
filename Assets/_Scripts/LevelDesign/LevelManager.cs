@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using ExtensionMethods;
+using System;
 
 public class LevelManager : MonoBehaviour {
     public static LevelManager instance;
@@ -13,17 +14,22 @@ public class LevelManager : MonoBehaviour {
     public World lastUnlockedWorld;
     public Level currentLevel;
     public Level lastUnlockedLevel;
+    public Level selectedLevel;
 
     public bool startedLevel = false;
     public bool isInGameplay;
     public float currentTimer;
+
+    private Coroutine loadLevelCoroutine;
+
+    public static Action OnLevelLoaded; 
     
     private void OnEnable() {
-        WorldMapManager.OnWorldLoaded += SpawnPlayer;
+        WorldMapManager.OnWorldMapLoaded += SpawnPlayer;
     }
 
     private void OnDisable() {
-        WorldMapManager.OnWorldLoaded -= SpawnPlayer;
+        WorldMapManager.OnWorldMapLoaded -= SpawnPlayer;
     }
 
     private void Awake() {
@@ -40,6 +46,7 @@ public class LevelManager : MonoBehaviour {
         if (WorldMapManager == null) WorldMapManager = WorldMapManager.instance;
 
         Player.transform.gameObject.SetActive(false);
+        LoadLevelData();
     }
 
     private void Update() {
@@ -48,25 +55,34 @@ public class LevelManager : MonoBehaviour {
         }
     }
 
-    // private IEnumerator StartLevelRoutine() {
-    //     new WaitForSeconds(3f);
-    //     return null;
-    // }
-
     public void SpawnPlayer() {
         Player.transform.gameObject.SetActive(true);
         // Player.transform.position = currentLevel.startingSpawnpoint.transform.position;
     }
 
-    public void FinishedLevel() {
+    public void LoadLevelData() {
+        currentLevel = selectedLevel;
+        selectedLevel = null;
+
+        Checkpoint[] Checkpoints = GameObject.FindObjectsOfType<Checkpoint>();
+
+        foreach (Checkpoint checkpoint in Checkpoints) {
+            currentLevel.CheckpointsList.Add(checkpoint);
+        }
+
+        LoadLevel();
+    }
+
+    public void LoadLevel() {
+        loadLevelCoroutine = StartCoroutine(LoadLevelRoutine());
+    }
+
+    public void FinishLevel() {
 
     }
 
     public void RestartLevel() {
         // corutina?
-    }
-
-    public void LoadLevelData() {
     }
 
     public void SaveLevelData() {
@@ -75,5 +91,13 @@ public class LevelManager : MonoBehaviour {
 
     public void RemoveCoin() {
 
+    }
+
+    public IEnumerator LoadLevelRoutine() {
+        currentLevel.SpawnLevelStructure();
+        // send event to scene manager to enable scene transition
+        yield return new WaitForSeconds(2f);
+        OnLevelLoaded?.Invoke();
+        yield return null;
     }
 }

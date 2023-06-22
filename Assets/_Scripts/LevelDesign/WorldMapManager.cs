@@ -7,16 +7,16 @@ using System;
 
 public class WorldMapManager : MonoBehaviour {
     public static WorldMapManager instance;
-    public LevelManager LevelManager { get; private set; }
-    public List<Tilemap> TilemapsList;
-    public Tilemap groundFillTilemap;
-    public Tilemap groundOverlapTilemap;
-    public Tilemap groundCollisionTilemap;
-    public Tilemap platformTilemap;
-    public Tilemap platformCollisionTilemap;
-    public Tilemap spikesTilemap;
-    public Tilemap spikesCollisionTilemap;
-    public Tilemap dummyTilemap;
+    public LevelManager LevelManagerInstance { get; private set; }
+    private LevelStructure levelStructure;
+    // public Tilemap groundFillTilemap;
+    // public Tilemap groundOverlapTilemap;
+    // public Tilemap groundCollisionTilemap;
+    // public Tilemap platformTilemap;
+    // public Tilemap platformCollisionTilemap;
+    // public Tilemap spikesTilemap;
+    // public Tilemap spikesCollisionTilemap;
+    // public Tilemap dummyTilemap;
 
     public Dictionary<Vector3, WorldTile> groundFillTiles = new Dictionary<Vector3, WorldTile>();
     public Dictionary<Vector3, WorldTile> platformTiles = new Dictionary<Vector3, WorldTile>();
@@ -27,7 +27,16 @@ public class WorldMapManager : MonoBehaviour {
     public float waitSecondsLoad;
     private WaitForSeconds loadSeconds;
 
-    public static Action OnWorldLoaded; 
+    public static Action OnWorldMapLoaded;
+    private Coroutine loadWorldMapCoroutine;
+
+    private void OnEnable() {
+        LevelManager.OnLevelLoaded += LoadWorldMap;
+    }
+
+    private void OnDisable() {
+        LevelManager.OnLevelLoaded -= LoadWorldMap;
+    }
 
     private void Awake() {
         if (instance == null) {
@@ -38,38 +47,40 @@ public class WorldMapManager : MonoBehaviour {
         }
 
         loadSeconds = new WaitForSeconds(waitSecondsLoad);
-
-        // GetGroundWorldTiles();
-        // GetPlatformWorldTiles();
-        GetWorldTiles(groundFillTilemap, groundFillTiles);
-        GetWorldTiles(platformTilemap, platformTiles);
-        GetWorldTiles(spikesTilemap, spikesTiles);
     }
 
     private void Start() {
-        if (LevelManager == null) LevelManager = LevelManager.instance;
-        StartCoroutine(LoadWorld());
+        if (LevelManagerInstance == null) LevelManagerInstance = LevelManager.instance;
     }
 
-    public IEnumerator LoadWorld() {
+    public void LoadWorldMap() {
+        levelStructure = LevelManagerInstance.currentLevel.levelStructure;
+        
+        GetWorldTiles(levelStructure.GroundFillTilemap, groundFillTiles);
+        GetWorldTiles(levelStructure.PlatformTilemap, platformTiles);
+        GetWorldTiles(levelStructure.SpikesTilemap, spikesTiles);
+        loadWorldMapCoroutine = StartCoroutine(LoadWorldMapRoutine());
+    }
+
+    public IEnumerator LoadWorldMapRoutine() {
         worldIsLoaded = false;
         bool[] directionsArray = {false, false, false, false};
         yield return loadSeconds;
-        Automapping(groundFillTilemap, groundOverlapTilemap, groundCollisionTilemap, groundFillTiles);
+        Automapping(levelStructure.GroundFillTilemap, levelStructure.GroundOverlapTilemap, levelStructure.GroundCollisionTilemap, groundFillTiles);
         yield return loadSeconds;
-        Automapping(platformTilemap, null, platformCollisionTilemap, platformTiles);
+        Automapping(levelStructure.PlatformTilemap, null, levelStructure.PlatformCollisionTilemap, platformTiles);
         yield return loadSeconds;
         directionsArray = new bool[] {true, false, true, false};
-        SetDummyTiles(platformTilemap, groundFillTilemap, platformTiles, directionsArray);
+        SetDummyTiles(levelStructure.PlatformTilemap, levelStructure.GroundFillTilemap, platformTiles, directionsArray);
         yield return loadSeconds;
-        Automapping(spikesTilemap, null, spikesCollisionTilemap, spikesTiles);
+        Automapping(levelStructure.SpikesTilemap, null, levelStructure.SpikesCollisionTilemap, spikesTiles);
         yield return loadSeconds;
         directionsArray = new bool[] {true, true, true, true};
-        SetDummyTiles(spikesTilemap, groundFillTilemap, spikesTiles, directionsArray);
-        SetDummyTiles(spikesCollisionTilemap, groundFillTilemap, spikesTiles, directionsArray);
+        SetDummyTiles(levelStructure.SpikesTilemap, levelStructure.GroundFillTilemap, spikesTiles, directionsArray);
+        SetDummyTiles(levelStructure.SpikesCollisionTilemap, levelStructure.GroundFillTilemap, spikesTiles, directionsArray);
         worldIsLoaded = true;
         yield return loadSeconds;
-        OnWorldLoaded?.Invoke();
+        OnWorldMapLoaded?.Invoke();
         yield return null;
     }
 
@@ -92,50 +103,6 @@ public class WorldMapManager : MonoBehaviour {
             fillTiles.Add(worldTile.WorldLocation, worldTile);
         }
     }
-
-    // private void GetGroundWorldTiles() {
-    //     groundFillTiles = new Dictionary<Vector3, WorldTile>();
-
-    //     foreach (Vector3Int pos in groundFillTilemap.cellBounds.allPositionsWithin) {
-    //         var localPlace = new Vector3Int(pos.x, pos.y, pos.z);
-
-    //         if (!groundFillTilemap.HasTile(localPlace)) continue;
-
-    //         var worldTile = new WorldTile {
-    //             Name = $"{localPlace.x} , {localPlace.y}",
-    //             LocalPlace = localPlace,
-    //             WorldLocation = groundFillTilemap.CellToWorld(localPlace),
-    //             TilemapMember = groundFillTilemap,
-    //             TileBase = groundFillTilemap.GetTile(localPlace),
-    //             ExtendedRuleTile = groundFillTilemap.GetTile<ExtendedRuleTile>(localPlace),
-    //             TileDataSO = groundFillTilemap.GetTile<ExtendedRuleTile>(localPlace).tileData,
-    //         };
-
-    //         groundFillTiles.Add(worldTile.WorldLocation, worldTile);
-    //     }
-    // }
-
-    // private void GetPlatformWorldTiles() {
-    //     platformTiles = new Dictionary<Vector3, WorldTile>();
-
-    //     foreach (Vector3Int pos in platformTilemap.cellBounds.allPositionsWithin) {
-    //         var localPlace = new Vector3Int(pos.x, pos.y, pos.z);
-
-    //         if (!platformTilemap.HasTile(localPlace)) continue;
-
-    //         var worldTile = new WorldTile {
-    //             Name = $"{localPlace.x} , {localPlace.y}",
-    //             LocalPlace = localPlace,
-    //             WorldLocation = platformTilemap.CellToWorld(localPlace),
-    //             TilemapMember = platformTilemap,
-    //             TileBase = platformTilemap.GetTile(localPlace),
-    //             ExtendedRuleTile = platformTilemap.GetTile<ExtendedRuleTile>(localPlace),
-    //             TileDataSO = platformTilemap.GetTile<ExtendedRuleTile>(localPlace).tileData,
-    //         };
-
-    //         platformTiles.Add(worldTile.WorldLocation, worldTile);
-    //     }
-    // }
 
     private void Automapping(Tilemap fillTilemap, Tilemap overlapTilemap, Tilemap collisionTilemap, Dictionary<Vector3, WorldTile> fillTiles) {
         foreach (Vector3Int pos in fillTilemap.cellBounds.allPositionsWithin) {

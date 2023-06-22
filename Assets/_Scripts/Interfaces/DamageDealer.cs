@@ -8,16 +8,6 @@ public class DamageDealer : MonoBehaviour {
     public float damageAmount;
 
     private void OnTriggerEnter2D(Collider2D collision) {
-        // if (damageableLayers.HasLayer(LayerMask.NameToLayer(LayerMask.LayerToName(collision.gameObject.layer)))) {
-        //     IDamageable damagedEntity = collision.GetComponentInHierarchy<IDamageable>();
-
-        //     if (damagedEntity == null) return;
-
-        //     if (damagedEntity.IsDamagedBy(gameObject.layer)) {
-        //         damagedEntity.Damage(damageAmount, collision.bounds.ClosestPoint(transform.position), this);
-        //     }
-        // }
-
         IDamageable damagedEntity = collision.GetComponentInHierarchy<IDamageable>();
 
         if (damagedEntity == null) return;
