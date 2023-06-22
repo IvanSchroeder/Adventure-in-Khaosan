@@ -23,7 +23,8 @@ public class LevelManager : MonoBehaviour {
 
     private Coroutine loadLevelCoroutine;
 
-    public static Action OnLevelLoaded; 
+    public static Action OnLevelLoaded;
+    public static Action<Player> OnPlayerSpawn;
     
     private void OnEnable() {
         WorldMapManager.OnWorldMapLoaded += SpawnPlayer;
@@ -72,6 +73,7 @@ public class LevelManager : MonoBehaviour {
         Player = playerObj.GetComponent<Player>();
         Player.transform.SetParent(null);
         Player.transform.position = currentLevel.startingSpawnpoint.CheckpointTransform.position;
+        OnPlayerSpawn?.Invoke(Player);
     }
 
     public void RespawnPlayer() {
