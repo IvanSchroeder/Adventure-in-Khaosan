@@ -15,11 +15,11 @@ public struct DamageInfo {
     public SpriteFlashConfiguration DamageFlash { get; set; }
     public SpriteFlashConfiguration InvulnerabilityFlash { get; set; }
 
-    public DamageInfo(DamageDealer damageSource, float damageAmount, Vector2 contactPoint, SpriteFlashConfiguration damageFlash, SpriteFlashConfiguration invulnerabilityFlash) {
+    public DamageInfo(DamageDealer damageSource, float damageAmount, Vector2 contactPoint, SpriteFlashConfiguration currentFlash, SpriteFlashConfiguration damageFlash, SpriteFlashConfiguration invulnerabilityFlash) {
         DamageDealerSource = damageSource;
         DamageAmount = damageAmount;
         ContactPoint = contactPoint;
-        CurrentFlash = null;
+        CurrentFlash = currentFlash;
         DamageFlash = damageFlash;
         InvulnerabilityFlash = invulnerabilityFlash;
     }
@@ -31,6 +31,10 @@ public interface IDamageable {
     // Material SpriteFlashMaterial { get; set; }
     SpriteFlashConfiguration DamageFlash { get; set; }
     SpriteFlashConfiguration InvulnerabilityFlash { get; set; }
+    bool IsRespawneable { get; set; }
+    bool CanRespawn { get; set; }
+    int CurrentLives { get; set; }
+    int MaxLives { get; set; }
     float MaxHealth { get; set; }
     float CurrentHealth { get; set; }
     int MaxHearts { get; set; }
@@ -42,6 +46,6 @@ public interface IDamageable {
     void InitializeHealth();
     bool IsDamagedBy(int layer);
     void Damage(DamageInfo damageInfo);
-    void SetInvulnerability();
+    void SetInvulnerability(DamageInfo damageInfo);
     // void Heal(float amount);
 }

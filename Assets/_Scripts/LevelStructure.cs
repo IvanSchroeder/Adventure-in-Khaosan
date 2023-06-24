@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using ExtensionMethods;
 using UnityEngine.Tilemaps;
+using System;
 
+[Serializable]
 public class LevelStructure : MonoBehaviour {
     [field: SerializeField] public Tilemap GroundFillTilemap { get; private set; }
     [field: SerializeField] public Tilemap GroundOverlapTilemap { get; private set; }

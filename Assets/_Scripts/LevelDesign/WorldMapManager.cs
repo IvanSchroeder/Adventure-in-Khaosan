@@ -9,14 +9,6 @@ public class WorldMapManager : MonoBehaviour {
     public static WorldMapManager instance;
     public LevelManager LevelManagerInstance { get; private set; }
     private LevelStructure levelStructure;
-    // public Tilemap groundFillTilemap;
-    // public Tilemap groundOverlapTilemap;
-    // public Tilemap groundCollisionTilemap;
-    // public Tilemap platformTilemap;
-    // public Tilemap platformCollisionTilemap;
-    // public Tilemap spikesTilemap;
-    // public Tilemap spikesCollisionTilemap;
-    // public Tilemap dummyTilemap;
 
     public Dictionary<Vector3, WorldTile> groundFillTiles = new Dictionary<Vector3, WorldTile>();
     public Dictionary<Vector3, WorldTile> platformTiles = new Dictionary<Vector3, WorldTile>();

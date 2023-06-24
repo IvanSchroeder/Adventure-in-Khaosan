@@ -15,6 +15,7 @@ public class PlayerData : ScriptableObject {
     public Vector2 currentVelocity;
     public ColliderConfiguration currentColliderConfiguration;
     public Direction facingDirection = Direction.Right;
+    public int currentLives;
     public float currentHealth;
     public int currentHearts;
     public string currentLayer;
@@ -60,6 +61,8 @@ public class PlayerData : ScriptableObject {
     public bool isHanging;
     public bool isClimbing;
     public bool isDamaged;
+    public bool isDead;
+    public bool isDeadOnGround;
     public bool isInvulnerable;
     public bool isAnimationFinished;
     public bool isExitingState;
@@ -81,11 +84,13 @@ public class PlayerData : ScriptableObject {
     [Space(5)]
 
     public HealthType healthType = HealthType.Hearts;
+    public int maxLives;
     public float maxHealth;
     public int maxHearts;
     public float invulnerabilitySeconds;
     public float minKnockbackTime;
     public float maxKnockbackTime;
+    public float deadOnGroundTime;
 
     [Space(20)]
 
@@ -97,6 +102,7 @@ public class PlayerData : ScriptableObject {
     public bool stickToGround;
     [Range(0f, 10f)] public float runSpeed;
     [Range(0f, 10f)] public float maxRunSpeed;
+    public float maxRunSpeedThreshold;
     [Range(0f, 5f)] public float crouchWalkSpeed;
     public bool lerpVelocity = false;
     [Range(0, 100)] public int runAcceleration;
@@ -211,15 +217,25 @@ public class PlayerData : ScriptableObject {
     public LayerMask wallLayer;
     public LayerMask platformLayer;
 
+    public void OnEnable() {
+        ResetPlayerInfo();
+    }
+
+    public void OnDisable() {
+        ResetPlayerInfo();
+    }
+
     public void ResetPlayerInfo() {
         currentVelocity = Vector2.zero;
         currentColliderConfiguration = standingColliderConfig;
         facingDirection = Direction.Right;
-        amountOfJumpsLeft = amountOfJumps;
+        currentLives = 0;
+        currentHealth = 0f;
+        currentHearts = 0;
         currentLayer = "Player";
         currentFallSpeed = defaultFallSpeed;
         currentGravityScale = defaultGravityScale;
-        currentGravityScale = defaultGravityScale;
+        amountOfJumpsLeft = amountOfJumps;
 
         isGrounded = false;
         isOnSolidGround = false;
@@ -244,6 +260,8 @@ public class PlayerData : ScriptableObject {
         isHanging = false;
         isClimbing = false;
         isDamaged = false;
+        isDead = false;
+        isDeadOnGround = false;
         isInvulnerable = false;
         isAnimationFinished = false;
         isExitingState = false;

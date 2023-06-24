@@ -3,10 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerKnockbackState : PlayerState {
-    protected Vector2 lastContactPoint;
-    protected int lastFacingDirection;
-    protected bool bounceOffWall;
-
     public PlayerKnockbackState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
     }
 
@@ -19,7 +15,7 @@ public class PlayerKnockbackState : PlayerState {
 
         isDamaged = true;
         isInvulnerable = true;
-        lastFacingDirection = player.FacingDirection;
+        lastKnockbackFacingDirection = player.FacingDirection;
 
         cumulatedKnockbackTime = 0f;
 
@@ -74,13 +70,6 @@ public class PlayerKnockbackState : PlayerState {
     }
 
     public void SetLastContactPoint(Vector2 point) {
-
-    }
-
-    public void BounceOffWall() {
-        bounceOffWall = true;
-        lastFacingDirection = player.FacingDirection;
-        player.CheckFacingDirection(-lastFacingDirection);
-        isTouchingBackWall = false;
+        lastContactPoint = point;
     }
 }

@@ -32,6 +32,8 @@ public class PlayerState {
     protected bool isHanging;
     protected bool isClimbing;
     protected bool isDamaged;
+    protected bool isDead;
+    protected bool isDeadOnGround;
     protected bool isInvulnerable;
     protected bool isAnimationFinished;
     protected bool isExitingState;
@@ -47,15 +49,18 @@ public class PlayerState {
     protected bool jumpInputHold;
     protected bool grabInput;
 
-    protected int amountOfJumpsLeft;
-    protected float targetSpeed;
 
+    protected int amountOfJumpsLeft;
+    protected float startTimeMaxRunSpeed;
     protected float startTime;
     protected float startWallJumpCoyoteTime;
     protected float cumulatedWallJumpCoyoteTime;
     protected float cumulatedKnockbackTime;
-    protected float startTimeMaxRunSpeed;
-    protected float maxRunSpeedThreshold;
+    protected float cumulatedDeathTime;
+
+    protected Vector2 lastContactPoint;
+    protected int lastKnockbackFacingDirection;
+    protected bool bounceOffWall;
 
     private string animBoolName;
 
@@ -149,6 +154,8 @@ public class PlayerState {
     }
 
     public void UpdatePlayerStates() {
+        playerData.currentVelocity = player.CurrentVelocity;
+        playerData.facingDirection = player.FacingDirection == 1 ? Direction.Right : Direction.Left;
         playerData.currentGravityScale = player.Rb.gravityScale;
         playerData.currentLayer = LayerMask.LayerToName(player.gameObject.layer);
         playerData.cumulatedKnockbackTime = cumulatedKnockbackTime;
@@ -180,6 +187,8 @@ public class PlayerState {
         playerData.isHanging = isHanging;
         playerData.isClimbing = isClimbing;
         playerData.isDamaged = isDamaged;
+        playerData.isDead = isDead;
+        playerData.isDeadOnGround = isDeadOnGround;
         playerData.isInvulnerable = isInvulnerable;
         playerData.isAnimationFinished = isAnimationFinished;
         playerData.isExitingState = isExitingState;
@@ -194,6 +203,9 @@ public class PlayerState {
         playerData.jumpInputStop = jumpInputStop;
         playerData.jumpInputHold = jumpInputHold;
         playerData.grabInput = grabInput;
+
+        playerData.wallJumpDirectionOffAngle = playerData.wallJumpAngle.AngleFloatToVector2();
+        playerData.wallHopDirectionOffAngle = playerData.wallHopAngle.AngleFloatToVector2();
     }
 
     protected float slopeDownAngle;
@@ -260,5 +272,12 @@ public class PlayerState {
         // else {
         //     player.Rb.sharedMaterial = playerData.noFrictionMaterial;
         // } 
+    }
+
+    public void BounceOffWall() {
+        bounceOffWall = true;
+        lastKnockbackFacingDirection = player.FacingDirection;
+        player.CheckFacingDirection(-lastKnockbackFacingDirection);
+        isTouchingBackWall = false;
     }
 }

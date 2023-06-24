@@ -14,6 +14,10 @@ public class HealthSystem : MonoBehaviour, IDamageable {
     [field: SerializeField] public DamageInfo LastDamageInfo { get; set; }
     [field: SerializeField] public SpriteFlashConfiguration DamageFlash { get; set; }
     [field: SerializeField] public SpriteFlashConfiguration InvulnerabilityFlash { get; set; }
+    [field: SerializeField] public bool IsRespawneable { get; set; }
+    [field: SerializeField] public bool CanRespawn { get; set; }
+    [field: SerializeField] public int CurrentLives { get; set; }
+    [field: SerializeField] public int MaxLives { get; set; }
     [field: SerializeField] public float MaxHealth { get; set; }
     [field: SerializeField] public float CurrentHealth { get; set; }
     [field: SerializeField] public int MaxHearts { get; set; }
@@ -22,11 +26,11 @@ public class HealthSystem : MonoBehaviour, IDamageable {
     [field: SerializeField] public bool IsInvulnerable { get; set; }
     [field: SerializeField] public float InvulnerabilitySeconds { get; set; }
 
-    // public event Action<Vector2, DamageDealer> OnDamagedSource;
-    // public event Action OnDamaged;
     public event Action<DamageInfo> OnDamaged;
-    public event Action<SpriteFlashConfiguration> OnInvulnerabilityStart;
-    public event Action<SpriteFlashConfiguration> OnInvulnerabilityEnd;
+    public event Action<DamageInfo> OnInvulnerabilityStart;
+    public event Action<DamageInfo> OnInvulnerabilityEnd;
+    public static event Action<DamageInfo> OnPlayerDeath;
+    public static event Action OnLivesDepleted;
 
     private Coroutine invulnerabilityCoroutine;
     private WaitForSeconds invulnerabilityDelay;
@@ -45,8 +49,11 @@ public class HealthSystem : MonoBehaviour, IDamageable {
     }
 
     private void Start() {
-        IsDead = false;
-        IsInvulnerable = false;
+        MaxLives = playerData.maxLives;
+        CurrentLives = MaxLives;
+        if (CurrentLives > 1) CanRespawn = true;
+        playerData.currentLives = CurrentLives;
+
         InvulnerabilitySeconds = playerData.invulnerabilitySeconds;
         invulnerabilityDelay = new WaitForSeconds(InvulnerabilitySeconds);
 
@@ -59,11 +66,15 @@ public class HealthSystem : MonoBehaviour, IDamageable {
 
         if (damageDealerSource == null) return;
 
-        LastDamageInfo = new DamageInfo(damageDealerSource, damageDealerSource.damageAmount, collision.ClosestPoint(this.transform.position), DamageFlash, InvulnerabilityFlash);
+        LastDamageInfo = new DamageInfo(damageDealerSource, damageDealerSource.damageAmount, collision.ClosestPoint(this.transform.position), DamageFlash, DamageFlash, InvulnerabilityFlash);
         Damage(LastDamageInfo);
     }
 
     public void InitializeHealth() {
+        IsDead = false;
+        IsInvulnerable = false;
+        IsRespawneable = true;
+
         HealthType = playerData.healthType;
 
         switch (HealthType) {
@@ -80,7 +91,7 @@ public class HealthSystem : MonoBehaviour, IDamageable {
             break;
         }
 
-        LastDamageInfo = new DamageInfo(null, 0f, Vector2.zero, DamageFlash, InvulnerabilityFlash);
+        LastDamageInfo = new DamageInfo(null, 0f, Vector2.zero, DamageFlash, DamageFlash, InvulnerabilityFlash);
     }
 
     public bool IsDamagedBy(int layer) {
@@ -92,7 +103,7 @@ public class HealthSystem : MonoBehaviour, IDamageable {
     }
 
     public void Damage(DamageInfo damageInfo) {
-        if (IsInvulnerable) return;
+        if (IsInvulnerable || IsDead) return;
         
         if (!IsDamagedBy(damageInfo.DamageDealerSource.damageDealerLayer)) return;
 
@@ -122,25 +133,42 @@ public class HealthSystem : MonoBehaviour, IDamageable {
             break;
         }
 
-        if(IsDead) Debug.Log($"Player died");
-        else Debug.Log($"Player damaged by {damageInfo.DamageAmount}");
-
-        // OnDamagedSource?.Invoke(point, source);
         OnDamaged?.Invoke(damageInfo);
+
+        if(IsDead) {
+            Death();
+            OnPlayerDeath?.Invoke(damageInfo);
+        }
+        else {
+            OnDamaged?.Invoke(damageInfo);
+        }
     }
 
-    public void SetInvulnerability() {
-        invulnerabilityCoroutine = StartCoroutine(InvulnerabilityFramesRoutine());
+    public void Death() {
+        CurrentLives--;
+
+        if (CurrentLives <= 0) {
+            CurrentLives = 0;
+            CanRespawn = false;
+            OnLivesDepleted?.Invoke();
+        }
+        
+        playerData.currentLives = CurrentLives;
     }
 
-    private IEnumerator InvulnerabilityFramesRoutine() {
+    public void SetInvulnerability(DamageInfo damageInfo) {
+        invulnerabilityCoroutine = StartCoroutine(InvulnerabilityFramesRoutine(damageInfo));
+    }
+
+    private IEnumerator InvulnerabilityFramesRoutine(DamageInfo damageInfo) {
         IsInvulnerable = true;
         HitboxCollider.enabled = false;
-        OnInvulnerabilityStart?.Invoke(LastDamageInfo.InvulnerabilityFlash);
+        damageInfo = new DamageInfo(null, 0f, default, InvulnerabilityFlash, DamageFlash, InvulnerabilityFlash);
+        OnInvulnerabilityStart?.Invoke(damageInfo);
         yield return invulnerabilityDelay;
         IsInvulnerable = false;
         HitboxCollider.enabled = true;
-        OnInvulnerabilityEnd?.Invoke(InvulnerabilityFlash);
+        OnInvulnerabilityEnd?.Invoke(damageInfo);
         yield return null;
     }
 }

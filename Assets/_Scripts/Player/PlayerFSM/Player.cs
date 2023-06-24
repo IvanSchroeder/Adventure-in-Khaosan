@@ -34,6 +34,7 @@ public class Player : MonoBehaviour {
     public PlayerWallJumpState WallJumpState { get; private set; }
     public PlayerLedgeClimbState LedgeClimbState { get; private set; }
     public PlayerKnockbackState KnockbackState { get; private set; }
+    public PlayerDeathState DeathState { get; private set; }
 #endregion
 
 #region COMPONENTS
@@ -52,6 +53,7 @@ public class Player : MonoBehaviour {
     [SerializeField] public Transform wallCheck;
     [SerializeField] public Transform ledgeCheck;
     [SerializeField] public Vector3 testVector;
+    [field: SerializeField] public DamageInfo LastDamageInfo { get; private set; }
 #endregion
 
 #region VARIABLES
@@ -66,28 +68,40 @@ public class Player : MonoBehaviour {
 #endregion
 
 #region EVENTS
-    public event Action OnKnockbackEnd;
+    public event Action<DamageInfo> OnKnockbackEnd;
+    public static event Action OnPlayerDeathEnd;
 #endregion
 
     public void KnockbackStart(DamageInfo damageInfo) {
+        LastDamageInfo = damageInfo;
         lastContactPoint = damageInfo.ContactPoint;
         KnockbackState.SetLastContactPoint(lastContactPoint);
         StateMachine.ChangeState(KnockbackState);
     }
 
     public void KnockbackEnd() {
-        OnKnockbackEnd?.Invoke();
+        LastDamageInfo = new DamageInfo(default, default, default, HealthSystem.InvulnerabilityFlash, HealthSystem.DamageFlash, HealthSystem.InvulnerabilityFlash);
+        OnKnockbackEnd?.Invoke(LastDamageInfo);
+    }
+
+    public void SetPlayerDeath(DamageInfo damageInfo) {
+        CameraTarget.transform.SetParent(null);
+        StateMachine.ChangeState(DeathState);
+    }
+
+    public void PlayerDeathEnd() {
+        OnPlayerDeathEnd?.Invoke();
     }
 
 #region UNITY CALLBACK FUNCTIONS
     private void OnEnable() {
-        // HealthSystem.OnDamagedSource += KnockbackStart;
         HealthSystem.OnDamaged += KnockbackStart;
+        HealthSystem.OnPlayerDeath += SetPlayerDeath;
     }
 
     private void OnDisable() {
-        // HealthSystem.OnDamagedSource -= KnockbackStart;
         HealthSystem.OnDamaged -= KnockbackStart;
+        HealthSystem.OnPlayerDeath -= SetPlayerDeath;
     }
 
     private void Awake() {
@@ -108,6 +122,7 @@ public class Player : MonoBehaviour {
         WallJumpState = new PlayerWallJumpState(this, StateMachine, playerData, "roll");
         LedgeClimbState = new PlayerLedgeClimbState(this, StateMachine, playerData, "ledgeClimbState");
         KnockbackState = new PlayerKnockbackState(this, StateMachine, playerData, "damaged");
+        DeathState = new PlayerDeathState(this, StateMachine, playerData, "dead");
 
         if (Anim == null) Anim = GetComponentInChildren<Animator>();
         if (PlayerSprite == null) PlayerSprite = GetComponentInChildren<SpriteRenderer>();
@@ -121,18 +136,24 @@ public class Player : MonoBehaviour {
     }
 
     private void Start() {
+        Init();
+    }
+
+    public void Init() {
         StateMachine.Initialize(IdleState);
 
         FacingDirection = 1;
         Rb.gravityScale = playerData.defaultGravityScale;
+        CheckFacingDirection(FacingDirection);
+        PlayerSprite.flipX = false;
+        CameraTarget.transform.SetParent(CameraTarget.CameraCenter);
+        CameraTarget.transform.localPosition = Vector3.zero;
 
         SetColliderParameters(MovementCollider, playerData.standingColliderConfig);
-        playerData.ResetPlayerInfo();
     }
 
     private void Update() {
         CurrentVelocity = Rb.velocity;
-        UpdatePlayerValues();
         StateMachine.CurrentState.LogicUpdate();
     }
     
@@ -152,6 +173,8 @@ public class Player : MonoBehaviour {
     }
 
     public void OnTriggerStay2D(Collider2D collision) {
+        if (!collision.HasComponentInHierarchy<IInteractable>()) return;
+
         if (CurrentInteractable.RequiresInput && InputHandler.NormInputY == 1) {
             CurrentInteractable.Interact();
         }
@@ -218,40 +241,6 @@ public class Player : MonoBehaviour {
         Rb.velocity = new Vector2(Rb.velocity.x.Clamp(-playerData.maxRunSpeed, playerData.maxRunSpeed), Rb.velocity.y.Clamp(-playerData.currentFallSpeed, playerData.maxAscendantSpeed));
         CurrentVelocity = Rb.velocity;
     }
-
-    // public bool lockPlatformDelay;
-
-    // public void SetPlatformCollision(bool enable, float delay = 0f) {
-    //     if (!enable) {
-    //         if (!lockPlatformDelay) {
-    //             StartCoroutine(PlatformCollisionDelayEnableRoutine());
-    //             lockPlatformDelay = true;
-    //         }
-    //     }
-    //     else {
-    //         if (!lockPlatformDelay) {
-    //             StartCoroutine(PlatformCollisionDelayDisableRoutine(delay));
-    //             lockPlatformDelay = true;
-    //         }
-    //     }
-    // }
-
-    // public IEnumerator PlatformCollisionDelayEnableRoutine() {
-    //     if (!Physics2D.GetIgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer("Platform"))) Physics2D.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer("Platform"), true);
-    //     if (gameObject.layer != LayerMask.NameToLayer("IgnorePlatforms")) gameObject.layer = LayerMask.NameToLayer("IgnorePlatforms");
-    //     Debug.Log($"Disabled Platform Collision");
-    //     yield return null;
-    // }
-
-    // public IEnumerator PlatformCollisionDelayDisableRoutine(float delay) {
-    //     lockPlatformDelay = true;
-    //     yield return new WaitForSeconds(delay);
-    //     if (Physics2D.GetIgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer("Platform"))) Physics2D.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer("Platform"), false);
-    //     if (gameObject.layer != LayerMask.NameToLayer("Player")) gameObject.layer = LayerMask.NameToLayer("Player");
-    //     lockPlatformDelay = false;
-    //     Debug.Log($"Enabled Platform Collision");
-    //     yield return null;
-    // }
 #endregion
 
 #region CHECK FUNCTIONS
@@ -259,11 +248,10 @@ public class Player : MonoBehaviour {
         if (direction != 0 && direction != FacingDirection) {
             Flip();
         }
-    }
 
-    // public bool CheckGround(LayerMask mask) {
-    //     return Physics2D.OverlapBox(groundCheck.position.ToVector2() + playerData.groundCheckOffset, playerData.groundCheckSize, 0f, mask);
-    // }
+        if (FacingDirection == 1) PlayerSprite.flipX = false;
+        else if (FacingDirection == -1) PlayerSprite.flipX = true;
+    }
 
     public bool CheckGround(LayerMask mask) {
         return Physics2D.Raycast(groundCheck.position.ToVector2() + (Vector2.right * playerData.groundCheckOffset.x) + (Vector2.up * playerData.groundCheckOffset.y), Vector2.down, playerData.groundCheckDistance, mask)
@@ -275,19 +263,18 @@ public class Player : MonoBehaviour {
         return Physics2D.Raycast(ceilingCheck.position.ToVector2() + (Vector2.right * playerData.ceilingCheckOffset) + (Vector2.down * playerData.ceilingCheckOffset.y), Vector2.up, playerData.ceilingCheckDistance, playerData.solidsLayer)
             || Physics2D.Raycast(ceilingCheck.position.ToVector2() + (Vector2.left * playerData.ceilingCheckOffset) + (Vector2.down * playerData.ceilingCheckOffset.y), Vector2.up, playerData.ceilingCheckDistance, playerData.solidsLayer)
             || Physics2D.Raycast(ceilingCheck.position.ToVector2() + (Vector2.down * playerData.ceilingCheckOffset.y), Vector2.up, playerData.ceilingCheckDistance, playerData.solidsLayer);
-        // return Physics2D.OverlapBox(ceilingCheck.position.ToVector2() + playerData.ceilingCheckOffset, playerData.ceilingCheckSize, 0f, playerData.solidsLayer);
     }
 
     public bool CheckWall() {
-        return Physics2D.Raycast(wallCheck.position.ToVector2() /*+ (Vector2.right * playerData.wallCheckOffset.x * FacingDirection)*/ + (Vector2.up * playerData.wallCheckOffset.y), Vector2.right * FacingDirection, playerData.wallCheckDistance, playerData.wallLayer);
+        return Physics2D.Raycast(wallCheck.position.ToVector2() + (Vector2.up * playerData.wallCheckOffset.y), Vector2.right * FacingDirection, playerData.wallCheckDistance, playerData.wallLayer);
     }
 
     public bool CheckBackWall() {
-        return Physics2D.Raycast(wallCheck.position.ToVector2() /*+ (Vector2.left * playerData.wallCheckOffset.x * FacingDirection)*/ + (Vector2.up * playerData.wallCheckOffset.y), Vector2.right * -FacingDirection, playerData.wallCheckDistance, playerData.wallLayer);
+        return Physics2D.Raycast(wallCheck.position.ToVector2() + (Vector2.up * playerData.wallCheckOffset.y), Vector2.right * -FacingDirection, playerData.wallCheckDistance, playerData.wallLayer);
     }
 
     public bool CheckLedge() {
-        return Physics2D.Raycast(ledgeCheck.position.ToVector2() /*+ (Vector2.right * playerData.ledgeCheckOffset.x * FacingDirection)*/ + (Vector2.up * playerData.ledgeCheckOffset.y), Vector2.right * FacingDirection, playerData.ledgeCheckDistance, playerData.wallLayer);
+        return Physics2D.Raycast(ledgeCheck.position.ToVector2() + (Vector2.up * playerData.ledgeCheckOffset.y), Vector2.right * FacingDirection, playerData.ledgeCheckDistance, playerData.wallLayer);
     }
 
     public bool CheckFalling() {
@@ -320,13 +307,6 @@ public class Player : MonoBehaviour {
         else if (FacingDirection == -1) PlayerSprite.flipX = true;
     }
 
-    public void UpdatePlayerValues() {
-        playerData.currentVelocity = CurrentVelocity;
-        playerData.facingDirection = FacingDirection == 1 ? Direction.Right : Direction.Left;
-        playerData.wallJumpDirectionOffAngle = playerData.wallJumpAngle.AngleFloatToVector2();
-        playerData.wallHopDirectionOffAngle = playerData.wallHopAngle.AngleFloatToVector2();
-    }
-
     public void CalculateColliderHeight(float height) {
         Vector2 center = MovementCollider.offset;
         workspace.Set(MovementCollider.size.x, height);
@@ -345,10 +325,6 @@ public class Player : MonoBehaviour {
 
         ceilingCheck.position = new Vector2(ceilingCheck.position.x, MovementCollider.bounds.max.y);
     }
-
-    // public void SetCeilingCheckHeight() {
-    //     ceilingCheck.transform.position = new Vector2(ceilingCheck.transform.position.x, MovementCollider.bounds.max.y);
-    // }
 
     public void CorrectCorner(float currentYVelocity) {
         float newPos = 0f;
@@ -431,7 +407,6 @@ public class Player : MonoBehaviour {
         Gizmos.DrawRay(ceilingCheck.position.ToVector2() + (playerData.ceilingCheckOffset * Vector2.right) + (Vector2.down * playerData.ceilingCheckOffset.y), Vector3.up * playerData.ceilingCheckDistance);
         Gizmos.DrawRay(ceilingCheck.position.ToVector2() + (playerData.ceilingCheckOffset * Vector2.left) + (Vector2.down * playerData.ceilingCheckOffset.y), Vector3.up * playerData.ceilingCheckDistance);
         Gizmos.DrawRay(ceilingCheck.position.ToVector2() + (Vector2.down * playerData.ceilingCheckOffset.y), Vector3.up * playerData.ceilingCheckDistance);
-        //Gizmos.DrawWireCube(ceilingCheck.position.ToVector2() + playerData.ceilingCheckOffset, playerData.ceilingCheckSize);
 
         // Corner Check Raycasts
         // Edge
@@ -448,13 +423,13 @@ public class Player : MonoBehaviour {
         
         // Wall Check Raycasts
         Gizmos.color = Color.cyan;
-        Gizmos.DrawRay(wallCheck.position.ToVector2() /*+ (Vector2.right * playerData.wallCheckOffset.x * FacingDirection)*/ + (Vector2.up * playerData.wallCheckOffset.y), Vector2.right * FacingDirection * playerData.wallCheckDistance);
+        Gizmos.DrawRay(wallCheck.position.ToVector2() + (Vector2.up * playerData.wallCheckOffset.y), Vector2.right * FacingDirection * playerData.wallCheckDistance);
         Gizmos.color = Color.magenta;
-        Gizmos.DrawRay(wallCheck.position.ToVector2() /*+ (Vector2.left * playerData.wallCheckOffset.x * FacingDirection)*/ + (Vector2.up * playerData.wallCheckOffset.y), Vector2.right * -FacingDirection * playerData.wallCheckDistance);
+        Gizmos.DrawRay(wallCheck.position.ToVector2() + (Vector2.up * playerData.wallCheckOffset.y), Vector2.right * -FacingDirection * playerData.wallCheckDistance);
 
         // Ledge Check Raycasts
         Gizmos.color = Color.yellow;
-        Gizmos.DrawRay(ledgeCheck.position.ToVector2() /*+ (Vector2.right * playerData.ledgeCheckOffset.x * FacingDirection)*/ + (Vector2.up * playerData.ledgeCheckOffset.y), Vector3.right * FacingDirection * playerData.ledgeCheckDistance);
+        Gizmos.DrawRay(ledgeCheck.position.ToVector2() + (Vector2.up * playerData.ledgeCheckOffset.y), Vector3.right * FacingDirection * playerData.ledgeCheckDistance);
     
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(groundHitPos, 0.5f);

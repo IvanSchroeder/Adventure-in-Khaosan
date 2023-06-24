@@ -22,7 +22,7 @@ public class CameraManager : MonoBehaviour {
     }
 
     private void SetVirtualCameraTarget(Player player) {
-        VirtualCamera.m_LookAt = player.transform;
-        VirtualCamera.m_Follow = player.transform;
+        VirtualCamera.m_LookAt = player.CameraTarget.transform;
+        VirtualCamera.m_Follow = player.CameraTarget.transform;
     }
 }

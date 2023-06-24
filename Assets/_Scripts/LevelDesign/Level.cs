@@ -2,9 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using ExtensionMethods;
+using System;
 using System.Linq;
 
 [CreateAssetMenu(fileName = "NewLevel", menuName = "Assets/Data/Level Design/Level")]
+[Serializable]
 public class Level : ScriptableObject {
     [Header("Level Info")]
 
@@ -54,7 +56,6 @@ public class Level : ScriptableObject {
 
     public void OnEnable() {
         levelStructure = null;
-        CheckpointsList = new List<Checkpoint>();
     }
 
     public void OnDisable() {
@@ -79,13 +80,16 @@ public class Level : ScriptableObject {
         var map = GameObject.Instantiate(worldMap);
         levelStructure = map.GetComponentInHierarchy<LevelStructure>();
 
-        Checkpoint[] Checkpoints = GameObject.FindObjectsOfType<Checkpoint>();
+        CheckpointsList = new List<Checkpoint>();
 
-        foreach (Checkpoint checkpoint in Checkpoints) {
-            CheckpointsList.Add(checkpoint);
+        Checkpoint[] checkpointArray = GameObject.FindObjectsOfType<Checkpoint>();
+
+        for (int i = 0; i < checkpointArray.Count(); i++) {
+            CheckpointsList.Add(checkpointArray[i]);
+            Debug.Log($"Checkpoint {checkpointArray[i]} added");
         }
 
-        CheckpointsList.OrderBy(ch => ch.checkpointOrderID);
+        // CheckpointsList.OrderByDescending(ch => ch.checkpointOrderID);
 
         Checkpoint firstCheckpoint = CheckpointsList.GetFirstElement();
         Checkpoint lastCheckpoint = CheckpointsList.GetLastElement();

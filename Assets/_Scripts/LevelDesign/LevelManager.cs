@@ -22,6 +22,7 @@ public class LevelManager : MonoBehaviour {
     public float currentTimer;
 
     private Coroutine loadLevelCoroutine;
+    private Coroutine playerSpawnCoroutine;
 
     public static Action OnLevelLoaded;
     public static Action<Player> OnPlayerSpawn;
@@ -29,11 +30,15 @@ public class LevelManager : MonoBehaviour {
     private void OnEnable() {
         WorldMapManager.OnWorldMapLoaded += SpawnPlayer;
         Checkpoint.OnCheckpointActive += SetCurrentCheckpoint;
+        HealthSystem.OnLivesDepleted += GameOver;
     }
 
     private void OnDisable() {
         WorldMapManager.OnWorldMapLoaded -= SpawnPlayer;
         Checkpoint.OnCheckpointActive -= SetCurrentCheckpoint;
+        HealthSystem.OnLivesDepleted -= GameOver;
+
+        Player.OnPlayerDeathEnd -= RespawnPlayer;
     }
 
     private void Awake() {
@@ -46,7 +51,6 @@ public class LevelManager : MonoBehaviour {
     }
 
     private void Start() {
-        if (Player == null) Player = FindObjectOfType<Player>();
         if (WorldMapManager == null) WorldMapManager = WorldMapManager.instance;
 
         // Player.transform.gameObject.SetActive(false);
@@ -73,11 +77,20 @@ public class LevelManager : MonoBehaviour {
         Player = playerObj.GetComponent<Player>();
         Player.transform.SetParent(null);
         Player.transform.position = currentLevel.startingSpawnpoint.CheckpointTransform.position;
+        Player.HealthSystem.SetInvulnerability(Player.HealthSystem.LastDamageInfo);
+
+        Player.OnPlayerDeathEnd += RespawnPlayer;
+
         OnPlayerSpawn?.Invoke(Player);
     }
 
     public void RespawnPlayer() {
-        Player.transform.position = currentLevel.currentCheckpoint.CheckpointTransform.position;
+        if (Player.HealthSystem.IsRespawneable && Player.HealthSystem.CanRespawn) {
+            playerSpawnCoroutine = StartCoroutine(RespawnPlayerRoutine(2f));
+        }
+        else {
+
+        }
     }
 
     public void LoadLevelData() {
@@ -107,11 +120,35 @@ public class LevelManager : MonoBehaviour {
 
     }
 
+    public void GameOver() {
+        loadLevelCoroutine = StartCoroutine(GameOverRoutine());
+    }
+
+    public IEnumerator RespawnPlayerRoutine(float respawnSeconds) {
+        Player.gameObject.SetActive(false);
+        yield return new WaitForSeconds(respawnSeconds);
+        Player.gameObject.SetActive(true);
+        Player.transform.position = currentLevel.currentCheckpoint.CheckpointTransform.position;
+        Player.Init();
+        Player.HealthSystem.InitializeHealth();
+
+        OnPlayerSpawn?.Invoke(Player);
+        yield return null;
+    }
+
     public IEnumerator LoadLevelRoutine() {
         currentLevel.SpawnLevelStructure();
         // send event to scene manager to enable scene transition
         yield return new WaitForSecondsRealtime(3f);
         OnLevelLoaded?.Invoke();
+        yield return null;
+    }
+
+    public IEnumerator GameOverRoutine() {
+        yield return new WaitForSecondsRealtime(3f);
+        Player.gameObject.SetActive(false);
+        Debug.Log($"Its Game Over");
+        // send event to scene manager to enable scene transition
         yield return null;
     }
 }

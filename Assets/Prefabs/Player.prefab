@@ -97,9 +97,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6f882f0f9ba0ed4f8e3e29575422e85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <DamageFlash>k__BackingField: {fileID: 11400000, guid: 0514c15ea549b1f40b1d147ef537951e, type: 2}
-  <InvulnerabilityFlash>k__BackingField: {fileID: 11400000, guid: 4d82b7bcf41c0e646937f0d0d6aca977, type: 2}
-  <InteractedFlash>k__BackingField: {fileID: 0}
+  <HealthSystem>k__BackingField: {fileID: 5509863583808375652}
   <CurrentFlashConfiguration>k__BackingField: {fileID: 0}
   <DefaultFlashColor>k__BackingField: {r: 1, g: 1, b: 1, a: 0}
   <CurrentFlashColor>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
@@ -535,15 +533,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerData: {fileID: 11400000, guid: 82651798b0a1f594e9210ad3f643c9b0, type: 2}
-  <Anim>k__BackingField: {fileID: 0}
-  <PlayerSprite>k__BackingField: {fileID: 0}
+  <Anim>k__BackingField: {fileID: 3643447841544891557}
+  <PlayerSprite>k__BackingField: {fileID: 7174821088211015114}
   <InputHandler>k__BackingField: {fileID: 0}
   <Rb>k__BackingField: {fileID: 0}
   <MovementCollider>k__BackingField: {fileID: 0}
   <Interactor>k__BackingField: {fileID: 0}
   <InteractTrigger>k__BackingField: {fileID: 0}
-  <HealthSystem>k__BackingField: {fileID: 0}
-  <CameraTarget>k__BackingField: {fileID: 0}
+  <HealthSystem>k__BackingField: {fileID: 5509863583808375652}
+  <CameraTarget>k__BackingField: {fileID: 5762768655862755544}
   groundCheck: {fileID: 3125253531717848553}
   ceilingCheck: {fileID: 3125253530865429025}
   wallCheck: {fileID: 3125253531543866480}
@@ -742,7 +740,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b20d0e794f5326b4da76ce28b1bf05a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <CameraCenter>k__BackingField: {fileID: 0}
+  <CameraCenter>k__BackingField: {fileID: 4896041828834241169}
   <TargetPosition>k__BackingField: {x: 0, y: 0, z: 0}
   <Lock>k__BackingField: 1
   <InstantSnapOverride>k__BackingField: 0
@@ -795,13 +793,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e9bb72ce760812449baa101186d4d2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 0}
+  player: {fileID: 3125253531432767928}
   playerData: {fileID: 11400000, guid: 82651798b0a1f594e9210ad3f643c9b0, type: 2}
   damagedBy:
     serializedVersion: 2
     m_Bits: 4352
-  <HitboxCollider>k__BackingField: {fileID: 0}
+  <HitboxCollider>k__BackingField: {fileID: 5362580700939068921}
   <HealthType>k__BackingField: 1
+  <DamageFlash>k__BackingField: {fileID: 11400000, guid: 0514c15ea549b1f40b1d147ef537951e, type: 2}
+  <InvulnerabilityFlash>k__BackingField: {fileID: 11400000, guid: 4d82b7bcf41c0e646937f0d0d6aca977, type: 2}
+  <IsRespawneable>k__BackingField: 1
+  <CanRespawn>k__BackingField: 0
+  <CurrentLives>k__BackingField: 0
+  <MaxLives>k__BackingField: 0
   <MaxHealth>k__BackingField: 0
   <CurrentHealth>k__BackingField: 0
   <MaxHearts>k__BackingField: 0

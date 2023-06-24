@@ -5,8 +5,7 @@ using ExtensionMethods;
 using System.Linq;
 
 public class SpriteFlash : MonoBehaviour {
-    private Player player;
-    private HealthSystem healthSystem;
+    [field: SerializeField] public HealthSystem HealthSystem { get; private set; }
     // private Interactor interactor;
     private IDamageable damageableBehavior;
     private IInteractable interactableBehavior;
@@ -30,30 +29,24 @@ public class SpriteFlash : MonoBehaviour {
     private static readonly int _alphaAmountID = Shader.PropertyToID("_AlphaAmount");
 
     private Material[] _materials;
-    private SpriteRenderer[] _spriteRenderers;
+    // private SpriteRenderer[] _spriteRenderers;
+    private SpriteRenderer spriteRenderer;
 
     private Coroutine spriteFlashCoroutine;
     private WaitForSeconds colorChangeDelay;
 
     private void OnEnable() {
-        //player.HealthSystem.OnDamaged += StartDamageFlash;
-        // player.OnKnockbackEnd += StopFlash;
-        // player.HealthSystem.OnInvulnerabilityStart += StartInvulnerabilityFlash;
-        // player.HealthSystem.OnInvulnerabilityEnd += StopFlash;
-        
-        healthSystem.OnDamaged += StartFlash;
+        HealthSystem.OnDamaged += StartFlash;
+        HealthSystem.OnPlayerDeath += StartFlash;
+        HealthSystem.OnInvulnerabilityStart += StartFlash;
+        HealthSystem.OnInvulnerabilityEnd += StopFlash;
         //interactableBehavior.OnInteracted += StartFlash;
     }
 
     private void OnDisable() {
-        //player.HealthSystem.OnDamaged -= StartDamageFlash;
-        // player.OnKnockbackEnd -= StopFlash;
-        // player.HealthSystem.OnInvulnerabilityStart -= StartInvulnerabilityFlash;
-        // player.HealthSystem.OnInvulnerabilityEnd -= StopFlash;
-
-        healthSystem.OnDamaged -= StartFlash;
-        healthSystem.OnInvulnerabilityStart -= StartFlash;
-        healthSystem.OnInvulnerabilityEnd -= StopFlash;
+        HealthSystem.OnDamaged -= StartFlash;
+        HealthSystem.OnInvulnerabilityStart -= StartFlash;
+        HealthSystem.OnInvulnerabilityEnd -= StopFlash;
         //interactableBehavior.OnInteracted -= StartFlash;
     }
 
@@ -62,16 +55,17 @@ public class SpriteFlash : MonoBehaviour {
     }
 
     private void Awake() {
-        if (player == null) player = this.GetComponentInHierarchy<Player>();
+        if (HealthSystem == null) HealthSystem = this.GetComponentInHierarchy<HealthSystem>();
         if (damageableBehavior == null) damageableBehavior = this.GetComponentInHierarchy<IDamageable>();
         if (interactableBehavior == null) interactableBehavior = this.GetComponentInHierarchy<IInteractable>();
 
-        _spriteRenderers = player.GetComponentsInChildren<SpriteRenderer>();
+        spriteRenderer = this.GetComponentInHierarchy<SpriteRenderer>();
         _materials = new Material[1];
+        _materials[0] = spriteRenderer.material;
 
-        for (int i = 0; i < _spriteRenderers.Length; i++) {
-            _materials[i] = _spriteRenderers[i].material;
-        }
+        // for (int i = 0; i < _spriteRenderers.Length; i++) {
+        //     _materials[i] = _spriteRenderers[i].material;
+        // }
     }
 
     private void Start() {
@@ -124,7 +118,7 @@ public class SpriteFlash : MonoBehaviour {
         spriteFlashCoroutine = StartCoroutine(SpriteFlashRoutine(damageInfo.CurrentFlash));
     }
 
-    private void StopFlash() {
+    private void StopFlash(DamageInfo damageInfo) {
         IsFlashing = false;
 
         if (spriteFlashCoroutine != null) {
@@ -160,7 +154,7 @@ public class SpriteFlash : MonoBehaviour {
             yield return colorChangeDelay;
 
             if ((CurrentFlashConfiguration.LoopFlash && !IsFlashing) || (!CurrentFlashConfiguration.LoopFlash && CurrentAmountOfFlashes >= CurrentFlashConfiguration.MaxAmountOfFlashes)) {
-                StopFlash();
+                StopFlash(default);
                 yield break;
             }
         }

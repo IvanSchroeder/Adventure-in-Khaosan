@@ -102,8 +102,8 @@ MonoBehaviour:
   checkpointOrderID: 0
   <RequiresInput>k__BackingField: 0
   <IsInteractable>k__BackingField: 1
-  <InteractableOutlineMaterial>k__BackingField: {fileID: 0}
   <DefaultMaterial>k__BackingField: {fileID: 2100000, guid: a6a0e8b29d967f0489f0f4c10bcb3c9a, type: 2}
+  <InteractableOutlineMaterial>k__BackingField: {fileID: 0}
   isActive: 0
   isStartingCheckpoint: 0
   isFinalCheckpoint: 0
@@ -226,14 +226,11 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9098463961231447889}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a6f882f0f9ba0ed4f8e3e29575422e85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <DamageFlash>k__BackingField: {fileID: 0}
-  <InvulnerabilityFlash>k__BackingField: {fileID: 0}
-  <InteractedFlash>k__BackingField: {fileID: 0}
   <CurrentFlashConfiguration>k__BackingField: {fileID: 0}
   <DefaultFlashColor>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
   <CurrentFlashColor>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
