@@ -15,8 +15,9 @@ public class Checkpoint : MonoBehaviour, IInteractable {
 
     [field: SerializeField] public bool RequiresInput { get; set; }
     [field: SerializeField] public bool IsInteractable { get; set; } = true;
-    [field: SerializeField] public Material InteractableOutlineMaterial { get; set; }
     [field: SerializeField] public Material DefaultMaterial { get; set; }
+    [field: SerializeField] public Material InteractableOutlineMaterial { get; set; }
+    public SpriteFlashConfiguration InteractedFlash { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
     public bool isActive = false;
     public bool isStartingCheckpoint = false;
@@ -62,7 +63,7 @@ public class Checkpoint : MonoBehaviour, IInteractable {
         else if (DefaultMaterial != null) {
             SpriteRenderer.material = DefaultMaterial;
             SpriteFlash flash = GetComponentInChildren<SpriteFlash>();
-            flash.StartInteractedFlash();
+            // flash.StartInteractedFlash();
         }
     }
 }

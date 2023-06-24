@@ -69,9 +69,9 @@ public class Player : MonoBehaviour {
     public event Action OnKnockbackEnd;
 #endregion
 
-    public void KnockbackStart(Vector2 point, DamageDealer source) {
-        lastContactPoint = point;
-        KnockbackState.SetLastContactPoint(point);
+    public void KnockbackStart(DamageInfo damageInfo) {
+        lastContactPoint = damageInfo.ContactPoint;
+        KnockbackState.SetLastContactPoint(lastContactPoint);
         StateMachine.ChangeState(KnockbackState);
     }
 
@@ -81,11 +81,13 @@ public class Player : MonoBehaviour {
 
 #region UNITY CALLBACK FUNCTIONS
     private void OnEnable() {
-        HealthSystem.OnDamagedSource += KnockbackStart;
+        // HealthSystem.OnDamagedSource += KnockbackStart;
+        HealthSystem.OnDamaged += KnockbackStart;
     }
 
     private void OnDisable() {
-        HealthSystem.OnDamagedSource -= KnockbackStart;
+        // HealthSystem.OnDamagedSource -= KnockbackStart;
+        HealthSystem.OnDamaged -= KnockbackStart;
     }
 
     private void Awake() {

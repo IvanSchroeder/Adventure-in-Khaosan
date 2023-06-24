@@ -5,11 +5,11 @@ using ExtensionMethods;
 
 public class DamageDealer : MonoBehaviour {
     public LayerMask damageableLayers;
-    public int damageSourceLayer;
+    public int damageDealerLayer;
     public float damageAmount;
 
     private void Awake() {
-        damageSourceLayer = this.gameObject.layer;
+        damageDealerLayer = this.gameObject.layer;
     }
 
     // private void OnTriggerEnter2D(Collider2D collision) {

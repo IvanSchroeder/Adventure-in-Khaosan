@@ -8,9 +8,12 @@ public class HealthSystem : MonoBehaviour, IDamageable {
     public Player player;
     public PlayerData playerData;
     public LayerMask damagedBy;
-
     [field: SerializeField] public BoxCollider2D HitboxCollider { get; private set; }
+
     [field: SerializeField] public HealthType HealthType { get; set; }
+    [field: SerializeField] public DamageInfo LastDamageInfo { get; set; }
+    [field: SerializeField] public SpriteFlashConfiguration DamageFlash { get; set; }
+    [field: SerializeField] public SpriteFlashConfiguration InvulnerabilityFlash { get; set; }
     [field: SerializeField] public float MaxHealth { get; set; }
     [field: SerializeField] public float CurrentHealth { get; set; }
     [field: SerializeField] public int MaxHearts { get; set; }
@@ -19,10 +22,11 @@ public class HealthSystem : MonoBehaviour, IDamageable {
     [field: SerializeField] public bool IsInvulnerable { get; set; }
     [field: SerializeField] public float InvulnerabilitySeconds { get; set; }
 
-    public event Action<Vector2, DamageDealer> OnDamagedSource;
-    public event Action OnDamaged;
-    public event Action OnInvulnerabilityStart;
-    public event Action OnInvulnerabilityEnd;
+    // public event Action<Vector2, DamageDealer> OnDamagedSource;
+    // public event Action OnDamaged;
+    public event Action<DamageInfo> OnDamaged;
+    public event Action<SpriteFlashConfiguration> OnInvulnerabilityStart;
+    public event Action<SpriteFlashConfiguration> OnInvulnerabilityEnd;
 
     private Coroutine invulnerabilityCoroutine;
     private WaitForSeconds invulnerabilityDelay;
@@ -55,9 +59,8 @@ public class HealthSystem : MonoBehaviour, IDamageable {
 
         if (damageDealerSource == null) return;
 
-        // if (!IsDamagedBy(damageDealerSource.gameObject.layer)) return;
-
-        Damage(damageDealerSource.damageAmount, collision.ClosestPoint(this.transform.position), damageDealerSource);
+        LastDamageInfo = new DamageInfo(damageDealerSource, damageDealerSource.damageAmount, collision.ClosestPoint(this.transform.position), DamageFlash, InvulnerabilityFlash);
+        Damage(LastDamageInfo);
     }
 
     public void InitializeHealth() {
@@ -76,6 +79,8 @@ public class HealthSystem : MonoBehaviour, IDamageable {
                 // spawn hearts in UI slots, maybe with a list/array and an event?
             break;
         }
+
+        LastDamageInfo = new DamageInfo(null, 0f, Vector2.zero, DamageFlash, InvulnerabilityFlash);
     }
 
     public bool IsDamagedBy(int layer) {
@@ -86,16 +91,16 @@ public class HealthSystem : MonoBehaviour, IDamageable {
         return false;
     }
 
-    public void Damage(float amount, Vector2 point, DamageDealer source) {
+    public void Damage(DamageInfo damageInfo) {
         if (IsInvulnerable) return;
         
-        if (!IsDamagedBy(source.damageSourceLayer)) return;
+        if (!IsDamagedBy(damageInfo.DamageDealerSource.damageDealerLayer)) return;
 
         IsInvulnerable = true;
 
         switch (HealthType) {
             case HealthType.Numerical:
-                CurrentHealth -= amount;
+                CurrentHealth -= damageInfo.DamageAmount;
 
                 if (CurrentHealth <= 0f) {
                     CurrentHealth = 0f;
@@ -118,10 +123,10 @@ public class HealthSystem : MonoBehaviour, IDamageable {
         }
 
         if(IsDead) Debug.Log($"Player died");
-        else Debug.Log($"Player damaged by {amount}");
+        else Debug.Log($"Player damaged by {damageInfo.DamageAmount}");
 
-        OnDamagedSource?.Invoke(point, source);
-        OnDamaged?.Invoke();
+        // OnDamagedSource?.Invoke(point, source);
+        OnDamaged?.Invoke(damageInfo);
     }
 
     public void SetInvulnerability() {
@@ -131,11 +136,11 @@ public class HealthSystem : MonoBehaviour, IDamageable {
     private IEnumerator InvulnerabilityFramesRoutine() {
         IsInvulnerable = true;
         HitboxCollider.enabled = false;
-        OnInvulnerabilityStart?.Invoke();
+        OnInvulnerabilityStart?.Invoke(LastDamageInfo.InvulnerabilityFlash);
         yield return invulnerabilityDelay;
         IsInvulnerable = false;
         HitboxCollider.enabled = true;
-        OnInvulnerabilityEnd?.Invoke();
+        OnInvulnerabilityEnd?.Invoke(InvulnerabilityFlash);
         yield return null;
     }
 }

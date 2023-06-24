@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using ExtensionMethods;
-using System;
 
 public interface IInteractable {
     BoxCollider2D InteractTrigger { get; set; }
     Material InteractableOutlineMaterial { get; set; }
+    SpriteFlashConfiguration InteractedFlash { get; set; }
     bool RequiresInput { get; set; }
     bool IsInteractable { get; set; }
 
