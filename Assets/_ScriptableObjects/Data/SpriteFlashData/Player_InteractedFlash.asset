@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 892d864e4c2cfa74abfa1412eb60364f, type: 3}
-  m_Name: InteractedFlash
+  m_Name: Player_InteractedFlash
   m_EditorClassIdentifier: 
-  <SecondsBetweenFlashes>k__BackingField: 0.2
+  <SecondsBetweenFlashes>k__BackingField: 0.1
   <LoopFlash>k__BackingField: 0
   <MaxAmountOfFlashes>k__BackingField: 1
   <ChangeColor>k__BackingField: 1

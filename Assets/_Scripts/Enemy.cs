@@ -1,18 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ExtensionMethods;
+using System;
 
-public class Enemy : MonoBehaviour
-{
-    // Start is called before the first frame update
-    void Start()
-    {
-        
+public class Enemy : Entity {
+    public EnemyData enemyData;
+
+    public Action<Enemy> OnEnemySpawn;
+    public Action<Enemy> OnEnemyDeath;
+
+    private void OnEnable() {
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    private void OnDisable() {
+    }
+    
+    private void Awake() {
+
     }
 }

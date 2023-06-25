@@ -1,33 +1,31 @@
 using UnityEngine;
 using ExtensionMethods;
 
-public enum Direction {
-    Left,
-    Right
-}
-
 [CreateAssetMenu(fileName = "NewPlayerData", menuName = "Assets/Data/Player Data")]
-public class PlayerData : ScriptableObject {
-    [Header("--- Player Info ---")]
-    [Space(5)]
+public class PlayerData : EntityData {
+    // [Header("--- Entity Info ---")]
+    // [Space(5)]
 
-    [Header("Values")]
-    public Vector2 currentVelocity;
-    public ColliderConfiguration currentColliderConfiguration;
-    public Direction facingDirection = Direction.Right;
-    public int currentLives;
-    public float currentHealth;
-    public int currentHearts;
-    public string currentLayer;
-    public float currentGravityScale;
-    public float currentFallSpeed;
-    public int amountOfJumpsLeft;
-    public float slopeDownAngle;
-    public float slopeSideAngle;
-    public float cumulatedKnockbackTime;
+    // [Header("Values")]
 
+    // public Vector2 currentVelocity;
+    // public ColliderConfiguration currentColliderConfiguration;
+    // public Direction facingDirection = Direction.Right;
+    // // public int currentLives;
+    // // public float currentHealth;
+    // // public int currentHearts;
+    // public string currentLayer;
+    // public float currentGravityScale;
+    // public float currentFallSpeed;
+    // public int amountOfJumpsLeft;
+    // public float slopeDownAngle;
+    // public float slopeSideAngle;
+    // public float cumulatedKnockbackTime;
+
+    [Space(20)]
+
+    [Header("--- Inputs Info ---")]
     [Space(5)]
-    [Header("Inputs")]
     public int xInput;
     public int lastXInput;
     public int yInput;
@@ -36,8 +34,10 @@ public class PlayerData : ScriptableObject {
     public bool jumpInputHold;
     public bool grabInput;
 
+    [Space(20)]
+
+    [Header("--- States Info ---")]
     [Space(5)]
-    [Header("States")]
     public bool isGrounded;
     public bool isOnSolidGround;
     public bool isOnPlatform;
@@ -70,34 +70,32 @@ public class PlayerData : ScriptableObject {
     public bool hasCoyoteTime;
     public bool hasWallJumpCoyoteTime;
 
-    [Space(20)]
+    // [Space(20)]
 
-    [Header("--- References ---")]
-    [Space(5)]
+    // [Header("--- References ---")]
+    // [Space(5)]
+    // public PhysicsMaterial2D noFrictionMaterial;
+    // public PhysicsMaterial2D fullFrictionMaterial;
 
-    public PhysicsMaterial2D noFrictionMaterial;
-    public PhysicsMaterial2D fullFrictionMaterial;
+    // [Space(20)]
 
-    [Space(20)]
-
-    [Header("--- Health Values ---")]
-    [Space(5)]
-
-    public HealthType healthType = HealthType.Hearts;
-    public int maxLives;
-    public float maxHealth;
-    public int maxHearts;
-    public float invulnerabilitySeconds;
-    public float minKnockbackTime;
-    public float maxKnockbackTime;
-    public float deadOnGroundTime;
+    // [Header("--- Health Parameters ---")]
+    // [Space(5)]
+    // public HealthType healthType = HealthType.Hearts;
+    // public int maxLives;
+    // public float maxHealth;
+    // public int maxHearts;
+    // public float invulnerabilitySeconds;
+    // public float minKnockbackTime;
+    // public float maxKnockbackTime;
+    // public float deadOnGroundTime;
 
     [Space(20)]
 
-    [Header("--- Movement Values ---")]
+    [Header("--- Movement Parameters ---")]
     [Space(5)]
-
     [Header("Ground")]
+    [Space(5)]
     // public bool enableFriction = true;
     public bool stickToGround;
     [Range(0f, 10f)] public float runSpeed;
@@ -112,6 +110,7 @@ public class PlayerData : ScriptableObject {
 
     [Space(5)]
     [Header("Air")]
+    [Space(5)]
     public bool lerpVelocityInAir = false;
     [Range(0, 100)] public int airAcceleration;
     [Range(0, 100)] public int airDecceleration;
@@ -120,6 +119,7 @@ public class PlayerData : ScriptableObject {
 
     [Space(5)]
     [Header("Colliders")]
+    [Space(5)]
     public ColliderConfiguration standingColliderConfig;
     public ColliderConfiguration crouchColliderConfig;
     public ColliderConfiguration walledColliderConfig;
@@ -129,17 +129,16 @@ public class PlayerData : ScriptableObject {
 
     [Space(20)]
 
-    [Header("--- Jump Values ---")]
+    [Header("--- Airborne Parameters ---")]
+    [Space(5)]
+    [Header("Jump")]
+    [Space(5)]
     public int amountOfJumps = 1;
     public float jumpHeight;
     [Range(0f, 1f)] public float variableJumpHeightMultiplier = 0.5f;
     public float cornerCorrectionRepositionOffset = 0.015f;
-    [Range(0f, 1f)] public float platformIgnoreVerticalVelocityThreshold = 0.5f;
-
-    [Space(20)]
-
-    [Header("--- Airborne State ---")]
-    [Space(5)]
+    // [Range(0f, 1f)] public float platformIgnoreVerticalVelocityThreshold = 0.5f;
+    public float maxAscendantSpeed;
 
     [Header("Fall")]
     public float defaultFallSpeed = 7f;
@@ -159,9 +158,8 @@ public class PlayerData : ScriptableObject {
 
     [Space(20)]
 
-    [Header("--- Wall States ---")]
+    [Header("--- Wall Parameters ---")]
     [Space(5)]
-
     public bool autoWallGrab = false;
     public bool autoWallSlide = false;
     public float wallSlideSpeed = 2.5f;
@@ -172,6 +170,7 @@ public class PlayerData : ScriptableObject {
     [Range(0, 100)] public int wallGrabAcceleration;
     [Range(0, 100)] public int wallClimbAcceleration;
     public float wallJumpSpeed = 15f;
+    public float wallHopSpeed = 10f;
     [Range(0f, 0.5f)] public float wallJumpTime = 0.4f;
     [Range(-90f, 90f)] public float wallJumpAngle;
     [Range(-90f, 90f)] public float wallHopAngle;
@@ -180,31 +179,37 @@ public class PlayerData : ScriptableObject {
 
     [Space(20)]
 
-    [Header("--- Ledge Climb State ---")]
+    [Header("--- Ledge Climb Parameters ---")]
     [Space(5)]
-
     [Header("Offsets")]
+    [Space(5)]
     public Vector2 startOffset;
     public Vector2 stopOffset;
 
     [Space(20)]
 
-    [Header("--- Check Variables ---")]
+    [Header("--- Check Parameters ---")]
     [Space(5)]
-
-    [Header("Values")]
+    [Header("Ground")]
+    [Space(5)]
     // public Vector2 groundCheckSize;
     public Vector2 groundCheckOffset;
     public float groundCheckDistance;
     public float slopeCheckDistance;
-    // public Vector2 ceilingCheckSize;
-    public Vector2 ceilingCheckOffset;
-    public float ceilingCheckDistance;
+    [Space(5)]
+    [Header("Walls")]
+    [Space(5)]
     // public Vector2 wallCheckSize;
     public Vector2 wallCheckOffset;
     public float wallCheckDistance;
     public Vector2 ledgeCheckOffset;
     public float ledgeCheckDistance;
+    [Space(5)]
+    [Header("Ceiling")]
+    [Space(5)]
+    // public Vector2 ceilingCheckSize;
+    public Vector2 ceilingCheckOffset;
+    public float ceilingCheckDistance;
     public Vector2 cornerInnerCheckOffset;
     public Vector2 cornerEdgeCheckOffset;
     public float cornerCheckDistance;
@@ -217,15 +222,11 @@ public class PlayerData : ScriptableObject {
     public LayerMask wallLayer;
     public LayerMask platformLayer;
 
-    public void OnEnable() {
-        ResetPlayerInfo();
+    public override void OnEnable() {
+        Init();
     }
 
-    public void OnDisable() {
-        ResetPlayerInfo();
-    }
-
-    public void ResetPlayerInfo() {
+    public override void Init() {
         currentVelocity = Vector2.zero;
         currentColliderConfiguration = standingColliderConfig;
         facingDirection = Direction.Right;
@@ -236,6 +237,14 @@ public class PlayerData : ScriptableObject {
         currentFallSpeed = defaultFallSpeed;
         currentGravityScale = defaultGravityScale;
         amountOfJumpsLeft = amountOfJumps;
+
+        xInput = 0;
+        lastXInput = 0;
+        yInput = 0;
+        jumpInput = false;
+        jumpInputStop = false;
+        jumpInputHold = false;
+        grabInput = false;
 
         isGrounded = false;
         isOnSolidGround = false;
@@ -269,84 +278,7 @@ public class PlayerData : ScriptableObject {
         hasCoyoteTime = false;
         hasWallJumpCoyoteTime = false;
 
-        xInput = 0;
-        lastXInput = 0;
-        yInput = 0;
-        jumpInput = false;
-        jumpInputStop = false;
-        jumpInputHold = false;
-        grabInput = false;
-
         wallJumpDirectionOffAngle = wallJumpAngle.AngleFloatToVector2();
         wallHopDirectionOffAngle = wallHopAngle.AngleFloatToVector2();
     }
-
-    // public void OnValidate() {
-    //     // gravityStrength = -(2 * jumpHeight) / (jumpTimeToApex * jumpTimeToApex);
-
-    //     // gravityScale = gravityStrength / Physics2D.gravity.y;
-
-
-    //     // jumpForce = (Mathf.Abs(gravityStrength) * jumpTimeToApex);
-
-
-    //     // maxAscendantSpeed = jumpForce * 2f;
-     
-    //     // runAccelAmount = (50 * runAcceleration) / maxRunSpeed;
-    //     // runDeccelAmount = (50 * runDecceleration) / maxRunSpeed;
-    //     // runAcceleration = Mathf.Clamp(runAcceleration, 0.01f, maxRunSpeed);
-    //     // runDecceleration = Mathf.Clamp(runDecceleration, 0.01f, maxRunSpeed);
-    //     wallJumpDirectionOffAngle = wallJumpAngle.AngleFloatToVector2();
-    //     wallHopDirectionOffAngle = wallHopAngle.AngleFloatToVector2();
-    // }
-
-
-    //[Header("Player Info")]
-    [HideInInspector] public float yVelocity;
-
-    //[Header("Movement State")]
-    [Space(40)]
-    [Header("Old")]
-    /*[ReadOnly]*/ public float runAccelAmount;
-    /*[ReadOnly]*/ public float runDeccelAmount;
-    public bool conserveMomentum = true;
-
-    //[Header("Jump State")]
-    public float jumpTimeToApex;
-    public float jumpForce;
-
-    //[Header("Gravity")]
-    public float gravityStrength;
-    public float gravityScale;
-
-    public float fallGravityMult;
-    public float fastFallGravityMult;
-    public float maxAscendantSpeed;
-
-    //[Header("Both Jumps")]
-    public float jumpCutGravityMult;
-    [Range(0f, 1f)] public float jumpHangGravityMult;
-    public float jumpHangTimeThreshold;
-    public float jumpHangAccelerationMult;
-    public float jumpHangMaxSpeedMult;
-
-    //[Header("Wall Jump")]
-	public Vector2 wallJumpForce;
-	[Range(0f, 1f)] public float wallJumpRunLerp;
-	public bool doTurnOnWallJump;
-
-    //[Header("Slide")]
-    public float slideSpeed;
-    public float slideAccel;
-    
-    //[Header("Animation State")]
-    public int currentAnimationState;
-    public readonly int Idle = Animator.StringToHash("Idle");
-    public readonly int Run = Animator.StringToHash("Run");
-    public readonly int Airborne = Animator.StringToHash("Airborne");
-    public readonly int Jump = Animator.StringToHash("Jump");
-    public readonly int Fall = Animator.StringToHash("Fall");
-    public readonly int Roll = Animator.StringToHash("Roll");
-    public readonly int Slide = Animator.StringToHash("Slide");
-    public readonly int Hurt = Animator.StringToHash("Hurt");
 }

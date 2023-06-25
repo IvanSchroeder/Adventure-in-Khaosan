@@ -238,15 +238,15 @@ AnimatorStateMachine:
   - {fileID: 1682007091930895221}
   - {fileID: -4951852421429684055}
   m_StateMachineTransitions:
-  - first: {fileID: -3169246241942662810}
-    second:
-    - {fileID: 5940249158650921217}
   - first: {fileID: 2876713343545978189}
     second:
     - {fileID: 2908006328937899833}
   - first: {fileID: 444320978145331004}
     second:
     - {fileID: -3219236500994493641}
+  - first: {fileID: -3169246241942662810}
+    second:
+    - {fileID: 5940249158650921217}
   m_StateMachineBehaviours: []
   m_AnyStatePosition: {x: 50, y: 20, z: 0}
   m_EntryPosition: {x: -160, y: 250, z: 0}
@@ -1169,7 +1169,7 @@ AnimatorController:
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
-    m_DefaultBool: 0
+    m_DefaultBool: 1
     m_Controller: {fileID: 0}
   - m_Name: land
     m_Type: 4

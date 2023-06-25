@@ -46,7 +46,7 @@ public class WorldMapManager : MonoBehaviour {
     }
 
     public void LoadWorldMap() {
-        levelStructure = LevelManagerInstance.currentLevel.levelStructure;
+        levelStructure = LevelManagerInstance.LevelStructure;
 
         GetWorldTiles(levelStructure.GroundFillTilemap, groundFillTiles);
         GetWorldTiles(levelStructure.PlatformTilemap, platformTiles);

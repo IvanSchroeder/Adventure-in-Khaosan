@@ -4,8 +4,15 @@ using UnityEngine;
 
 public class PlayerDeathState : PlayerState {
     protected bool deathLock;
+    protected bool groundLock;
 
     public PlayerDeathState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
+    }
+
+    public override void AnimationTrigger() {
+        base.AnimationTrigger();
+
+        isDeadOnGround = true;
     }
 
     public override void Enter() {
@@ -14,9 +21,10 @@ public class PlayerDeathState : PlayerState {
         isDead = true;
         isDeadOnGround = false;
         deathLock = false;
+        groundLock = false;
         cumulatedDeathTime = 0f;
 
-        player.SetVelocity(playerData.wallJumpSpeed, Vector2.up + Vector2.right, -player.FacingDirection);
+        player.SetVelocity(playerData.jumpHeight, Vector2.up + Vector2.right, -player.FacingDirection);
 
         player.Anim.SetBool("deadOnAir", true);
     }
@@ -44,10 +52,10 @@ public class PlayerDeathState : PlayerState {
             player.Anim.SetBool("deadOnAir", false);
 
             if (player.CurrentVelocity.x == 0f) {
-                if (!isDeadOnGround) {
+                if (!groundLock) {
+                    groundLock = true;
                     player.Anim.SetBool("deadOnGround", true);
                     player.KnockbackEnd();
-                    isDeadOnGround = true;
                 }
             }
         }

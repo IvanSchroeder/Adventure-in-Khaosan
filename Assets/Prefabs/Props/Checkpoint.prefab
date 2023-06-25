@@ -24,7 +24,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9098463959747971589}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.5, y: 2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -99,11 +99,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2569992e0d14dd2479a586c9d9101042, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <SpawnpointTransform>k__BackingField: {fileID: 9098463959747971610}
   checkpointOrderID: 0
-  <RequiresInput>k__BackingField: 0
+  <RequiresInput>k__BackingField: 1
   <IsInteractable>k__BackingField: 1
   <DefaultMaterial>k__BackingField: {fileID: 2100000, guid: a6a0e8b29d967f0489f0f4c10bcb3c9a, type: 2}
-  <InteractableOutlineMaterial>k__BackingField: {fileID: 0}
+  <InteractableOutlineMaterial>k__BackingField: {fileID: 2100000, guid: ed77e81198d72c046aa7d3b08cc7d035, type: 2}
   isActive: 0
   isStartingCheckpoint: 0
   isFinalCheckpoint: 0
@@ -231,6 +232,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6f882f0f9ba0ed4f8e3e29575422e85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <HealthSystem>k__BackingField: {fileID: 0}
   <CurrentFlashConfiguration>k__BackingField: {fileID: 0}
   <DefaultFlashColor>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
   <CurrentFlashColor>k__BackingField: {r: 1, g: 1, b: 1, a: 1}

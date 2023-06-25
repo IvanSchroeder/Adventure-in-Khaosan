@@ -16,9 +16,8 @@ public struct ColliderConfiguration {
     }
 }
 
-public class Player : MonoBehaviour {
+public class Player : Entity {
 #region STATES
-    public PlayerData playerData;
     public PlayerStateMachine StateMachine { get; private set; }
 
     public PlayerIdleState IdleState { get; private set; }
@@ -38,21 +37,23 @@ public class Player : MonoBehaviour {
 #endregion
 
 #region COMPONENTS
-    [field: SerializeField] public Animator Anim { get; private set; }
-    [field: SerializeField] public SpriteRenderer PlayerSprite { get; private set; }
+    public PlayerData playerData;
     [field: SerializeField] public PlayerInputHandler InputHandler { get; private set; }
     [field: SerializeField] public Rigidbody2D Rb { get; private set; }
     [field: SerializeField] public BoxCollider2D MovementCollider { get; private set; }
+    [field: SerializeField] public Animator Anim { get; private set; }
+    [field: SerializeField] public SpriteRenderer PlayerSprite { get; private set; }
     [field: SerializeField] public Transform Interactor { get; private set; }
     [field: SerializeField] public BoxCollider2D InteractTrigger { get; private set; }
     [field: SerializeField] public HealthSystem HealthSystem { get; private set; }
     [field: SerializeField] public CameraTarget CameraTarget { get; private set; }
-    [field: SerializeField] public IInteractable CurrentInteractable { get; private set; }
+
     [SerializeField] public Transform groundCheck;
     [SerializeField] public Transform ceilingCheck;
     [SerializeField] public Transform wallCheck;
     [SerializeField] public Transform ledgeCheck;
-    [SerializeField] public Vector3 testVector;
+
+    [field: SerializeField] public IInteractable CurrentInteractable { get; private set; }
     [field: SerializeField] public DamageInfo LastDamageInfo { get; private set; }
 #endregion
 
@@ -64,13 +65,27 @@ public class Player : MonoBehaviour {
     public Vector2 CurrentVelocity { get; private set; }
     public int FacingDirection { get; private set; } = 1;
 
+    public Vector2 detectedPos;
+    public Vector2 cornerPos;
+    public Vector2 startPos;
+    public Vector2 stopPos;
+    public Vector2 groundHitPos;
+    public Vector2 lastContactPoint;
+
     [SerializeField] private bool drawGizmos;
 #endregion
 
 #region EVENTS
+    public static event Action<Player> OnPlayerSpawned;
+    public static event Action<Player> OnPlayerDeath;
     public event Action<DamageInfo> OnKnockbackEnd;
     public static event Action OnPlayerDeathEnd;
+    public static event Action OnLivesDepleted;
 #endregion
+
+    public void StartInvulnerable() {
+        HealthSystem.SetInvulnerability(new DamageInfo(default, 0f, Vector2.zero, entityData.invulnerabilityFlash));
+    }
 
     public void KnockbackStart(DamageInfo damageInfo) {
         LastDamageInfo = damageInfo;
@@ -80,34 +95,58 @@ public class Player : MonoBehaviour {
     }
 
     public void KnockbackEnd() {
-        LastDamageInfo = new DamageInfo(default, default, default, HealthSystem.InvulnerabilityFlash, HealthSystem.DamageFlash, HealthSystem.InvulnerabilityFlash);
+        LastDamageInfo = new DamageInfo(default, default, default, entityData.invulnerabilityFlash);
         OnKnockbackEnd?.Invoke(LastDamageInfo);
     }
 
     public void SetPlayerDeath(DamageInfo damageInfo) {
-        CameraTarget.transform.SetParent(null);
+        OnPlayerDeath?.Invoke(this);
         StateMachine.ChangeState(DeathState);
     }
 
+    public void SetLivesDepleted() {
+        OnLivesDepleted?.Invoke();
+    }
+
     public void PlayerDeathEnd() {
+        HealthSystem.Invulnerable();
         OnPlayerDeathEnd?.Invoke();
+    }
+
+    public void StandOnCheckpoint() {
+        CurrentVelocity = Vector2.zero;
+        Rb.velocity = CurrentVelocity;
     }
 
 #region UNITY CALLBACK FUNCTIONS
     private void OnEnable() {
-        HealthSystem.OnDamaged += KnockbackStart;
-        HealthSystem.OnPlayerDeath += SetPlayerDeath;
+        LevelManager.OnPlayerSpawn += StartInvulnerable;
+        LevelManager.OnLevelFinished += StandOnCheckpoint;
+
+        this.HealthSystem.OnDamaged += KnockbackStart;
+        this.HealthSystem.OnEntityDead += SetPlayerDeath;
+        this.HealthSystem.OnLivesDepleted += SetLivesDepleted;
+
+
+        OnKnockbackEnd += HealthSystem.SetInvulnerability;
+        OnPlayerDeathEnd += HealthSystem.Invulnerable;
     }
 
     private void OnDisable() {
-        HealthSystem.OnDamaged -= KnockbackStart;
-        HealthSystem.OnPlayerDeath -= SetPlayerDeath;
+        LevelManager.OnPlayerSpawn -= StartInvulnerable;
+        LevelManager.OnLevelFinished -= StandOnCheckpoint;
+        
+        this.HealthSystem.OnDamaged -= KnockbackStart;
+        this.HealthSystem.OnEntityDead -= SetPlayerDeath;
+        this.HealthSystem.OnLivesDepleted -= SetLivesDepleted;
+
+
+        OnKnockbackEnd -= HealthSystem.SetInvulnerability;
+        OnPlayerDeathEnd -= HealthSystem.Invulnerable;
     }
 
     private void Awake() {
         StateMachine = new PlayerStateMachine();
-
-        testVector = Vector3.zero;
 
         IdleState = new PlayerIdleState(this, StateMachine, playerData, "idle");
         MoveState = new PlayerMoveState(this, StateMachine, playerData, "move");
@@ -129,8 +168,8 @@ public class Player : MonoBehaviour {
         if (InputHandler == null) InputHandler = GetComponent<PlayerInputHandler>();
         if (Rb == null) Rb = GetComponent<Rigidbody2D>();
         if (MovementCollider == null) MovementCollider = GetComponent<BoxCollider2D>();
-        if (Interactor == null) Interactor = GameObject.Find("Interactor").transform;
-        if (InteractTrigger == null) InteractTrigger = Interactor.GetComponent<BoxCollider2D>();
+        // if (Interactor == null) Interactor = GameObject.Find("Interactor").transform;
+        // if (InteractTrigger == null) InteractTrigger = Interactor.GetComponent<BoxCollider2D>();
         if (HealthSystem == null) HealthSystem = GetComponentInChildren<HealthSystem>();
         if (CameraTarget == null) CameraTarget = GetComponentInChildren<CameraTarget>();
     }
@@ -150,6 +189,9 @@ public class Player : MonoBehaviour {
         CameraTarget.transform.localPosition = Vector3.zero;
 
         SetColliderParameters(MovementCollider, playerData.standingColliderConfig);
+        HealthSystem.SetInvulnerability(LastDamageInfo);
+
+        OnPlayerSpawned?.Invoke(this);
     }
 
     private void Update() {
@@ -387,13 +429,6 @@ public class Player : MonoBehaviour {
     //     return platformHits;
     // }
 #endregion
-
-    public Vector2 detectedPos;
-    public Vector2 cornerPos;
-    public Vector2 startPos;
-    public Vector2 stopPos;
-    public Vector2 groundHitPos;
-    public Vector2 lastContactPoint;
 
     private void OnDrawGizmos() {
         if (!drawGizmos) return;

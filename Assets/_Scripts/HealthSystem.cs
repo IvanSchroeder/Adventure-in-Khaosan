@@ -5,15 +5,14 @@ using ExtensionMethods;
 using System;
 
 public class HealthSystem : MonoBehaviour, IDamageable {
-    public Player player;
-    public PlayerData playerData;
+    public Entity entity;
+    public EntityData entityData;
     public LayerMask damagedBy;
-    [field: SerializeField] public BoxCollider2D HitboxCollider { get; private set; }
+    [field: SerializeField] public BoxCollider2D HitboxTrigger { get; set; }
 
     [field: SerializeField] public HealthType HealthType { get; set; }
     [field: SerializeField] public DamageInfo LastDamageInfo { get; set; }
-    [field: SerializeField] public SpriteFlashConfiguration DamageFlash { get; set; }
-    [field: SerializeField] public SpriteFlashConfiguration InvulnerabilityFlash { get; set; }
+    [field: SerializeField] public Material SpriteFlashMaterial { get; set; }
     [field: SerializeField] public bool IsRespawneable { get; set; }
     [field: SerializeField] public bool CanRespawn { get; set; }
     [field: SerializeField] public int CurrentLives { get; set; }
@@ -26,35 +25,38 @@ public class HealthSystem : MonoBehaviour, IDamageable {
     [field: SerializeField] public bool IsInvulnerable { get; set; }
     [field: SerializeField] public float InvulnerabilitySeconds { get; set; }
 
-    public event Action<DamageInfo> OnDamaged;
-    public event Action<DamageInfo> OnInvulnerabilityStart;
-    public event Action<DamageInfo> OnInvulnerabilityEnd;
-    public static event Action<DamageInfo> OnPlayerDeath;
-    public static event Action OnLivesDepleted;
+    public Action<DamageInfo> OnDamaged;
+    public Action<DamageInfo> OnInvulnerabilityStart;
+    public Action<DamageInfo> OnEntityDead;
+    public Action OnLivesDepleted;
 
     private Coroutine invulnerabilityCoroutine;
     private WaitForSeconds invulnerabilityDelay;
 
-    private void OnEnable() {
-        player.OnKnockbackEnd += SetInvulnerability;
-    }
+    // private void OnEnable() {
+    //     // player.OnKnockbackEnd += SetInvulnerability;
+    //     Player.OnPlayerDeathEnd += Invulnerable;
+    // }
 
-    private void OnDisable() {
-        player.OnKnockbackEnd -= SetInvulnerability;
-    }
+    // private void OnDisable() {
+    //     // player.OnKnockbackEnd -= SetInvulnerability;
+    //     Player.OnPlayerDeathEnd -= Invulnerable;
+    // }
 
     private void Awake() {
-        if (player == null) player = this.GetComponentInHierarchy<Player>();
-        if (HitboxCollider == null) HitboxCollider = GetComponent<BoxCollider2D>();
+        if (entity == null) entity = this.GetComponentInHierarchy<Entity>();
+        if (HitboxTrigger == null) HitboxTrigger = GetComponent<BoxCollider2D>();
     }
 
     private void Start() {
-        MaxLives = playerData.maxLives;
+        if (entityData == null) entityData = entity.entityData;
+
+        MaxLives = entityData.maxLives;
         CurrentLives = MaxLives;
         if (CurrentLives > 1) CanRespawn = true;
-        playerData.currentLives = CurrentLives;
+        entityData.currentLives = CurrentLives;
 
-        InvulnerabilitySeconds = playerData.invulnerabilitySeconds;
+        InvulnerabilitySeconds = entityData.invulnerabilitySeconds;
         invulnerabilityDelay = new WaitForSeconds(InvulnerabilitySeconds);
 
         InitializeHealth();
@@ -66,7 +68,8 @@ public class HealthSystem : MonoBehaviour, IDamageable {
 
         if (damageDealerSource == null) return;
 
-        LastDamageInfo = new DamageInfo(damageDealerSource, damageDealerSource.damageAmount, collision.ClosestPoint(this.transform.position), DamageFlash, DamageFlash, InvulnerabilityFlash);
+        // LastDamageInfo = new DamageInfo(damageDealerSource, damageDealerSource.damageAmount, collision.ClosestPoint(this.transform.position), DamageFlash, DamageFlash, InvulnerabilityFlash);
+        LastDamageInfo = new DamageInfo(damageDealerSource, damageDealerSource.damageAmount, collision.ClosestPoint(this.transform.position), entityData.damageFlash);
         Damage(LastDamageInfo);
     }
 
@@ -75,23 +78,23 @@ public class HealthSystem : MonoBehaviour, IDamageable {
         IsInvulnerable = false;
         IsRespawneable = true;
 
-        HealthType = playerData.healthType;
+        HealthType = entityData.healthType;
 
         switch (HealthType) {
             case HealthType.Numerical:
-                MaxHealth = playerData.maxHealth;
+                MaxHealth = entityData.maxHealth;
                 CurrentHealth = MaxHealth;
-                playerData.currentHealth = CurrentHealth;
+                entityData.currentHealth = CurrentHealth;
             break;
             case HealthType.Hearts:
-                MaxHearts = playerData.maxHearts;
+                MaxHearts = entityData.maxHearts;
                 CurrentHearts = MaxHearts;
-                playerData.currentHearts = CurrentHearts;
+                entityData.currentHearts = CurrentHearts;
                 // spawn hearts in UI slots, maybe with a list/array and an event?
             break;
         }
 
-        LastDamageInfo = new DamageInfo(null, 0f, Vector2.zero, DamageFlash, DamageFlash, InvulnerabilityFlash);
+        // LastDamageInfo = new DamageInfo(null, 0f, Vector2.zero, DamageFlash, DamageFlash, InvulnerabilityFlash);
     }
 
     public bool IsDamagedBy(int layer) {
@@ -118,7 +121,7 @@ public class HealthSystem : MonoBehaviour, IDamageable {
                     IsDead = true;
                 }
 
-                playerData.currentHealth = CurrentHealth;
+                entityData.currentHealth = CurrentHealth;
             break;
             case HealthType.Hearts:
                 CurrentHearts -= 1;
@@ -128,7 +131,7 @@ public class HealthSystem : MonoBehaviour, IDamageable {
                     IsDead = true;
                 }
 
-                playerData.currentHearts = CurrentHearts;
+                entityData.currentHearts = CurrentHearts;
                 // spawn hearts in UI slots, maybe with a list/array and an event?
             break;
         }
@@ -137,7 +140,7 @@ public class HealthSystem : MonoBehaviour, IDamageable {
 
         if(IsDead) {
             Death();
-            OnPlayerDeath?.Invoke(damageInfo);
+            OnEntityDead?.Invoke(damageInfo);
         }
         else {
             OnDamaged?.Invoke(damageInfo);
@@ -153,7 +156,15 @@ public class HealthSystem : MonoBehaviour, IDamageable {
             OnLivesDepleted?.Invoke();
         }
         
-        playerData.currentLives = CurrentLives;
+        entityData.currentLives = CurrentLives;
+    }
+
+    public void Invulnerable() {
+        // DamageInfo damageInfo = new DamageInfo(default, 0f, default, InvulnerabilityFlash, DamageFlash, InvulnerabilityFlash);
+        DamageInfo damageInfo = new DamageInfo(default, 0f, default, entityData.invulnerabilityFlash);
+        LastDamageInfo = damageInfo;
+        IsInvulnerable = true;
+        HitboxTrigger.enabled = false;
     }
 
     public void SetInvulnerability(DamageInfo damageInfo) {
@@ -161,14 +172,14 @@ public class HealthSystem : MonoBehaviour, IDamageable {
     }
 
     private IEnumerator InvulnerabilityFramesRoutine(DamageInfo damageInfo) {
-        IsInvulnerable = true;
-        HitboxCollider.enabled = false;
-        damageInfo = new DamageInfo(null, 0f, default, InvulnerabilityFlash, DamageFlash, InvulnerabilityFlash);
-        OnInvulnerabilityStart?.Invoke(damageInfo);
+        // damageInfo = new DamageInfo(default, 0f, default, InvulnerabilityFlash, DamageFlash, InvulnerabilityFlash);
+        damageInfo = new DamageInfo(default, 0f, default, entityData.invulnerabilityFlash);
+        LastDamageInfo = damageInfo;
+        Invulnerable();
+        OnInvulnerabilityStart?.Invoke(LastDamageInfo);
         yield return invulnerabilityDelay;
         IsInvulnerable = false;
-        HitboxCollider.enabled = true;
-        OnInvulnerabilityEnd?.Invoke(damageInfo);
+        HitboxTrigger.enabled = true;
         yield return null;
     }
 }

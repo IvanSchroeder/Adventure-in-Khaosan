@@ -16,11 +16,6 @@ MonoBehaviour:
   levelID: 0
   levelNumber: 1
   worldMap: {fileID: 2854569919551609531, guid: b21c05c210493b74ca3080c6fc8dec30, type: 3}
-  levelStructure: {fileID: 0}
-  CheckpointsList: []
-  startingSpawnpoint: {fileID: 0}
-  currentCheckpoint: {fileID: 0}
-  furthestCheckpoint: {fileID: 0}
   isUnlocked: 1
   collectedAllCoins: 0
   collectedAllDishes: 0

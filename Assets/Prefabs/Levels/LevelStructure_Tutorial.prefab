@@ -49,7 +49,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8c41bb73d9ec5f44b06b37bab1fad87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shouldDisable: 0
+  shouldDisable: 1
   disableOnStart: 1
   isDisabled: 0
 --- !u!1839735485 &2854569919038734716
@@ -27934,7 +27934,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8c41bb73d9ec5f44b06b37bab1fad87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shouldDisable: 0
+  shouldDisable: 1
   disableOnStart: 1
   isDisabled: 0
 --- !u!1839735485 &2854569919255105447
@@ -30602,7 +30602,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8c41bb73d9ec5f44b06b37bab1fad87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shouldDisable: 0
+  shouldDisable: 1
   disableOnStart: 1
   isDisabled: 0
 --- !u!114 &2854569919692439468

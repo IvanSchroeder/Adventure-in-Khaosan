@@ -1,36 +1,33 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public enum HealthType {
     Numerical,
     Hearts
 }
 
+[Serializable]
 public struct DamageInfo {
+    public DamageDealer DamageDealerSource { get; set; }
     public float DamageAmount { get; set; }
     public Vector2 ContactPoint { get; set; }
-    public DamageDealer DamageDealerSource { get; set; }
     public SpriteFlashConfiguration CurrentFlash { get; set; }
-    public SpriteFlashConfiguration DamageFlash { get; set; }
-    public SpriteFlashConfiguration InvulnerabilityFlash { get; set; }
 
-    public DamageInfo(DamageDealer damageSource, float damageAmount, Vector2 contactPoint, SpriteFlashConfiguration currentFlash, SpriteFlashConfiguration damageFlash, SpriteFlashConfiguration invulnerabilityFlash) {
+    public DamageInfo(DamageDealer damageSource, float damageAmount, Vector2 contactPoint, SpriteFlashConfiguration currentFlash) {
         DamageDealerSource = damageSource;
         DamageAmount = damageAmount;
         ContactPoint = contactPoint;
         CurrentFlash = currentFlash;
-        DamageFlash = damageFlash;
-        InvulnerabilityFlash = invulnerabilityFlash;
     }
 }
 
 public interface IDamageable {
+    BoxCollider2D HitboxTrigger { get; set; }
+    Material SpriteFlashMaterial { get; set; }
     HealthType HealthType { get; set; }
     DamageInfo LastDamageInfo { get; set; }
-    // Material SpriteFlashMaterial { get; set; }
-    SpriteFlashConfiguration DamageFlash { get; set; }
-    SpriteFlashConfiguration InvulnerabilityFlash { get; set; }
     bool IsRespawneable { get; set; }
     bool CanRespawn { get; set; }
     int CurrentLives { get; set; }

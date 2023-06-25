@@ -16,14 +16,9 @@ public class Level : ScriptableObject {
     public int levelID;
     public int levelNumber;
     public GameObject worldMap;
-    public LevelStructure levelStructure;
     // public List<CoinItem> CoinItems;
     // public List<FoodItem> FoodItemsList;
     // public List<Enemy> EnemiesList;
-    public List<Checkpoint> CheckpointsList;
-    public Checkpoint startingSpawnpoint;
-    public Checkpoint currentCheckpoint;
-    public Checkpoint furthestCheckpoint;
 
     [Space(20)]
 
@@ -46,6 +41,7 @@ public class Level : ScriptableObject {
     [Space(5)]
     public int totalCoinsAmount;
     public int totalEnemiesAmount;
+    // public float baseRecordTime = 60f;
     public float baseRecordTime = 60f;
 
     [Space(20)]
@@ -53,51 +49,16 @@ public class Level : ScriptableObject {
     [Header("Check Parameters")]
     public float currentRecordTime;
     public bool wasHit = false;
-
-    public void OnEnable() {
-        levelStructure = null;
-    }
-
-    public void OnDisable() {
-        levelStructure = null;
-        CheckpointsList = new List<Checkpoint>();
-        startingSpawnpoint = null;
-        currentCheckpoint = null;
-        furthestCheckpoint = null;
-    }
     
-    public void CheckCompletion() {
-
+    public void CheckCompletion(float currentTimer) {
+        CheckRecordTime(currentTimer);
     }
 
     public void CheckRecordTime(float currentTimer) {
-
+        if (currentTimer < currentRecordTime) {
+            currentRecordTime = currentTimer;
+        }
     }
 
     public void SetHitStatus() => wasHit = true;
-
-    public void SpawnLevelStructure() {
-        var map = GameObject.Instantiate(worldMap);
-        levelStructure = map.GetComponentInHierarchy<LevelStructure>();
-
-        CheckpointsList = new List<Checkpoint>();
-
-        Checkpoint[] checkpointArray = GameObject.FindObjectsOfType<Checkpoint>();
-
-        for (int i = 0; i < checkpointArray.Count(); i++) {
-            CheckpointsList.Add(checkpointArray[i]);
-            Debug.Log($"Checkpoint {checkpointArray[i]} added");
-        }
-
-        // CheckpointsList.OrderByDescending(ch => ch.checkpointOrderID);
-
-        Checkpoint firstCheckpoint = CheckpointsList.GetFirstElement();
-        Checkpoint lastCheckpoint = CheckpointsList.GetLastElement();
-        firstCheckpoint.isStartingCheckpoint = true;
-        lastCheckpoint.isFinalCheckpoint = true;
-
-        startingSpawnpoint = firstCheckpoint;
-        currentCheckpoint = firstCheckpoint;
-        furthestCheckpoint = firstCheckpoint;
-    }
 }

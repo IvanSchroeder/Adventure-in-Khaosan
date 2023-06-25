@@ -7,7 +7,7 @@ using System;
 [Serializable]
 public class Checkpoint : MonoBehaviour, IInteractable {
     public BoxCollider2D InteractTrigger { get; set; }
-    public Transform CheckpointTransform { get; private set; }
+    [field: SerializeField] public Transform SpawnpointTransform { get; private set; }
     public SpriteRenderer SpriteRenderer { get; private set; }
     public Animator Anim { get; private set; }
 
@@ -26,7 +26,6 @@ public class Checkpoint : MonoBehaviour, IInteractable {
     public static event Action<Checkpoint> OnCheckpointActive;
 
     private void Awake() {
-        if (CheckpointTransform == null) CheckpointTransform = this.transform;
         if (InteractTrigger == null) InteractTrigger = GetComponentInChildren<BoxCollider2D>();
         if (SpriteRenderer == null) SpriteRenderer = GetComponentInChildren<SpriteRenderer>();
         if (Anim == null) Anim = this.GetComponentInHierarchy<Animator>();
@@ -40,28 +39,29 @@ public class Checkpoint : MonoBehaviour, IInteractable {
         if (isStartingCheckpoint) Interact();
     }
 
-    public void SetActive() {
+    public void Interact() {
+        if (!IsInteractable || isActive) return;
+
         isActive = true;
         Anim.SetBool("isActive", isActive);
         InteractTrigger.enabled = !isActive;
-        OnCheckpointActive?.Invoke(this);
-    }
-
-    public void Interact() {
-        if (!IsInteractable || isActive) return;
-        SetActive();
+        
         SetInteraction(false);
         SpriteFlash flash = GetComponentInChildren<SpriteFlash>();
         
         Debug.Log($"Interacted with {this.transform.name}");
+        OnCheckpointActive?.Invoke(this);
     }
 
     public void SetInteraction(bool enable) {
         IsInteractable = enable;
-        if (enable && IsInteractable && InteractableOutlineMaterial != null)
-        SpriteRenderer.material = InteractableOutlineMaterial;
+
+        if (enable && IsInteractable && InteractableOutlineMaterial != null) {
+            SpriteRenderer.material = InteractableOutlineMaterial;
+        }
         else if (DefaultMaterial != null) {
             SpriteRenderer.material = DefaultMaterial;
+            
             SpriteFlash flash = GetComponentInChildren<SpriteFlash>();
             // flash.StartInteractedFlash();
         }

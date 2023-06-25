@@ -36,8 +36,11 @@ public class PlayerAbilityState : PlayerState {
         if (isAbilityDone) {
             if (isGrounded && isFalling)
                 stateMachine.ChangeState(player.LandState);
-            else
+            else {
+                player.SetVelocityX(player.CurrentVelocity.x);
+                player.SetVelocityY(player.CurrentVelocity.y);
                 stateMachine.ChangeState(player.AirborneState);
+            }
         }
     }
 

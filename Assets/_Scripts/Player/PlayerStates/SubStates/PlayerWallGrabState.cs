@@ -44,7 +44,7 @@ public class PlayerWallGrabState : PlayerTouchingWallState {
             stateMachine.ChangeState(player.LedgeClimbState);
         }
         else if (xInput == -player.FacingDirection) {
-            WallHop(playerData.wallJumpSpeed, playerData.wallHopDirectionOffAngle, player.FacingDirection);
+            WallHop(playerData.wallHopSpeed, playerData.wallHopDirectionOffAngle, player.FacingDirection);
         }
         else if (playerData.autoWallGrab) {
             if (xInput == player.FacingDirection && yInput != 0) {

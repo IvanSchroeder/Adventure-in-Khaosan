@@ -23,17 +23,17 @@ public class PlayerWallJumpState : PlayerAbilityState {
     public override void Exit() {
         base.Exit();
         
-        player.CheckFacingDirection(xInput);
+        // player.CheckFacingDirection(xInput);
 
-        if (xInput == player.FacingDirection) {
-            player.SetVelocityX(xInput * playerData.runSpeed);
-        }
-        else if (xInput == -player.FacingDirection) {
-            player.SetVelocityX(xInput * playerData.runSpeed, playerData.airAcceleration, playerData.lerpVelocityInAir);
-        }
-        else if (xInput == 0) {
-            player.SetVelocityX(0f, playerData.airDecceleration, playerData.lerpVelocityInAir);
-        }
+        // if (xInput == player.FacingDirection) {
+        //     player.SetVelocityX(xInput * playerData.runSpeed);
+        // }
+        // else if (xInput == -player.FacingDirection) {
+        //     player.SetVelocityX(xInput * playerData.runSpeed, playerData.airAcceleration, playerData.lerpVelocityInAir);
+        // }
+        // else if (xInput == 0) {
+        //     player.SetVelocityX(0f, playerData.airDecceleration, playerData.lerpVelocityInAir);
+        // }
     }
 
     public override void LogicUpdate() {

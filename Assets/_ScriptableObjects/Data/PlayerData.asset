@@ -12,30 +12,41 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9aae3865295db8b429b15b321daea11a, type: 3}
   m_Name: PlayerData
   m_EditorClassIdentifier: 
+  damageFlash: {fileID: 11400000, guid: 0514c15ea549b1f40b1d147ef537951e, type: 2}
+  invulnerableFlash: {fileID: 0}
+  interactedFlash: {fileID: 0}
   currentVelocity: {x: 0, y: 0}
   currentColliderConfiguration:
     <Offset>k__BackingField: {x: 0, y: 0.75}
     <Size>k__BackingField: {x: 1, y: 1.5}
   facingDirection: 1
-  currentLives: 1
+  currentLives: 0
   currentHealth: 0
-  currentHearts: 2
+  currentHearts: 0
   currentLayer: Player
   currentGravityScale: 3
   currentFallSpeed: 12
-  amountOfJumpsLeft: 0
+  amountOfJumpsLeft: 1
   slopeDownAngle: 0
   slopeSideAngle: 0
   cumulatedKnockbackTime: 0
+  healthType: 1
+  maxLives: 3
+  maxHearts: 2
+  maxHealth: 100
+  invulnerabilitySeconds: 2
+  minKnockbackTime: 0.5
+  maxKnockbackTime: 2
+  deadOnGroundTime: 3
   xInput: 0
-  lastXInput: -1
+  lastXInput: 0
   yInput: 0
   jumpInput: 0
-  jumpInputStop: 1
+  jumpInputStop: 0
   jumpInputHold: 0
   grabInput: 0
-  isGrounded: 1
-  isOnSolidGround: 1
+  isGrounded: 0
+  isOnSolidGround: 0
   isOnPlatform: 0
   isIgnoringPlatforms: 0
   isOnSlope: 0
@@ -65,19 +76,10 @@ MonoBehaviour:
   isAbilityDone: 0
   hasCoyoteTime: 0
   hasWallJumpCoyoteTime: 0
-  noFrictionMaterial: {fileID: 6200000, guid: 00051301d2c521f4d8cdd8ad41071ae1, type: 2}
-  fullFrictionMaterial: {fileID: 6200000, guid: ab5b232c31c2267469ac62a55abfba99, type: 2}
-  healthType: 1
-  maxLives: 3
-  maxHealth: 100
-  maxHearts: 2
-  invulnerabilitySeconds: 2
-  minKnockbackTime: 0.5
-  maxKnockbackTime: 3
-  deadOnGroundTime: 3
   stickToGround: 0
   runSpeed: 10
   maxRunSpeed: 10
+  maxRunSpeedThreshold: 0
   crouchWalkSpeed: 3
   lerpVelocity: 1
   runAcceleration: 40
@@ -107,7 +109,7 @@ MonoBehaviour:
   jumpHeight: 20
   variableJumpHeightMultiplier: 0.2
   cornerCorrectionRepositionOffset: 1
-  platformIgnoreVerticalVelocityThreshold: 0.071
+  maxAscendantSpeed: 120
   defaultFallSpeed: 12
   fastFallSpeed: 20
   defaultGravityScale: 3
@@ -129,6 +131,7 @@ MonoBehaviour:
   wallGrabAcceleration: 50
   wallClimbAcceleration: 60
   wallJumpSpeed: 20
+  wallHopSpeed: 10
   wallJumpTime: 0.25
   wallJumpAngle: 40
   wallHopAngle: 10
@@ -139,12 +142,12 @@ MonoBehaviour:
   groundCheckOffset: {x: 0.475, y: 0.1}
   groundCheckDistance: 0.4
   slopeCheckDistance: 1.13
-  ceilingCheckOffset: {x: 0.475, y: 0.1}
-  ceilingCheckDistance: 0.4
   wallCheckOffset: {x: 0, y: 0.9}
   wallCheckDistance: 0.8
   ledgeCheckOffset: {x: 0, y: 1.1}
   ledgeCheckDistance: 0.8
+  ceilingCheckOffset: {x: 0.475, y: 0.1}
+  ceilingCheckDistance: 0.4
   cornerInnerCheckOffset: {x: 0.125, y: 0}
   cornerEdgeCheckOffset: {x: 0.5, y: 0}
   cornerCheckDistance: 1
@@ -161,25 +164,3 @@ MonoBehaviour:
   platformLayer:
     serializedVersion: 2
     m_Bits: 128
-  yVelocity: 0
-  runAccelAmount: 7.5
-  runDeccelAmount: 7.5
-  conserveMomentum: 1
-  jumpTimeToApex: 0.5
-  jumpForce: 60
-  gravityStrength: -120
-  gravityScale: 12.232415
-  fallGravityMult: 1
-  fastFallGravityMult: 4
-  maxAscendantSpeed: 120
-  jumpCutGravityMult: 2
-  jumpHangGravityMult: 0.85
-  jumpHangTimeThreshold: 0.1
-  jumpHangAccelerationMult: 1
-  jumpHangMaxSpeedMult: 1
-  wallJumpForce: {x: 12, y: 12}
-  wallJumpRunLerp: 0
-  doTurnOnWallJump: 1
-  slideSpeed: 1
-  slideAccel: 3
-  currentAnimationState: 0

@@ -13,14 +13,33 @@ public class PlayerInputHandler : MonoBehaviour {
     public bool JumpInputHold { get; private set; }
     public bool GrabInput { get; private set; }
 
-    [SerializeField] private float inputHoldTime = 0.2f;
+    [field: SerializeField] public bool LockInputs { get; private set; }
+    [field: SerializeField] public float InputHoldTime { get; private set; } = 0.2f;
     private float jumpInputStartTime;
+
+    private void OnEnable() {
+        LevelManager.OnLevelStarted += UnlockGameplayInputs;
+        LevelManager.OnLevelFinished += LockGameplayInputs;
+        LevelManager.OnPlayerSpawn += UnlockGameplayInputs;
+    }
+
+    private void OnDisable() {
+        LevelManager.OnLevelStarted -= UnlockGameplayInputs;
+        LevelManager.OnLevelFinished -= LockGameplayInputs;
+        LevelManager.OnPlayerSpawn -= UnlockGameplayInputs;
+    }
+
+    private void Start() {
+        LockInputs = false;
+    }
 
     private void Update() {
         CheckJumpInputHoldTime();
     }
 
     public void OnMoveInput(InputAction.CallbackContext context) {
+        if (LockInputs) return;
+
         RawMovementInput = context.ReadValue<Vector2>();
         
         NormInputX = Mathf.RoundToInt(RawMovementInput.x);
@@ -35,6 +54,8 @@ public class PlayerInputHandler : MonoBehaviour {
     }
 
     public void OnJumpImput(InputAction.CallbackContext context) {
+        if (LockInputs) return;
+
         if (context.started) {
             JumpInput = true;
             JumpInputStop = false;
@@ -49,6 +70,8 @@ public class PlayerInputHandler : MonoBehaviour {
     }
 
     public void OnGrabInput(InputAction.CallbackContext context) {
+        if (LockInputs) return;
+
         if (context.started) GrabInput = true;
         if (context.canceled) GrabInput = false;
     }
@@ -56,8 +79,16 @@ public class PlayerInputHandler : MonoBehaviour {
     public void UseJumpInput() => JumpInput = false;
 
     private void CheckJumpInputHoldTime() {
-        if (Time.time >= jumpInputStartTime + inputHoldTime) {
+        if (Time.time >= jumpInputStartTime + InputHoldTime) {
             JumpInput = false;
         }
+    }
+
+    public void UnlockGameplayInputs() {
+        LockInputs = false;
+    }
+
+    public void LockGameplayInputs() {
+        LockInputs = true;
     }
 }
