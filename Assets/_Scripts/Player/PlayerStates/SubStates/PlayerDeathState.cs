@@ -55,7 +55,7 @@ public class PlayerDeathState : PlayerState {
                 if (!groundLock) {
                     groundLock = true;
                     player.Anim.SetBool("deadOnGround", true);
-                    player.KnockbackEnd();
+                    player.KnockbackEnd(null, null);
                 }
             }
         }

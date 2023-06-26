@@ -53,7 +53,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a6a0e8b29d967f0489f0f4c10bcb3c9a, type: 2}
+  - {fileID: 2100000, guid: 021783b7f71f0434c8dc5871128c8f72, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -97,11 +97,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54cd327a20f58594c885d38f90e2939f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <Entity>k__BackingField: {fileID: 3125253531432767928}
   <HealthSystem>k__BackingField: {fileID: 5509863583808375652}
   <CurrentFlashConfiguration>k__BackingField: {fileID: 11400000, guid: 4d82b7bcf41c0e646937f0d0d6aca977, type: 2}
-  <DamagedFlash>k__BackingField: {fileID: 11400000, guid: 0514c15ea549b1f40b1d147ef537951e, type: 2}
-  <InvulnerableFlash>k__BackingField: {fileID: 11400000, guid: 4d82b7bcf41c0e646937f0d0d6aca977, type: 2}
-  <InteractedFlash>k__BackingField: {fileID: 11400000, guid: fc38e4012282de94bae91f56827ca71a, type: 2}
   <DefaultFlashColor>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
   <CurrentFlashColor>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
   <CurrentAlphaAmount>k__BackingField: 1
@@ -111,6 +109,8 @@ MonoBehaviour:
   <CurrentAmountIndex>k__BackingField: 0
   <CurrentAlphaIndex>k__BackingField: 0
   <CurrentAmountOfFlashes>k__BackingField: 0
+  _materials: []
+  spriteRenderer: {fileID: 7174821088211015114}
 --- !u!1 &443455453067590178
 GameObject:
   m_ObjectHideFlags: 0
@@ -824,8 +824,8 @@ MonoBehaviour:
   <HitboxTrigger>k__BackingField: {fileID: 5362580700939068921}
   <HealthType>k__BackingField: 1
   <SpriteFlashMaterial>k__BackingField: {fileID: 2100000, guid: a6a0e8b29d967f0489f0f4c10bcb3c9a, type: 2}
-  <DamageFlash>k__BackingField: {fileID: 11400000, guid: 0514c15ea549b1f40b1d147ef537951e, type: 2}
-  <InvulnerabilityFlash>k__BackingField: {fileID: 11400000, guid: 4d82b7bcf41c0e646937f0d0d6aca977, type: 2}
+  <DamagedFlash>k__BackingField: {fileID: 11400000, guid: 0514c15ea549b1f40b1d147ef537951e, type: 2}
+  <InvulnerableFlash>k__BackingField: {fileID: 11400000, guid: 4d82b7bcf41c0e646937f0d0d6aca977, type: 2}
   <IsRespawneable>k__BackingField: 1
   <CanRespawn>k__BackingField: 0
   <CurrentLives>k__BackingField: 0

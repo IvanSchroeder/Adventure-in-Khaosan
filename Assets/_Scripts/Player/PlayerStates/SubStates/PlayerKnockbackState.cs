@@ -27,7 +27,7 @@ public class PlayerKnockbackState : PlayerState {
         base.Exit();
 
         isDamaged = false;
-        player.KnockbackEnd();
+        player.KnockbackEnd(null, null);
         // player.CanMove = true;
     }
 

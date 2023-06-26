@@ -8,26 +8,27 @@ public enum HealthType {
     Hearts
 }
 
-[Serializable]
-public struct DamageInfo {
-    public DamageDealer DamageDealerSource { get; set; }
-    public float DamageAmount { get; set; }
-    public Vector2 ContactPoint { get; set; }
-    public SpriteFlashConfiguration CurrentFlash { get; set; }
+// [Serializable]
+// public struct DamageInfo {
+//     public DamageDealer DamageDealerSource { get; set; }
+//     public float DamageAmount { get; set; }
+//     public Vector2 ContactPoint { get; set; }
+//     public SpriteFlashConfiguration CurrentFlash { get; set; }
 
-    public DamageInfo(DamageDealer damageSource, float damageAmount, Vector2 contactPoint, SpriteFlashConfiguration currentFlash) {
-        DamageDealerSource = damageSource;
-        DamageAmount = damageAmount;
-        ContactPoint = contactPoint;
-        CurrentFlash = currentFlash;
-    }
-}
+//     public DamageInfo(DamageDealer damageSource, float damageAmount, Vector2 contactPoint, SpriteFlashConfiguration currentFlash) {
+//         DamageDealerSource = damageSource;
+//         DamageAmount = damageAmount;
+//         ContactPoint = contactPoint;
+//         CurrentFlash = currentFlash;
+//     }
+// }
 
 public interface IDamageable {
     BoxCollider2D HitboxTrigger { get; set; }
     Material SpriteFlashMaterial { get; set; }
     HealthType HealthType { get; set; }
-    DamageInfo LastDamageInfo { get; set; }
+    SpriteFlashConfiguration DamagedFlash { get; set; }
+    SpriteFlashConfiguration InvulnerableFlash { get; set; }
     bool IsRespawneable { get; set; }
     bool CanRespawn { get; set; }
     int CurrentLives { get; set; }
@@ -42,7 +43,7 @@ public interface IDamageable {
 
     void InitializeHealth();
     bool IsDamagedBy(int layer);
-    void Damage(DamageInfo damageInfo);
-    void SetInvulnerability(DamageInfo damageInfo);
+    void Damage(OnEntityDamagedEventArgs eventArgs);
+    void SetInvulnerability(object sender, OnEntityDamagedEventArgs eventArgs);
     // void Heal(float amount);
 }

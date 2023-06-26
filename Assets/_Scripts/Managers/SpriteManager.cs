@@ -2,19 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using ExtensionMethods;
+using System;
 using System.Linq;
 
 public class SpriteManager : MonoBehaviour {
     [field: SerializeField] public Entity Entity { get; private set; }
     [field: SerializeField] public HealthSystem HealthSystem { get; private set; }
+    [field: SerializeField] public IDamageable DamageableBehavior { get; private set; }
+    [field: SerializeField] public IInteractable InteractableBehavior { get; private set; }
     // [field: SerializeField] public InteractorSystem InteractorSystem { get; private set; }
-    // private Interactor interactor;
-    private IDamageable damageableBehavior;
-    private IInteractable interactableBehavior;
     [field: SerializeField] public SpriteFlashConfiguration CurrentFlashConfiguration { get; private set; }
-    [field: SerializeField] public SpriteFlashConfiguration DamagedFlash { get; private set; }
-    [field: SerializeField] public SpriteFlashConfiguration InvulnerableFlash { get; private set; }
-    [field: SerializeField] public SpriteFlashConfiguration InteractedFlash { get; private set; }
+    public SpriteFlashConfiguration DamagedFlash { get; private set; }
+    public SpriteFlashConfiguration InvulnerableFlash { get; private set; }
+    public SpriteFlashConfiguration InteractedFlash { get; private set; }
 
     [field: SerializeField, ColorUsage(true, true)] public Color DefaultFlashColor { get; private set; } = Color.white;
     [field: SerializeField, ColorUsage(true, true)] public Color CurrentFlashColor { get; private set; } = Color.white;
@@ -30,9 +30,9 @@ public class SpriteManager : MonoBehaviour {
     private static readonly int _flashAmountID = Shader.PropertyToID("_FlashAmount");
     private static readonly int _alphaAmountID = Shader.PropertyToID("_AlphaAmount");
 
-    private Material[] _materials;
+    public Material[] _materials;
     // private SpriteRenderer[] _spriteRenderers;
-    private SpriteRenderer spriteRenderer;
+    public SpriteRenderer spriteRenderer;
 
     private Coroutine spriteFlashCoroutine;
     private WaitForSeconds colorChangeDelay;
@@ -42,9 +42,11 @@ public class SpriteManager : MonoBehaviour {
         // this.HealthSystem.OnEntityDead += StartFlash;
         // this.HealthSystem.OnInvulnerabilityStart += StartFlash;
 
-        this.HealthSystem.OnDamaged += StartDamageFlash;
-        this.HealthSystem.OnEntityDead += StartDamageFlash;
-        this.HealthSystem.OnInvulnerabilityStart += StartInvulnerabilityFlash;
+        if (HealthSystem.IsNotNull()) {
+            this.HealthSystem.OnDamaged += StartDamageFlash;
+            this.HealthSystem.OnEntityDead += StartDamageFlash;
+            this.HealthSystem.OnInvulnerabilityStart += StartInvulnerabilityFlash;
+        }
 
         // this.InteractorSystem.OnInteracted += StartInteractedFlash;
     }
@@ -54,22 +56,25 @@ public class SpriteManager : MonoBehaviour {
         // this.HealthSystem.OnEntityDead -= StartFlash;
         // this.HealthSystem.OnInvulnerabilityStart -= StartFlash;
 
-        this.HealthSystem.OnDamaged -= StartDamageFlash;
-        this.HealthSystem.OnEntityDead -= StartDamageFlash;
-        this.HealthSystem.OnInvulnerabilityStart -= StartInvulnerabilityFlash;
+        if (HealthSystem.IsNotNull()) {
+            this.HealthSystem.OnDamaged -= StartDamageFlash;
+            this.HealthSystem.OnEntityDead -= StartDamageFlash;
+            this.HealthSystem.OnInvulnerabilityStart -= StartInvulnerabilityFlash;
+        }
 
         // this.InteractorSystem.OnInteracted -= StartInteractedFlash;
     }
 
     private void Awake() {
-        if (Entity == null) Entity = this.GetComponentInHierarchy<Entity>();
+        if (Entity == null && this.HasComponentInHierarchy<Entity>()) Entity = this.GetComponentInHierarchy<Entity>();
         if (HealthSystem == null) HealthSystem = this.GetComponentInHierarchy<HealthSystem>();
-        if (damageableBehavior == null) damageableBehavior = this.GetComponentInHierarchy<IDamageable>();
-        if (interactableBehavior == null) interactableBehavior = this.GetComponentInHierarchy<IInteractable>();
+        if (DamageableBehavior == null) DamageableBehavior = this.GetComponentInHierarchy<IDamageable>();
+        if (InteractableBehavior == null) InteractableBehavior = this.GetComponentInHierarchy<IInteractable>();
 
-        spriteRenderer = this.GetComponentInHierarchy<SpriteRenderer>();
+        if (spriteRenderer == null) spriteRenderer = this.GetComponentInHierarchy<SpriteRenderer>();
         _materials = new Material[1];
         _materials[0] = spriteRenderer.material;
+
 
         // for (int i = 0; i < _spriteRenderers.Length; i++) {
         //     _materials[i] = _spriteRenderers[i].material;
@@ -77,6 +82,14 @@ public class SpriteManager : MonoBehaviour {
     }
 
     private void Start() {
+        if (HealthSystem != null) {
+            if (HealthSystem.DamagedFlash != null) DamagedFlash = HealthSystem.DamagedFlash;
+            if (HealthSystem.InvulnerableFlash != null) InvulnerableFlash = HealthSystem.InvulnerableFlash;
+        }
+
+        // if (InteractorSystem != null) {
+        //     if (InteractorSystem.InteractedFlash != null) InteractedFlash = InteractorSystem.InteractedFlash;
+        // }
         SetDefaultValues();
     }
 
@@ -95,6 +108,13 @@ public class SpriteManager : MonoBehaviour {
         SetAlphaAmount(CurrentAlphaAmount);
     }
 
+    private void SetDefaultValues() {
+        SetFlashColor(DefaultFlashColor);
+        SetFlashAmount(0f);
+        SetAlphaAmount(DefaultAlphaAmount);
+        // CurrentFlashConfiguration = null;
+    }
+
     private void SetSpriteFlashConfiguration(SpriteFlashConfiguration config) {
         if (config == null) return;
         CurrentFlashConfiguration = config;
@@ -103,31 +123,36 @@ public class SpriteManager : MonoBehaviour {
         colorChangeDelay = new WaitForSeconds(CurrentFlashConfiguration.SecondsBetweenFlashes);
     }
 
-    public void StartDamageFlash(DamageInfo damageInfo = default) {
-        StartFlash(HealthSystem.entityData.damageFlash);
+    public void StartDamageFlash(object sender, OnEntityDamagedEventArgs eventArgs) {
+        // StartFlash(HealthSystem.entityData.damageFlash);
+        // Material mat = Instantiate(eventArgs.CurrentMaterial);
+        // spriteRenderer.material = mat;
+        StartFlash(DamagedFlash);
     }
 
-    public void StartInvulnerabilityFlash(DamageInfo damageInfo = default) {
-        StartFlash(HealthSystem.entityData.damageFlash);
+    public void StartInvulnerabilityFlash(object sender, OnEntityDamagedEventArgs eventArgs) {
+        // StartFlash(HealthSystem.entityData.invulnerabilityFlash);
+        // Material mat = Instantiate(eventArgs.CurrentMaterial);
+        // spriteRenderer.material = mat;
+        StartFlash(InvulnerableFlash);
     }
 
-    public void StartInteractedFlash(DamageInfo damageInfo = default) {
+    public void StartInteractedFlash(object sender, OnEntityDamagedEventArgs eventArgs) {
         StartFlash(InteractedFlash);
     }
 
     private void StartFlash(SpriteFlashConfiguration configuration) {
+        // if (IsFlashing) IsFlashing = false;
+
         if (spriteFlashCoroutine != null) {
-            IsFlashing = false;
             StopCoroutine(spriteFlashCoroutine);
             spriteFlashCoroutine = null;
         }
 
-        IsFlashing = true;
-
         spriteFlashCoroutine = StartCoroutine(SpriteFlashRoutine(configuration));
     }
 
-    private void StopFlash(DamageInfo damageInfo) {
+    private void StopFlash() {
         IsFlashing = false;
 
         if (spriteFlashCoroutine != null) {
@@ -139,6 +164,7 @@ public class SpriteManager : MonoBehaviour {
     }
 
     private IEnumerator SpriteFlashRoutine(SpriteFlashConfiguration config) {
+        IsFlashing = true;
         SetSpriteFlashConfiguration(config);
 
         while ((CurrentFlashConfiguration.LoopFlash) || (!CurrentFlashConfiguration.LoopFlash && CurrentAmountOfFlashes < CurrentFlashConfiguration.MaxAmountOfFlashes)) {
@@ -160,12 +186,12 @@ public class SpriteManager : MonoBehaviour {
 
             CurrentAmountOfFlashes++;
 
-            yield return colorChangeDelay;
-
             if ((CurrentFlashConfiguration.LoopFlash && !IsFlashing) || (!CurrentFlashConfiguration.LoopFlash && CurrentAmountOfFlashes >= CurrentFlashConfiguration.MaxAmountOfFlashes)) {
-                StopFlash(default);
+                StopFlash();
                 yield break;
             }
+
+            yield return colorChangeDelay;
         }
 
         // float currentFlashAmount = 0f;
@@ -193,27 +219,23 @@ public class SpriteManager : MonoBehaviour {
         // }
     }
 
-    private void SetDefaultValues() {
-        SetFlashColor(DefaultFlashColor);
-        SetFlashAmount(0f);
-        SetAlphaAmount(DefaultAlphaAmount);
-        // CurrentFlashConfiguration = null;
-    }
-
     private void SetFlashColor(Color color) {
         for (int i = 0; i < _materials.Length; i++) {
+            // if (_materials[i].HasColor(_flashColorID))
             _materials[i].SetColor(_flashColorID, color);
         }
     }
 
     private void SetFlashAmount(float amount) {
         for (int i = 0; i < _materials.Length; i++) {
+            // if (_materials[i].HasFloat(_flashAmountID))
             _materials[i].SetFloat(_flashAmountID, amount);
         }
     }
 
     private void SetAlphaAmount(float amount) {
         for (int i = 0; i < _materials.Length; i++) {
+            // if (_materials[i].HasFloat(_alphaAmountID))
             _materials[i].SetFloat(_alphaAmountID, amount);
         }
     }

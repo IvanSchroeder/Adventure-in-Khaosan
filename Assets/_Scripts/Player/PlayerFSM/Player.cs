@@ -54,7 +54,6 @@ public class Player : Entity {
     [SerializeField] public Transform ledgeCheck;
 
     [field: SerializeField] public IInteractable CurrentInteractable { get; private set; }
-    [field: SerializeField] public DamageInfo LastDamageInfo { get; private set; }
 #endregion
 
 #region VARIABLES
@@ -78,33 +77,37 @@ public class Player : Entity {
 #region EVENTS
     public static event Action<Player> OnPlayerSpawned;
     public static event Action<Player> OnPlayerDeath;
-    public event Action<DamageInfo> OnKnockbackEnd;
+    public EventHandler<OnEntityDamagedEventArgs> OnKnockbackEnd;
     public static event Action OnPlayerDeathEnd;
     public static event Action OnLivesDepleted;
 #endregion
 
     public void StartInvulnerable() {
-        HealthSystem.SetInvulnerability(new DamageInfo(default, 0f, Vector2.zero, entityData.invulnerabilityFlash));
+        OnEntityDamagedEventArgs entityArgs = new OnEntityDamagedEventArgs();
+        entityArgs.CurrentMaterial = HealthSystem.SpriteFlashMaterial;
+        entityArgs.CurrentFlash = entityData.invulnerabilityFlash;
+        HealthSystem.SetInvulnerability(this, entityArgs);
     }
 
-    public void KnockbackStart(DamageInfo damageInfo) {
-        LastDamageInfo = damageInfo;
-        lastContactPoint = damageInfo.ContactPoint;
+    public void KnockbackStart(object sender, OnEntityDamagedEventArgs entityArgs) {
+        lastContactPoint = entityArgs.ContactPoint;
         KnockbackState.SetLastContactPoint(lastContactPoint);
         StateMachine.ChangeState(KnockbackState);
     }
 
-    public void KnockbackEnd() {
-        LastDamageInfo = new DamageInfo(default, default, default, entityData.invulnerabilityFlash);
-        OnKnockbackEnd?.Invoke(LastDamageInfo);
+    public void KnockbackEnd(object sender, OnEntityDamagedEventArgs args) {
+        OnEntityDamagedEventArgs entityArgs = new OnEntityDamagedEventArgs();
+        entityArgs.CurrentMaterial = HealthSystem.SpriteFlashMaterial;
+        entityArgs.CurrentFlash = entityData.invulnerabilityFlash;
+        OnKnockbackEnd?.Invoke(this, entityArgs);
     }
 
-    public void SetPlayerDeath(DamageInfo damageInfo) {
+    public void SetPlayerDeath(object sender, OnEntityDamagedEventArgs entityArgs) {
         OnPlayerDeath?.Invoke(this);
         StateMachine.ChangeState(DeathState);
     }
 
-    public void SetLivesDepleted() {
+    public void SetLivesDepleted(object sender, EventArgs args) {
         OnLivesDepleted?.Invoke();
     }
 
@@ -127,7 +130,6 @@ public class Player : Entity {
         this.HealthSystem.OnEntityDead += SetPlayerDeath;
         this.HealthSystem.OnLivesDepleted += SetLivesDepleted;
 
-
         OnKnockbackEnd += HealthSystem.SetInvulnerability;
         OnPlayerDeathEnd += HealthSystem.Invulnerable;
     }
@@ -139,7 +141,6 @@ public class Player : Entity {
         this.HealthSystem.OnDamaged -= KnockbackStart;
         this.HealthSystem.OnEntityDead -= SetPlayerDeath;
         this.HealthSystem.OnLivesDepleted -= SetLivesDepleted;
-
 
         OnKnockbackEnd -= HealthSystem.SetInvulnerability;
         OnPlayerDeathEnd -= HealthSystem.Invulnerable;
@@ -189,7 +190,6 @@ public class Player : Entity {
         CameraTarget.transform.localPosition = Vector3.zero;
 
         SetColliderParameters(MovementCollider, playerData.standingColliderConfig);
-        HealthSystem.SetInvulnerability(LastDamageInfo);
 
         OnPlayerSpawned?.Invoke(this);
     }
