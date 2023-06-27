@@ -92,7 +92,6 @@ MonoBehaviour:
   airAcceleration: 65
   airDecceleration: 50
   collisionEnableDelay: 0.2
-  wallBounceFalloff: 0.9
   standingColliderConfig:
     <Offset>k__BackingField: {x: 0, y: 0.75}
     <Size>k__BackingField: {x: 1, y: 1.5}
@@ -109,12 +108,13 @@ MonoBehaviour:
   crouchColliderHeight: 0.8
   amountOfJumps: 1
   jumpHeight: 20
-  variableJumpHeightMultiplier: 0.2
+  variableJumpHeightMultiplier: 0.7
   cornerCorrectionRepositionOffset: 1
   maxAscendantSpeed: 120
-  maxBouncesOffGround: 10
-  bounceOffGroundXFalloff: 1
-  bounceOffGroundYFalloff: 1
+  maxBouncesOffGround: 3
+  wallBounceFalloff: 0.8
+  groundBounceXFalloff: 0.9
+  groundBounceYFalloff: 0.7
   defaultFallSpeed: 12
   fastFallSpeed: 20
   defaultGravityScale: 3

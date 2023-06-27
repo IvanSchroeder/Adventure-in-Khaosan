@@ -43,6 +43,8 @@ public class PlayerDeathState : PlayerState {
 
         currentBounceXSpeed = playerData.runSpeed;
         currentBounceYSpeed = playerData.jumpHeight;
+        lastBounceXSpeed = currentBounceXSpeed;
+        lastBounceYSpeed = currentBounceYSpeed;
 
         player.Anim.SetBool("deadSpin", true);
         player.Anim.SetBool("deadOnGround", false);
@@ -74,11 +76,7 @@ public class PlayerDeathState : PlayerState {
             BounceOffGround();
         }
 
-        float dotProduct = Vector2.Dot(Vector2.right * player.FacingDirection, Vector2.right * player.CurrentVelocity.x.Sign());
-        Debug.Log($"Dot product {dotProduct}");
-
-        if (isTouchingWall && !hasBouncedOffWall && ((dotProduct == 1 && isTouchingWall) || (dotProduct == -1 && isTouchingBackWall))) {
-            Debug.Log($"Dot product {dotProduct}");
+        if (isTouchingWall && !hasBouncedOffWall) {
             player.Anim.SetBool("deadSpin", true);
             player.Anim.SetBool("deadOnFall", false);
             BounceOffWall();
@@ -91,7 +89,7 @@ public class PlayerDeathState : PlayerState {
             BounceOffCeiling();
         }
 
-        if (isOnSolidGround && isOutOfBounces) {
+        if ((isOutOfBounces || currentBounceYSpeed == 0f) && isOnSolidGround) {
             player.Anim.SetBool("deadOnSlide", true);
             player.Anim.SetBool("deadOnFall", false);
             player.Anim.SetBool("deadSpin", false);
@@ -105,12 +103,18 @@ public class PlayerDeathState : PlayerState {
                 }
             }
         }
-        else if (!isOutOfBounces && isFalling)  {
+        else if ((isOutOfBounces && isFalling) || (!isOutOfBounces && isFalling)) {
             player.CheckFacingDirection(player.CurrentVelocity.x.Sign());
             player.Anim.SetBool("deadOnFall", true);
-            player.Anim.SetBool("deadSpin", false);
             player.Anim.SetBool("deadOnSlide", false);
+            player.Anim.SetBool("deadSpin", false);
         }
+        // else if (!isOutOfBounces && isFalling)  {
+        //     player.CheckFacingDirection(player.CurrentVelocity.x.Sign());
+        //     player.Anim.SetBool("deadOnFall", true);
+        //     player.Anim.SetBool("deadSpin", false);
+        //     player.Anim.SetBool("deadOnSlide", false);
+        // }
 
         if (isFalling && hasBouncedOffGround) {
             hasBouncedOffGround = false;
@@ -119,6 +123,8 @@ public class PlayerDeathState : PlayerState {
         if (isAscending && hasBouncedOffCeiling) {
             hasBouncedOffCeiling = false;
         }
+
+        if (hasBouncedOffWall) hasBouncedOffWall = false;
 
         if (isDeadOnGround) {
             cumulatedDeathTime += Time.deltaTime;
@@ -138,7 +144,7 @@ public class PlayerDeathState : PlayerState {
         if (isOnSolidGround && isOutOfBounces) {
             if (isTouchingWall) {
                 player.CheckFacingDirection(-player.FacingDirection);
-                player.SetVelocityX(-player.CurrentVelocity.x * playerData.wallBounceFalloff);
+                player.SetVelocityX(player.CurrentVelocity.x * player.FacingDirection * playerData.wallBounceFalloff);
                 isTouchingWall = false;
             }
 
@@ -149,46 +155,30 @@ public class PlayerDeathState : PlayerState {
             player.SetVelocityX(player.CurrentVelocity.x);
 
             if (!bounceOffGround && !bounceOffCeiling) {
-                if (isFalling) player.SetVelocityY(player.CurrentVelocity.y, playerData.fallAcceleration, playerData.lerpVerticalVelocity);
+                if (isFalling) player.SetVelocityY(player.CurrentVelocity.y, playerData.fallAcceleration * 2, playerData.lerpVerticalVelocity);
                 else if (isAscending) player.SetVelocityY(player.CurrentVelocity.y);
             }
-
-            bool hasAlreadyBouncedOffWall = false;
 
             if (bounceOffWall) {
                 Debug.Log("Bounced off Wall");
 
-                lastBounceXSpeed = currentBounceXSpeed;
                 currentBounceXSpeed = lastBounceXSpeed * playerData.wallBounceFalloff;
-                player.SetVelocityX(currentBounceXSpeed);
-                bounceOffWall = false;
+                lastBounceXSpeed = currentBounceXSpeed;
+                player.SetVelocityX(currentBounceXSpeed * player.FacingDirection);
 
-                hasBouncedOffWall = false;
-                hasAlreadyBouncedOffWall = true;
+                hasBouncedOffWall = true;
+                bounceOffWall = false;
             }
 
             if (bounceOffGround) {
                 Debug.Log("Bounced off Ground");
 
-                if (bounceOffWall && !hasAlreadyBouncedOffWall) {
-                    Debug.Log("Bounced off Wall");
+                currentBounceXSpeed = lastBounceXSpeed * playerData.groundBounceXFalloff;
+                lastBounceXSpeed = currentBounceXSpeed;
+                player.SetVelocityX(currentBounceXSpeed * player.FacingDirection);
 
-                    lastBounceXSpeed = currentBounceXSpeed;
-                    currentBounceXSpeed = lastBounceXSpeed * playerData.wallBounceFalloff;
-                    player.SetVelocityX(currentBounceXSpeed * player.CurrentVelocity.x.Sign());
-                    bounceOffWall = false;
-
-                    hasBouncedOffWall = false;
-                    hasAlreadyBouncedOffWall = true;
-                }
-                else {
-                    lastBounceXSpeed = currentBounceXSpeed;
-                    currentBounceXSpeed = lastBounceXSpeed * playerData.bounceOffGroundXFalloff;
-                    player.SetVelocityX(currentBounceXSpeed * player.CurrentVelocity.x.Sign());
-                }
-
+                currentBounceYSpeed = lastBounceYSpeed * playerData.groundBounceYFalloff;
                 lastBounceYSpeed = currentBounceYSpeed;
-                currentBounceYSpeed = lastBounceYSpeed * playerData.bounceOffGroundYFalloff;
                 player.SetVelocityY(currentBounceYSpeed);
 
                 bouncesOffGroundCount += 1;
@@ -202,26 +192,12 @@ public class PlayerDeathState : PlayerState {
             if (bounceOffCeiling) {
                 Debug.Log("Bounced off Ceiling");
 
-                if (bounceOffWall && !hasAlreadyBouncedOffWall) {
-                    Debug.Log("Bounced off Wall");
+                currentBounceXSpeed = lastBounceXSpeed * playerData.groundBounceXFalloff;
+                lastBounceXSpeed = currentBounceXSpeed;
+                player.SetVelocityX(currentBounceXSpeed * player.CurrentVelocity.x.Sign());
 
-                    lastBounceXSpeed = currentBounceXSpeed;
-                    currentBounceXSpeed = lastBounceXSpeed * playerData.wallBounceFalloff;
-                    player.SetVelocityX(currentBounceXSpeed * player.CurrentVelocity.x.Sign());
-                    bounceOffWall = false;
-
-                    hasBouncedOffWall = false;
-                    hasAlreadyBouncedOffWall = true;
-                }
-                else {
-                    lastBounceXSpeed = currentBounceXSpeed;
-                    currentBounceXSpeed = lastBounceXSpeed * playerData.bounceOffGroundXFalloff;
-                    player.SetVelocityX(currentBounceXSpeed * player.CurrentVelocity.x.Sign());
-                }
-
-                lastBounceYSpeed = currentBounceYSpeed;
-                currentBounceYSpeed = lastBounceYSpeed * playerData.bounceOffGroundYFalloff;
-                player.SetVelocityY(currentBounceYSpeed * Vector2.down.y);
+                currentBounceYSpeed = lastBounceYSpeed;
+                player.SetVelocityY(player.CurrentVelocity.y * Vector2.down.y);
 
                 hasBouncedOffCeiling = true;
                 bounceOffCeiling = false;

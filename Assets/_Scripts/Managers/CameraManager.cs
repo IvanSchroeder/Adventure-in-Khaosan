@@ -9,6 +9,7 @@ public class CameraManager : MonoBehaviour {
     [field: SerializeField] public Camera MainCamera { get; private set; }
     [field: SerializeField] public CinemachineVirtualCamera VirtualCamera { get; private set; }
     [field: SerializeField] public Transform CameraTarget { get; private set; }
+    [field: SerializeField] public bool DisableCameraTargetOnDeath { get; private set; } = true;
 
     private void OnEnable() {
         Player.OnPlayerSpawned += SetVirtualCameraTarget;
@@ -41,6 +42,6 @@ public class CameraManager : MonoBehaviour {
     }
 
     private void DisableCameraTarget(Player player) {
-        // CameraTarget.transform.SetParent(null);
+        if (DisableCameraTargetOnDeath) CameraTarget.transform.SetParent(null);
     }
 }

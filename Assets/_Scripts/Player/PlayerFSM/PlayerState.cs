@@ -285,8 +285,7 @@ public class PlayerState {
     }
 
     public void BounceOffWall() {
-        lastKnockbackFacingDirection = player.FacingDirection;
-        player.CheckFacingDirection(-lastKnockbackFacingDirection);
+        player.CheckFacingDirection(-player.FacingDirection);
 
         isTouchingBackWall = false;
         isTouchingWall = false;

@@ -718,6 +718,7 @@ MonoBehaviour:
   <MainCamera>k__BackingField: {fileID: 0}
   <VirtualCamera>k__BackingField: {fileID: 0}
   <CameraTarget>k__BackingField: {fileID: 0}
+  <DisableCameraTargetOnDeath>k__BackingField: 1
 --- !u!114 &809080270
 MonoBehaviour:
   m_ObjectHideFlags: 0

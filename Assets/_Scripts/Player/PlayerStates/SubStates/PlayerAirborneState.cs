@@ -146,8 +146,10 @@ public class PlayerAirborneState : PlayerState {
 
             player.Anim.SetBool("fastFall", isFastFalling);
         }
-        else if (isJumping || isAscending)
-            player.SetVelocityY(player.CurrentVelocity.y);
+        else if (isJumping || isAscending) {
+            player.SetVelocityY(player.CurrentVelocity.y, playerData.ascensionAcceleration, playerData.lerpVerticalVelocity);
+            // player.SetVelocityY(player.CurrentVelocity.y);
+        }
     }
 
     private void CheckJumpMultiplier() {
