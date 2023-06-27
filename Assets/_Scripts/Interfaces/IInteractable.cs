@@ -5,7 +5,6 @@ using ExtensionMethods;
 
 public interface IInteractable {
     BoxCollider2D InteractTrigger { get; set; }
-    Material InteractableOutlineMaterial { get; set; }
     SpriteFlashConfiguration InteractedFlash { get; set; }
     bool RequiresInput { get; set; }
     bool IsInteractable { get; set; }

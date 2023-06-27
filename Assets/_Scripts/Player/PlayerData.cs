@@ -100,6 +100,7 @@ public class PlayerData : EntityData {
     public bool stickToGround;
     [Range(0f, 10f)] public float runSpeed;
     [Range(0f, 10f)] public float maxRunSpeed;
+    [Range(0f, 30f)] public float maxHorizontalSpeed;
     public float maxRunSpeedThreshold;
     [Range(0f, 5f)] public float crouchWalkSpeed;
     public bool lerpVelocity = false;
@@ -107,6 +108,7 @@ public class PlayerData : EntityData {
     [Range(0, 100)] public int runDecceleration;
     [Range(0, 100)] public int crouchAcceleration;
     [Range(0, 100)] public int crouchDecceleration;
+    [Range(0, 100)] public int deathSlideDecceleration;
 
     [Space(5)]
     [Header("Air")]
@@ -139,6 +141,9 @@ public class PlayerData : EntityData {
     public float cornerCorrectionRepositionOffset = 0.015f;
     // [Range(0f, 1f)] public float platformIgnoreVerticalVelocityThreshold = 0.5f;
     public float maxAscendantSpeed;
+    public int maxBouncesOffGround = 3;
+    [Range(0f, 1f)] public float bounceOffGroundXFalloff = 0.5f;
+    [Range(0f, 1f)] public float bounceOffGroundYFalloff = 0.5f;
 
     [Header("Fall")]
     public float defaultFallSpeed = 7f;

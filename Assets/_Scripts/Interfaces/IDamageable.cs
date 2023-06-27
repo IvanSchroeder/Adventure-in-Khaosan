@@ -25,7 +25,6 @@ public enum HealthType {
 
 public interface IDamageable {
     BoxCollider2D HitboxTrigger { get; set; }
-    Material SpriteFlashMaterial { get; set; }
     HealthType HealthType { get; set; }
     SpriteFlashConfiguration DamagedFlash { get; set; }
     SpriteFlashConfiguration InvulnerableFlash { get; set; }

@@ -154,7 +154,7 @@ public class LevelManager : MonoBehaviour {
         OnPlayerSpawn?.Invoke();
     }
 
-    public void RespawnPlayer() {
+    public void RespawnPlayer(object sender, OnEntityDamagedEventArgs args) {
         if (PlayerInstance.HealthSystem.IsRespawneable && PlayerInstance.HealthSystem.CanRespawn) {
             playerSpawnCoroutine = StartCoroutine(RespawnPlayerRoutine());
         }

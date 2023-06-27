@@ -8,14 +8,12 @@ public class OnEntityDamagedEventArgs : EventArgs {
     public DamageDealer DamageDealerSource { get; set; }
     public float DamageAmount { get; set; }
     public Vector2 ContactPoint { get; set; }
-    public Material CurrentMaterial { get; set; }
     public SpriteFlashConfiguration CurrentFlash { get; set; }
 
-    public OnEntityDamagedEventArgs(DamageDealer ds = null, float da = 0f, Vector2 cp = default, Material cm = null, SpriteFlashConfiguration cf = null) {
+    public OnEntityDamagedEventArgs(DamageDealer ds = null, float da = 0f, Vector2 cp = default, SpriteFlashConfiguration cf = null) {
         DamageDealerSource = ds;
         DamageAmount = da;
         ContactPoint = cp;
-        CurrentMaterial = cm;
         CurrentFlash = cf;
     }
 }
@@ -27,7 +25,6 @@ public class HealthSystem : MonoBehaviour, IDamageable {
     [field: SerializeField] public BoxCollider2D HitboxTrigger { get; set; }
 
     [field: SerializeField] public HealthType HealthType { get; set; }
-    [field: SerializeField] public Material SpriteFlashMaterial { get; set; }
     [field: SerializeField] public SpriteFlashConfiguration DamagedFlash { get; set; }
     [field: SerializeField] public SpriteFlashConfiguration InvulnerableFlash { get; set; }
     [field: SerializeField] public bool IsRespawneable { get; set; }
@@ -44,6 +41,7 @@ public class HealthSystem : MonoBehaviour, IDamageable {
 
     public EventHandler<OnEntityDamagedEventArgs> OnDamaged;
     public EventHandler<OnEntityDamagedEventArgs> OnInvulnerabilityStart;
+    public EventHandler OnInvulnerabilityEnd;
     public EventHandler<OnEntityDamagedEventArgs> OnEntityDead;
     public EventHandler<OnEntityDamagedEventArgs> OnLivesDepleted;
 
@@ -85,7 +83,7 @@ public class HealthSystem : MonoBehaviour, IDamageable {
 
         if (damageDealerSource == null) return;
 
-        OnEntityDamagedEventArgs entityArgs = new OnEntityDamagedEventArgs(damageDealerSource, damageDealerSource.damageAmount, collision.ClosestPoint(this.transform.position), SpriteFlashMaterial, entityData.damageFlash);
+        OnEntityDamagedEventArgs entityArgs = new OnEntityDamagedEventArgs(damageDealerSource, damageDealerSource.damageAmount, collision.ClosestPoint(this.transform.position), entityData.damageFlash);
         Damage(entityArgs);
     }
 
@@ -172,9 +170,10 @@ public class HealthSystem : MonoBehaviour, IDamageable {
         OnEntityDead?.Invoke(this, entityArgs);
     }
 
-    public void Invulnerable() {
+    public void Invulnerable(object sender, OnEntityDamagedEventArgs entityArgs) {
         IsInvulnerable = true;
         HitboxTrigger.enabled = false;
+        OnInvulnerabilityStart?.Invoke(this, entityArgs);
     }
 
     public void SetInvulnerability(object sender, OnEntityDamagedEventArgs entityDamagedEventArgs) {
@@ -182,12 +181,14 @@ public class HealthSystem : MonoBehaviour, IDamageable {
     }
 
     private IEnumerator InvulnerabilityFramesRoutine(OnEntityDamagedEventArgs entityDamagedEventArgs) {
-        Invulnerable();
+        IsInvulnerable = true;
+        HitboxTrigger.enabled = false;
         entityDamagedEventArgs.CurrentFlash = entityData.invulnerabilityFlash;
         OnInvulnerabilityStart?.Invoke(this, entityDamagedEventArgs);
         yield return invulnerabilityDelay;
         IsInvulnerable = false;
         HitboxTrigger.enabled = true;
+        OnInvulnerabilityEnd?.Invoke(this, entityDamagedEventArgs);
         yield return null;
     }
 }

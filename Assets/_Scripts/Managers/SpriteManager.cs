@@ -26,9 +26,12 @@ public class SpriteManager : MonoBehaviour {
     [field: SerializeField] public int CurrentAlphaIndex { get; private set; }
     [field: SerializeField] public int CurrentAmountOfFlashes { get; private set; }
 
+    private static readonly int _enableFlashID = Shader.PropertyToID("_EnableFlash");
     private static readonly int _flashColorID = Shader.PropertyToID("_FlashColor");
     private static readonly int _flashAmountID = Shader.PropertyToID("_FlashAmount");
     private static readonly int _alphaAmountID = Shader.PropertyToID("_AlphaAmount");
+    private static readonly int _enableOutlineID = Shader.PropertyToID("_EnableOutline");
+    private static readonly int _outlineAmountID = Shader.PropertyToID("_OutlineAmount");
 
     public Material[] _materials;
     // private SpriteRenderer[] _spriteRenderers;
@@ -38,28 +41,22 @@ public class SpriteManager : MonoBehaviour {
     private WaitForSeconds colorChangeDelay;
 
     private void OnEnable() {
-        // this.HealthSystem.OnDamaged += StartFlash;
-        // this.HealthSystem.OnEntityDead += StartFlash;
-        // this.HealthSystem.OnInvulnerabilityStart += StartFlash;
-
         if (HealthSystem.IsNotNull()) {
             this.HealthSystem.OnDamaged += StartDamageFlash;
             this.HealthSystem.OnEntityDead += StartDamageFlash;
             this.HealthSystem.OnInvulnerabilityStart += StartInvulnerabilityFlash;
+            this.HealthSystem.OnInvulnerabilityEnd += DisableIsFlashing;
         }
 
         // this.InteractorSystem.OnInteracted += StartInteractedFlash;
     }
 
     private void OnDisable() {
-        // this.HealthSystem.OnDamaged -= StartFlash;
-        // this.HealthSystem.OnEntityDead -= StartFlash;
-        // this.HealthSystem.OnInvulnerabilityStart -= StartFlash;
-
         if (HealthSystem.IsNotNull()) {
             this.HealthSystem.OnDamaged -= StartDamageFlash;
             this.HealthSystem.OnEntityDead -= StartDamageFlash;
             this.HealthSystem.OnInvulnerabilityStart -= StartInvulnerabilityFlash;
+            this.HealthSystem.OnInvulnerabilityEnd -= DisableIsFlashing;
         }
 
         // this.InteractorSystem.OnInteracted -= StartInteractedFlash;
@@ -113,6 +110,10 @@ public class SpriteManager : MonoBehaviour {
         SetFlashAmount(0f);
         SetAlphaAmount(DefaultAlphaAmount);
         // CurrentFlashConfiguration = null;
+    }
+
+    private void DisableIsFlashing(object sender, EventArgs args) {
+        IsFlashing = false;
     }
 
     private void SetSpriteFlashConfiguration(SpriteFlashConfiguration config) {
@@ -193,6 +194,10 @@ public class SpriteManager : MonoBehaviour {
 
             yield return colorChangeDelay;
         }
+
+        StopFlash();
+
+        yield return null;
 
         // float currentFlashAmount = 0f;
         // float elapsedTime = 0f;

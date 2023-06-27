@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: PlayerData
   m_EditorClassIdentifier: 
   damageFlash: {fileID: 11400000, guid: 0514c15ea549b1f40b1d147ef537951e, type: 2}
-  invulnerableFlash: {fileID: 0}
-  interactedFlash: {fileID: 0}
+  invulnerabilityFlash: {fileID: 11400000, guid: 4d82b7bcf41c0e646937f0d0d6aca977, type: 2}
+  interactedFlash: {fileID: 11400000, guid: fc38e4012282de94bae91f56827ca71a, type: 2}
   currentVelocity: {x: 0, y: 0}
   currentColliderConfiguration:
     <Offset>k__BackingField: {x: 0, y: 0.75}
@@ -31,8 +31,8 @@ MonoBehaviour:
   slopeSideAngle: 0
   cumulatedKnockbackTime: 0
   healthType: 1
-  maxLives: 3
-  maxHearts: 2
+  maxLives: 20
+  maxHearts: 1
   maxHealth: 100
   invulnerabilitySeconds: 2
   minKnockbackTime: 0.5
@@ -79,6 +79,7 @@ MonoBehaviour:
   stickToGround: 0
   runSpeed: 10
   maxRunSpeed: 10
+  maxHorizontalSpeed: 30
   maxRunSpeedThreshold: 0
   crouchWalkSpeed: 3
   lerpVelocity: 1
@@ -86,11 +87,12 @@ MonoBehaviour:
   runDecceleration: 50
   crouchAcceleration: 40
   crouchDecceleration: 40
+  deathSlideDecceleration: 5
   lerpVelocityInAir: 1
   airAcceleration: 65
   airDecceleration: 50
   collisionEnableDelay: 0.2
-  wallBounceFalloff: 0.8
+  wallBounceFalloff: 0.9
   standingColliderConfig:
     <Offset>k__BackingField: {x: 0, y: 0.75}
     <Size>k__BackingField: {x: 1, y: 1.5}
@@ -110,6 +112,9 @@ MonoBehaviour:
   variableJumpHeightMultiplier: 0.2
   cornerCorrectionRepositionOffset: 1
   maxAscendantSpeed: 120
+  maxBouncesOffGround: 10
+  bounceOffGroundXFalloff: 1
+  bounceOffGroundYFalloff: 1
   defaultFallSpeed: 12
   fastFallSpeed: 20
   defaultGravityScale: 3

@@ -2561,6 +2561,9 @@ namespace ExtensionMethods {
 	/// Extensions for numerical values.
 	/// </summary>
 	#region ===== Numericals =====
+		public static int Sign(this float f) => MathF.Sign(f);
+		public static int Sign(this int f) => MathF.Sign(f);
+
 		public static int ToInt(this float f) => Mathf.RoundToInt(f);
 		public static int ToIntCeil(this float f) => Mathf.CeilToInt(f);
 		public static int ToIntFloor(this float f) => Mathf.FloorToInt(f);

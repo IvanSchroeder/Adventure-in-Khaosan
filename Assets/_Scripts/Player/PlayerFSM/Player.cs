@@ -78,13 +78,12 @@ public class Player : Entity {
     public static event Action<Player> OnPlayerSpawned;
     public static event Action<Player> OnPlayerDeath;
     public EventHandler<OnEntityDamagedEventArgs> OnKnockbackEnd;
-    public static event Action OnPlayerDeathEnd;
+    public static EventHandler<OnEntityDamagedEventArgs> OnPlayerDeathEnd;
     public static event Action OnLivesDepleted;
 #endregion
 
     public void StartInvulnerable() {
         OnEntityDamagedEventArgs entityArgs = new OnEntityDamagedEventArgs();
-        entityArgs.CurrentMaterial = HealthSystem.SpriteFlashMaterial;
         entityArgs.CurrentFlash = entityData.invulnerabilityFlash;
         HealthSystem.SetInvulnerability(this, entityArgs);
     }
@@ -97,7 +96,6 @@ public class Player : Entity {
 
     public void KnockbackEnd(object sender, OnEntityDamagedEventArgs args) {
         OnEntityDamagedEventArgs entityArgs = new OnEntityDamagedEventArgs();
-        entityArgs.CurrentMaterial = HealthSystem.SpriteFlashMaterial;
         entityArgs.CurrentFlash = entityData.invulnerabilityFlash;
         OnKnockbackEnd?.Invoke(this, entityArgs);
     }
@@ -112,8 +110,10 @@ public class Player : Entity {
     }
 
     public void PlayerDeathEnd() {
-        HealthSystem.Invulnerable();
-        OnPlayerDeathEnd?.Invoke();
+        OnEntityDamagedEventArgs entityArgs = new OnEntityDamagedEventArgs();
+        entityArgs.CurrentFlash = entityData.invulnerabilityFlash;
+        HealthSystem.Invulnerable(this, entityArgs);
+        OnPlayerDeathEnd?.Invoke(this, entityArgs);
     }
 
     public void StandOnCheckpoint() {
@@ -245,7 +245,7 @@ public class Player : Entity {
         else
             velocityX = velocity;
         
-        CurrentVelocity = CurrentVelocity.SetXY(velocityX.Clamp(-playerData.maxRunSpeed, playerData.maxRunSpeed), CurrentVelocity.y);
+        CurrentVelocity = CurrentVelocity.SetXY(velocityX.Clamp(-playerData.maxHorizontalSpeed, playerData.maxHorizontalSpeed), CurrentVelocity.y);
         Rb.velocity = CurrentVelocity;
     }
 
@@ -265,13 +265,13 @@ public class Player : Entity {
         else
             velocityY = velocity;
 
-        CurrentVelocity = CurrentVelocity.SetXY(CurrentVelocity.x, velocityY.Clamp(-playerData.maxRunSpeed, playerData.maxRunSpeed));
+        CurrentVelocity = CurrentVelocity.SetXY(CurrentVelocity.x, velocityY.Clamp(-playerData.maxHorizontalSpeed, playerData.maxHorizontalSpeed));
         Rb.velocity = CurrentVelocity;
     }
 
     public void SetVelocity(float velocity, Vector2 angle, int direction) {
         angle.Normalize();
-        velocityXY.Set((angle.x * velocity * direction).Clamp(-playerData.maxRunSpeed, playerData.maxRunSpeed), (angle.y * velocity).Clamp(-playerData.currentFallSpeed, playerData.maxAscendantSpeed));
+        velocityXY.Set((angle.x * velocity * direction).Clamp(-playerData.maxHorizontalSpeed, playerData.maxHorizontalSpeed), (angle.y * velocity).Clamp(-playerData.currentFallSpeed, playerData.maxAscendantSpeed));
         CurrentVelocity = velocityXY;
         Rb.velocity = CurrentVelocity;
     }
@@ -280,7 +280,7 @@ public class Player : Entity {
         angle.Normalize();
         Vector2 forceDirection = new Vector2((angle.x * xDirection * velocity), (angle.y * velocity));
         Rb.AddForce(forceDirection, ForceMode2D.Impulse);
-        Rb.velocity = new Vector2(Rb.velocity.x.Clamp(-playerData.maxRunSpeed, playerData.maxRunSpeed), Rb.velocity.y.Clamp(-playerData.currentFallSpeed, playerData.maxAscendantSpeed));
+        Rb.velocity = new Vector2(Rb.velocity.x.Clamp(-playerData.maxHorizontalSpeed, playerData.maxHorizontalSpeed), Rb.velocity.y.Clamp(-playerData.currentFallSpeed, playerData.maxAscendantSpeed));
         CurrentVelocity = Rb.velocity;
     }
 #endregion

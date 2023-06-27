@@ -58,9 +58,6 @@ public class PlayerKnockbackState : PlayerState {
             player.SetVelocityX(-player.CurrentVelocity.x * playerData.wallBounceFalloff);
             bounceOffWall = false;
         }
-        else {
-            player.SetVelocityX(player.CurrentVelocity.x);
-        }
 
         if (isFalling) {
             playerData.currentFallSpeed = playerData.defaultFallSpeed;

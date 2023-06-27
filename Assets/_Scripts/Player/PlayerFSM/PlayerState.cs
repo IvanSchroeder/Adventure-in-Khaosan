@@ -60,7 +60,12 @@ public class PlayerState {
 
     protected Vector2 lastContactPoint;
     protected int lastKnockbackFacingDirection;
+    protected bool bounceOffGround;
     protected bool bounceOffWall;
+    protected bool bounceOffCeiling;
+    protected bool hasBouncedOffGround;
+    protected bool hasBouncedOffWall;
+    protected bool hasBouncedOffCeiling;
 
     private string animBoolName;
 
@@ -93,7 +98,7 @@ public class PlayerState {
         UpdatePlayerStates();
         CheckVerticallity();
 
-        if ((yInput == -1 && ((isOnPlatform && jumpInputHold) || isWallSliding || isFalling || isAirborne)) || isWallClimbing || isWallGrabing) {
+        if ((yInput == -1 && ((isOnPlatform && jumpInputHold) || isWallSliding || isFalling || isAirborne)) || isWallClimbing || isWallGrabing || isDead) {
             player.InputHandler.UseJumpInput();
             isIgnoringPlatforms = true;
             Physics2D.IgnoreLayerCollision(player.gameObject.layer, LayerMask.NameToLayer("Platform"), true);
@@ -274,10 +279,22 @@ public class PlayerState {
         // } 
     }
 
+    public void BounceOffGround() {
+        isOnSolidGround = false;
+        bounceOffGround = true;
+    }
+
     public void BounceOffWall() {
-        bounceOffWall = true;
         lastKnockbackFacingDirection = player.FacingDirection;
         player.CheckFacingDirection(-lastKnockbackFacingDirection);
+
         isTouchingBackWall = false;
+        isTouchingWall = false;
+        bounceOffWall = true;
+    }
+
+    public void BounceOffCeiling() {
+        isTouchingCeiling = false;
+        bounceOffCeiling = true;
     }
 }

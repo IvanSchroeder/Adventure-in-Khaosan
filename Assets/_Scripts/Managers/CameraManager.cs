@@ -41,6 +41,6 @@ public class CameraManager : MonoBehaviour {
     }
 
     private void DisableCameraTarget(Player player) {
-        CameraTarget.transform.SetParent(null);
+        // CameraTarget.transform.SetParent(null);
     }
 }
