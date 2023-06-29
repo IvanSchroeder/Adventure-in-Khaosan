@@ -24,8 +24,9 @@ public class LevelManager : MonoBehaviour {
     // public List<FoodItem> FoodItemsList;
     // public List<Enemy> EnemiesList;
     public List<Checkpoint> CheckpointsList = new List<Checkpoint>();
-    public Checkpoint startingSpawnpoint;
+    public Checkpoint startingCheckpoint;
     public Checkpoint currentCheckpoint;
+    public Checkpoint lastCheckpoint;
 
     public bool startedLevel = false;
     public bool isInGameplay;
@@ -44,20 +45,22 @@ public class LevelManager : MonoBehaviour {
         WorldMapManager.OnWorldMapLoaded += SpawnPlayer;
         Checkpoint.OnCheckpointActive += SetCurrentCheckpoint;
 
-        startingSpawnpoint = null;
+        startingCheckpoint = null;
         currentCheckpoint = null;
+        lastCheckpoint = null;
     }
 
     private void OnDisable() {
         WorldMapManager.OnWorldMapLoaded -= SpawnPlayer;
         Checkpoint.OnCheckpointActive -= SetCurrentCheckpoint;
 
-        Player.OnLivesDepleted -= GameOver;
-        Player.OnPlayerDeathEnd -= RespawnPlayer;
+        PlayerInstance.OnLivesDepleted -= GameOver;
+        PlayerInstance.OnPlayerDeathEnd -= RespawnPlayer;
 
         CheckpointsList = new List<Checkpoint>();
-        startingSpawnpoint = null;
+        startingCheckpoint = null;
         currentCheckpoint = null;
+        lastCheckpoint = null;
     }
 
     private void Awake() {
@@ -81,7 +84,7 @@ public class LevelManager : MonoBehaviour {
         }
     }
 
-    private void SetCurrentCheckpoint(Checkpoint checkpoint) {
+    private void SetCurrentCheckpoint(object sender, Checkpoint checkpoint) {
         currentCheckpoint = checkpoint;
 
         if (currentCheckpoint.isFinalCheckpoint) {
@@ -133,28 +136,35 @@ public class LevelManager : MonoBehaviour {
             Debug.Log($"Checkpoint {checkpointArray[i]} added");
         }
 
-        Checkpoint firstCheckpoint = CheckpointsList.GetFirstElement();
-        Checkpoint lastCheckpoint = CheckpointsList.GetLastElement();
-        firstCheckpoint.isStartingCheckpoint = true;
-        lastCheckpoint.isFinalCheckpoint = true;
-
-        startingSpawnpoint = firstCheckpoint;
-        currentCheckpoint = firstCheckpoint;
+        startingCheckpoint = CheckpointsList.GetFirstElement();
+        currentCheckpoint = startingCheckpoint;
+        lastCheckpoint = CheckpointsList.GetLastElement();
     }
 
     public void SpawnPlayer() {
-        var playerObj = GameObject.Instantiate(PlayerPrefab, Vector3.zero, Quaternion.identity);
-        PlayerInstance = playerObj.GetComponent<Player>();
-        PlayerInstance.transform.SetParent(null);
-        PlayerInstance.transform.position = startingSpawnpoint.SpawnpointTransform.position;
+        Player player = FindObjectOfType<Player>();
 
-        Player.OnLivesDepleted += GameOver;
-        Player.OnPlayerDeathEnd += RespawnPlayer;
+        if (player.IsNotNull()) {
+            PlayerInstance = player;
+        }
+        else {
+            var playerObj = GameObject.Instantiate(PlayerPrefab, Vector3.zero, Quaternion.identity);
+            playerObj.name = "Player";
+            PlayerInstance = playerObj.GetComponent<Player>();
+        }
+
+        PlayerInstance.transform.SetParent(null);
+        PlayerInstance.transform.position = startingCheckpoint.SpawnpointTransform.position;
+
+        PlayerInstance.OnPlayerDeathEnd += RespawnPlayer;
+        PlayerInstance.OnLivesDepleted += GameOver;
+
+        PlayerInstance.HealthSystem.HasInfiniteLives = currentLevel.enableInfiniteLives;
 
         OnPlayerSpawn?.Invoke();
     }
 
-    public void RespawnPlayer(object sender, OnEntityDamagedEventArgs args) {
+    public void RespawnPlayer() {
         if (PlayerInstance.HealthSystem.IsRespawneable && PlayerInstance.HealthSystem.CanRespawn) {
             playerSpawnCoroutine = StartCoroutine(RespawnPlayerRoutine());
         }
@@ -164,11 +174,17 @@ public class LevelManager : MonoBehaviour {
 
     }
 
+    private void EnableCheckpoints() {
+        startingCheckpoint.isStartingCheckpoint = true;
+        lastCheckpoint.isFinalCheckpoint = true;
+    }
+
     public IEnumerator LoadLevelRoutine() {
         SpawnLevelStructure();
         if (!currentLevel.isFinished) currentLevel.currentRecordTime = currentLevel.baseRecordTime;
         // send event to scene manager to enable scene transition
         yield return new WaitForSecondsRealtime(3f);
+        EnableCheckpoints();
         isInGameplay = true;
         startedLevel = true;
         OnLevelStarted?.Invoke();

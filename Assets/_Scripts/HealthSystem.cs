@@ -4,31 +4,19 @@ using UnityEngine;
 using ExtensionMethods;
 using System;
 
-public class OnEntityDamagedEventArgs : EventArgs {
-    public DamageDealer DamageDealerSource { get; set; }
-    public float DamageAmount { get; set; }
-    public Vector2 ContactPoint { get; set; }
-    public SpriteFlashConfiguration CurrentFlash { get; set; }
-
-    public OnEntityDamagedEventArgs(DamageDealer ds = null, float da = 0f, Vector2 cp = default, SpriteFlashConfiguration cf = null) {
-        DamageDealerSource = ds;
-        DamageAmount = da;
-        ContactPoint = cp;
-        CurrentFlash = cf;
-    }
-}
-
-public class HealthSystem : MonoBehaviour, IDamageable {
-    public Entity entity;
-    public EntityData entityData;
-    public LayerMask damagedBy;
+public class HealthSystem : MonoBehaviour {
+    [field: SerializeField] public Entity Entity { get; private set; }
+    [field: SerializeField] public EntityData EntityData { get; private set; }
     [field: SerializeField] public BoxCollider2D HitboxTrigger { get; set; }
+    [field: SerializeField] public SpriteManager SpriteManager { get; set; }
 
+    [field: SerializeField] public LayerMask DamagedBy { get; set; }
     [field: SerializeField] public HealthType HealthType { get; set; }
     [field: SerializeField] public SpriteFlashConfiguration DamagedFlash { get; set; }
     [field: SerializeField] public SpriteFlashConfiguration InvulnerableFlash { get; set; }
     [field: SerializeField] public bool IsRespawneable { get; set; }
     [field: SerializeField] public bool CanRespawn { get; set; }
+    [field: SerializeField] public bool HasInfiniteLives { get; set; }
     [field: SerializeField] public int CurrentLives { get; set; }
     [field: SerializeField] public int MaxLives { get; set; }
     [field: SerializeField] public float MaxHealth { get; set; }
@@ -39,52 +27,35 @@ public class HealthSystem : MonoBehaviour, IDamageable {
     [field: SerializeField] public bool IsInvulnerable { get; set; }
     [field: SerializeField] public float InvulnerabilitySeconds { get; set; }
 
-    public EventHandler<OnEntityDamagedEventArgs> OnDamaged;
+    public EventHandler<OnEntityDamagedEventArgs> OnEntityDamaged;
+    public EventHandler<OnEntityDamagedEventArgs> OnEntityDeath;
     public EventHandler<OnEntityDamagedEventArgs> OnInvulnerabilityStart;
     public EventHandler OnInvulnerabilityEnd;
-    public EventHandler<OnEntityDamagedEventArgs> OnEntityDead;
     public EventHandler<OnEntityDamagedEventArgs> OnLivesDepleted;
 
     private Coroutine invulnerabilityCoroutine;
     private WaitForSeconds invulnerabilityDelay;
 
-    // private void OnEnable() {
-    //     // player.OnKnockbackEnd += SetInvulnerability;
-    //     Player.OnPlayerDeathEnd += Invulnerable;
-    // }
-
-    // private void OnDisable() {
-    //     // player.OnKnockbackEnd -= SetInvulnerability;
-    //     Player.OnPlayerDeathEnd -= Invulnerable;
-    // }
-
     private void Awake() {
-        if (entity == null) entity = this.GetComponentInHierarchy<Entity>();
+        if (Entity == null) Entity = this.GetComponentInHierarchy<Entity>();
         if (HitboxTrigger == null) HitboxTrigger = GetComponent<BoxCollider2D>();
+        if (SpriteManager == null) SpriteManager = this.GetComponentInHierarchy<SpriteManager>();
     }
 
     private void Start() {
-        if (entityData == null) entityData = entity.entityData;
+        if (EntityData == null) EntityData = Entity.entityData;
 
-        MaxLives = entityData.maxLives;
+        DamagedBy = EntityData.damagedBy;
+
+        MaxLives = EntityData.maxLives;
         CurrentLives = MaxLives;
         if (CurrentLives > 1) CanRespawn = true;
-        entityData.currentLives = CurrentLives;
+        EntityData.currentLives = CurrentLives;
 
-        InvulnerabilitySeconds = entityData.invulnerabilitySeconds;
+        InvulnerabilitySeconds = EntityData.invulnerabilitySeconds;
         invulnerabilityDelay = new WaitForSeconds(InvulnerabilitySeconds);
 
         InitializeHealth();
-    }
-
-    public void OnTriggerEnter2D(Collider2D collision) {
-        DamageDealer damageDealerSource = collision.GetComponentInHierarchy<DamageDealer>();
-        Debug.Log($"Detected hazard {damageDealerSource.transform.name}");
-
-        if (damageDealerSource == null) return;
-
-        OnEntityDamagedEventArgs entityArgs = new OnEntityDamagedEventArgs(damageDealerSource, damageDealerSource.damageAmount, collision.ClosestPoint(this.transform.position), entityData.damageFlash);
-        Damage(entityArgs);
     }
 
     public void InitializeHealth() {
@@ -92,35 +63,33 @@ public class HealthSystem : MonoBehaviour, IDamageable {
         IsInvulnerable = false;
         IsRespawneable = true;
 
-        HealthType = entityData.healthType;
+        HealthType = EntityData.healthType;
 
         switch (HealthType) {
             case HealthType.Numerical:
-                MaxHealth = entityData.maxHealth;
+                MaxHealth = EntityData.maxHealth;
                 CurrentHealth = MaxHealth;
-                entityData.currentHealth = CurrentHealth;
+                EntityData.currentHealth = CurrentHealth;
             break;
             case HealthType.Hearts:
-                MaxHearts = entityData.maxHearts;
+                MaxHearts = EntityData.maxHearts;
                 CurrentHearts = MaxHearts;
-                entityData.currentHearts = CurrentHearts;
+                EntityData.currentHearts = CurrentHearts;
                 // spawn hearts in UI slots, maybe with a list/array and an event?
             break;
         }
     }
 
     public bool IsDamagedBy(int layer) {
-        if (damagedBy.HasLayer(layer)) {
+        if (DamagedBy.HasLayer(layer)) {
             return true;
         }
 
         return false;
     }
 
-    public void Damage(OnEntityDamagedEventArgs entityDamagedEventArgs) {
-        if (IsInvulnerable || IsDead) return;
-        
-        if (!IsDamagedBy(entityDamagedEventArgs.DamageDealerSource.damageDealerLayer)) return;
+    public void ReduceHealth(object sender, OnEntityDamagedEventArgs entityDamagedEventArgs) {
+        if (IsInvulnerable || IsDead || !IsDamagedBy(entityDamagedEventArgs.DamageDealerSource.DamageDealerLayer)) return;
 
         IsInvulnerable = true;
 
@@ -133,7 +102,7 @@ public class HealthSystem : MonoBehaviour, IDamageable {
                     IsDead = true;
                 }
 
-                entityData.currentHealth = CurrentHealth;
+                EntityData.currentHealth = CurrentHealth;
             break;
             case HealthType.Hearts:
                 CurrentHearts -= 1;
@@ -143,20 +112,23 @@ public class HealthSystem : MonoBehaviour, IDamageable {
                     IsDead = true;
                 }
 
-                entityData.currentHearts = CurrentHearts;
+                EntityData.currentHearts = CurrentHearts;
                 // spawn hearts in UI slots, maybe with a list/array and an event?
             break;
         }
 
         if(IsDead) {
-            Death(entityDamagedEventArgs);
+            ReduceLives(entityDamagedEventArgs);
+            OnEntityDeath?.Invoke(this, entityDamagedEventArgs);
         }
         else {
-            OnDamaged?.Invoke(this, entityDamagedEventArgs);
+            OnEntityDamaged?.Invoke(this, entityDamagedEventArgs);
         }
     }
 
-    public void Death(OnEntityDamagedEventArgs entityArgs) {
+    public void ReduceLives(OnEntityDamagedEventArgs entityArgs) {
+        if (HasInfiniteLives) return;
+        
         CurrentLives--;
 
         if (CurrentLives <= 0) {
@@ -165,9 +137,7 @@ public class HealthSystem : MonoBehaviour, IDamageable {
             OnLivesDepleted?.Invoke(this, entityArgs);
         }
         
-        entityData.currentLives = CurrentLives;
-
-        OnEntityDead?.Invoke(this, entityArgs);
+        EntityData.currentLives = CurrentLives;
     }
 
     public void Invulnerable(object sender, OnEntityDamagedEventArgs entityArgs) {
@@ -183,7 +153,7 @@ public class HealthSystem : MonoBehaviour, IDamageable {
     private IEnumerator InvulnerabilityFramesRoutine(OnEntityDamagedEventArgs entityDamagedEventArgs) {
         IsInvulnerable = true;
         HitboxTrigger.enabled = false;
-        entityDamagedEventArgs.CurrentFlash = entityData.invulnerabilityFlash;
+        entityDamagedEventArgs.CurrentFlash = EntityData.invulnerabilityFlash;
         OnInvulnerabilityStart?.Invoke(this, entityDamagedEventArgs);
         yield return invulnerabilityDelay;
         IsInvulnerable = false;

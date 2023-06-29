@@ -28652,7 +28652,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2854569919692439509}
   - component: {fileID: 2854569919692439464}
-  - component: {fileID: 2854569919692439468}
+  - component: {fileID: 845609612969388718}
   - component: {fileID: 2854569919692439511}
   - component: {fileID: 2854569919692439510}
   - component: {fileID: 2854569919692439467}
@@ -28695,7 +28695,7 @@ MonoBehaviour:
   shouldDisable: 1
   disableOnStart: 1
   isDisabled: 0
---- !u!114 &2854569919692439468
+--- !u!114 &845609612969388718
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -28704,14 +28704,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 2854569919692439508}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25763872db0db694ba0923495194a90c, type: 3}
+  m_Script: {fileID: 11500000, guid: 886755ae7d89e7348ba2960f3373569c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damageableLayers:
+  <DamageHitbox>k__BackingField: {fileID: 2854569919692439465}
+  <DamageablesLayers>k__BackingField:
     serializedVersion: 2
-    m_Bits: 8192
-  damageDealerLayer: 0
-  damageAmount: 10
+    m_Bits: 1536
+  <DamageDealerLayer>k__BackingField: 0
+  <DamageAmount>k__BackingField: 10
 --- !u!1839735485 &2854569919692439511
 Tilemap:
   m_ObjectHideFlags: 0

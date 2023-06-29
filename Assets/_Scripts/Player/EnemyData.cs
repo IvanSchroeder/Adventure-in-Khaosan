@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[CreateAssetMenu(fileName = "NewEnemyData", menuName = "Assets/Data/Entity Data/Enemy")]
 public class EnemyData : EntityData {
     public override void OnEnable() {
         Init();

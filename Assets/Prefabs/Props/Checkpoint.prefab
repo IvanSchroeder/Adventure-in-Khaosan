@@ -1,5 +1,111 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1094257404297276584
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3081433978676476378}
+  - component: {fileID: 5593726000987461281}
+  - component: {fileID: 4964172299964983953}
+  m_Layer: 15
+  m_Name: Interactable
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3081433978676476378
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1094257404297276584}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 9098463959776978668}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5593726000987461281
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1094257404297276584}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a868f7bb924d62429ff37efc9e85fea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <InteractedFlash>k__BackingField: {fileID: 11400000, guid: 5e6d9f4b629caba4293723bcc964e8b8, type: 2}
+  <RequiresInput>k__BackingField: 1
+  <IsInteractable>k__BackingField: 1
+  <WasInteracted>k__BackingField: 0
+--- !u!61 &4964172299964983953
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1094257404297276584}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0.5, y: 2}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.25, y: 0}
+    oldSize: {x: 2, y: 4}
+    newSize: {x: 2, y: 3}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 2, y: 4}
+  m_EdgeRadius: 0
+--- !u!1 &7739993903438050567
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4605518029853970295}
+  m_Layer: 0
+  m_Name: Basepoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4605518029853970295
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7739993903438050567}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 9098463959776978668}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &9098463959747971589
 GameObject:
   m_ObjectHideFlags: 0
@@ -24,12 +130,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9098463959747971589}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.5, y: 2, z: 0}
+  m_LocalPosition: {x: 1, y: 2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 9098463959776978668}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &9098463959776978665
 GameObject:
@@ -61,8 +167,10 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 3081433978676476378}
   - {fileID: 9098463961231447894}
   - {fileID: 9098463959747971610}
+  - {fileID: 4605518029853970295}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -99,12 +207,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2569992e0d14dd2479a586c9d9101042, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <InteractTrigger>k__BackingField: {fileID: 4964172299964983953}
+  <InteractableSystem>k__BackingField: {fileID: 5593726000987461281}
+  <SpriteManager>k__BackingField: {fileID: 2824934081278347986}
   <SpawnpointTransform>k__BackingField: {fileID: 9098463959747971610}
+  <BasepointTransform>k__BackingField: {fileID: 4605518029853970295}
   checkpointOrderID: 0
-  <RequiresInput>k__BackingField: 1
-  <IsInteractable>k__BackingField: 1
-  <DefaultMaterial>k__BackingField: {fileID: 2100000, guid: a6a0e8b29d967f0489f0f4c10bcb3c9a, type: 2}
-  <InteractableOutlineMaterial>k__BackingField: {fileID: 2100000, guid: ed77e81198d72c046aa7d3b08cc7d035, type: 2}
   isActive: 0
   isStartingCheckpoint: 0
   isFinalCheckpoint: 0
@@ -118,9 +226,8 @@ GameObject:
   m_Component:
   - component: {fileID: 9098463961231447894}
   - component: {fileID: 9098463961231447893}
-  - component: {fileID: 9098463961231447892}
   - component: {fileID: 2824934081278347986}
-  m_Layer: 14
+  m_Layer: 0
   m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -140,7 +247,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 9098463959776978668}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &9098463961231447893
 SpriteRenderer:
@@ -162,7 +269,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a6a0e8b29d967f0489f0f4c10bcb3c9a, type: 2}
+  - {fileID: 2100000, guid: 021783b7f71f0434c8dc5871128c8f72, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -194,32 +301,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 1
---- !u!61 &9098463961231447892
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9098463961231447889}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0.5, y: 2}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.25, y: 0}
-    oldSize: {x: 2, y: 4}
-    newSize: {x: 2, y: 3}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 2, y: 4}
-  m_EdgeRadius: 0
 --- !u!114 &2824934081278347986
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -234,6 +315,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <Entity>k__BackingField: {fileID: 0}
   <HealthSystem>k__BackingField: {fileID: 0}
+  <InteractableSystem>k__BackingField: {fileID: 5593726000987461281}
   <CurrentFlashConfiguration>k__BackingField: {fileID: 11400000, guid: fc38e4012282de94bae91f56827ca71a, type: 2}
   <DefaultFlashColor>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
   <CurrentFlashColor>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
@@ -244,9 +326,3 @@ MonoBehaviour:
   <CurrentAmountIndex>k__BackingField: 0
   <CurrentAlphaIndex>k__BackingField: 0
   <CurrentAmountOfFlashes>k__BackingField: 0
-  _materials: []
-  materialsToAdd:
-  - {fileID: 2100000, guid: a6a0e8b29d967f0489f0f4c10bcb3c9a, type: 2}
-  - {fileID: 2100000, guid: ed77e81198d72c046aa7d3b08cc7d035, type: 2}
-  listOfMaterials: []
-  spriteRenderer: {fileID: 0}

@@ -14,7 +14,7 @@ public class DamageDealer : MonoBehaviour {
 
     // private void OnTriggerEnter2D(Collider2D collision) {
     //     IDamageable damagedEntity = collision.GetComponentInHierarchy<IDamageable>();
-    //     Debug.Log($"Detected damageable {collision.transform.name}");
+    //     Debug.Log($"Detected damageable {collision.transform.name}");    
 
     //     if (damagedEntity == null) return;
 

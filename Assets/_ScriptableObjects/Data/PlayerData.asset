@@ -30,8 +30,11 @@ MonoBehaviour:
   slopeDownAngle: 0
   slopeSideAngle: 0
   cumulatedKnockbackTime: 0
+  damagedBy:
+    serializedVersion: 2
+    m_Bits: 4352
   healthType: 1
-  maxLives: 20
+  maxLives: 3
   maxHearts: 1
   maxHealth: 100
   invulnerabilitySeconds: 2
@@ -108,20 +111,21 @@ MonoBehaviour:
   crouchColliderHeight: 0.8
   amountOfJumps: 1
   jumpHeight: 20
-  variableJumpHeightMultiplier: 0.7
+  variableJumpHeightMultiplier: 0.1
   cornerCorrectionRepositionOffset: 1
   maxAscendantSpeed: 120
   maxBouncesOffGround: 3
   wallBounceFalloff: 0.8
-  groundBounceXFalloff: 0.9
+  groundBounceXFalloff: 0.8
   groundBounceYFalloff: 0.7
+  groundBounceThreshold: 0.4
   defaultFallSpeed: 12
   fastFallSpeed: 20
   defaultGravityScale: 3
   fallThreshold: -0.01
   lerpVerticalVelocity: 1
-  fallAcceleration: 50
-  ascensionAcceleration: 90
+  fallAcceleration: 70
+  ascensionAcceleration: 100
   coyoteTime: 0.3
   wallJumpCoyoteTime: 0.3
   jumpBufferTime: 0.5

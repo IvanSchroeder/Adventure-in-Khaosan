@@ -6553,8 +6553,9 @@ MonoBehaviour:
   currentLevel: {fileID: 0}
   lastUnlockedLevel: {fileID: 0}
   CheckpointsList: []
-  startingSpawnpoint: {fileID: 0}
+  startingCheckpoint: {fileID: 0}
   currentCheckpoint: {fileID: 0}
+  lastCheckpoint: {fileID: 0}
   startedLevel: 0
   isInGameplay: 0
   currentTimer: {fileID: 11400000, guid: ae6d182de68a0b94db50413c77e60b0a, type: 2}

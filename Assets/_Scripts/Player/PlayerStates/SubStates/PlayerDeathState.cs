@@ -173,8 +173,14 @@ public class PlayerDeathState : PlayerState {
             if (bounceOffGround) {
                 Debug.Log("Bounced off Ground");
 
-                currentBounceXSpeed = lastBounceXSpeed * playerData.groundBounceXFalloff;
-                lastBounceXSpeed = currentBounceXSpeed;
+                if (player.CurrentVelocity.x < playerData.groundBounceThreshold * 5f) {
+                    currentBounceXSpeed = playerData.runSpeed;
+                    lastBounceXSpeed = playerData.runSpeed;
+                }
+                else {
+                    currentBounceXSpeed = lastBounceXSpeed * playerData.groundBounceXFalloff;
+                    lastBounceXSpeed = currentBounceXSpeed;
+                }
                 player.SetVelocityX(currentBounceXSpeed * player.FacingDirection);
 
                 currentBounceYSpeed = lastBounceYSpeed * playerData.groundBounceYFalloff;

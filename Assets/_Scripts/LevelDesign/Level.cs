@@ -9,13 +9,12 @@ using System.Linq;
 [Serializable]
 public class Level : ScriptableObject {
     [Header("Level Info")]
-
     [Space(5)]
-
     public string levelName;
     public int levelID;
     public int levelNumber;
     public GameObject worldMap;
+    public bool enableInfiniteLives = false;
     // public List<CoinItem> CoinItems;
     // public List<FoodItem> FoodItemsList;
     // public List<Enemy> EnemiesList;
@@ -23,7 +22,6 @@ public class Level : ScriptableObject {
     [Space(20)]
 
     [Header("Completion States")]
-
     [Space(5)]
     public bool isUnlocked = false;
     public bool collectedAllCoins = false;
@@ -37,7 +35,6 @@ public class Level : ScriptableObject {
     [Space(20)]
     
     [Header("Entities Info")]
-
     [Space(5)]
     public int totalCoinsAmount;
     public int totalEnemiesAmount;

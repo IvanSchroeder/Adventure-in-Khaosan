@@ -37,6 +37,7 @@ public abstract class EntityData : ScriptableObject {
 
     [Header("--- Health Parameters ---")]
     [Space(5)]
+    public LayerMask damagedBy;
     public HealthType healthType = HealthType.Hearts;
     public int maxLives;
     public int maxHearts;

@@ -41,7 +41,7 @@ Material:
     - _AlphaAmount: 1
     - _EightDirections: 0
     - _EnableFlash: 1
-    - _EnableOutline: 1
+    - _EnableOutline: 0
     - _FlashAmount: 0
     - _OutlineAmount: 1
     m_Colors:

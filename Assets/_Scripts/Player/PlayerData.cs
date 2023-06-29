@@ -1,7 +1,7 @@
 using UnityEngine;
 using ExtensionMethods;
 
-[CreateAssetMenu(fileName = "NewPlayerData", menuName = "Assets/Data/Player Data")]
+[CreateAssetMenu(fileName = "NewPlayerData", menuName = "Assets/Data/Entity/Player")]
 public class PlayerData : EntityData {
     // [Header("--- Entity Info ---")]
     // [Space(5)]
@@ -144,6 +144,7 @@ public class PlayerData : EntityData {
     [Range(0f, 1f)] public float wallBounceFalloff = 0.5f;
     [Range(0f, 1f)] public float groundBounceXFalloff = 0.5f;
     [Range(0f, 1f)] public float groundBounceYFalloff = 0.5f;
+    [Range(0f, 1f)] public float groundBounceThreshold = 0.5f;
 
     [Header("Fall")]
     public float defaultFallSpeed = 7f;

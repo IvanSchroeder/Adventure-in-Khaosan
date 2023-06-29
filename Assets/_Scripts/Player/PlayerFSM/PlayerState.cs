@@ -154,7 +154,8 @@ public class PlayerState {
 
     public void UpdateAnimator() {
         player.Anim.SetFloat("xVelocity", player.CurrentVelocity.x);
-        player.Anim.SetFloat("yVelocity", player.CurrentVelocity.normalized.y);
+        player.Anim.SetFloat("xVelocityNormalized", player.CurrentVelocity.normalized.x);
+        player.Anim.SetFloat("yVelocityNormalized", player.CurrentVelocity.normalized.y);
         player.Anim.SetFloat("xInput", xInput);
     }
 
@@ -220,7 +221,7 @@ public class PlayerState {
     protected Vector2 slopeHitPosition;
 
     private void SlopeCheck() {
-        Vector2 checkPos = player.groundCheck.position;
+        Vector2 checkPos = player.GroundCheck.position;
         // RaycastHit2D slopeHitDown = Physics2D.Raycast(player.groundCheck.position.ToVector2() /*+ (Vector2.right * player.FacingDirection * playerData.groundCheckOffset)*/, Vector2.down, playerData.slopeCheckDistance, playerData.solidsLayer);
         // if (slopeHitDown) {
         //     Vector2 temp = player.groundCheck.position;

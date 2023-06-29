@@ -6,4 +6,7 @@ using System;
 
 public abstract class Entity : MonoBehaviour {
     public EntityData entityData;
+
+    public EventHandler<OnEntityDamagedEventArgs> OnEntityDamaged;
+    public EventHandler<OnEntityDamagedEventArgs> OnEntityDeath;
 }

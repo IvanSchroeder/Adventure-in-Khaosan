@@ -43,7 +43,7 @@ public class PlayerGroundedState : PlayerState {
 
         if (playerData.stickToGround) {
             // groundHit = player.GetGroundHit();
-            groundHit = Physics2D.Raycast((Vector2)player.groundCheck.position + (Vector2.up * playerData.groundCheckOffset.y), Vector2.down, playerData.groundCheckDistance * 1.5f, playerData.groundLayer);
+            groundHit = Physics2D.Raycast((Vector2)player.GroundCheck.position + (Vector2.up * playerData.groundCheckOffset.y), Vector2.down, playerData.groundCheckDistance * 1.5f, playerData.groundLayer);
             player.groundHitPos = groundHit.point;
 
             if (groundHit) {

@@ -16,6 +16,7 @@ MonoBehaviour:
   levelID: 0
   levelNumber: 1
   worldMap: {fileID: 2854569919551609531, guid: b21c05c210493b74ca3080c6fc8dec30, type: 3}
+  enableInfiniteLives: 1
   isUnlocked: 1
   collectedAllCoins: 0
   collectedAllDishes: 0
@@ -27,5 +28,5 @@ MonoBehaviour:
   totalCoinsAmount: 0
   totalEnemiesAmount: 0
   baseRecordTime: 60
-  currentRecordTime: 0
+  currentRecordTime: 60
   wasHit: 0

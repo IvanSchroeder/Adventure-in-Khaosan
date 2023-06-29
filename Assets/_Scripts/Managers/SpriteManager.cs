@@ -8,9 +8,9 @@ using System.Linq;
 public class SpriteManager : MonoBehaviour {
     [field: SerializeField] public Entity Entity { get; private set; }
     [field: SerializeField] public HealthSystem HealthSystem { get; private set; }
-    [field: SerializeField] public IDamageable DamageableBehavior { get; private set; }
-    [field: SerializeField] public IInteractable InteractableBehavior { get; private set; }
-    // [field: SerializeField] public InteractorSystem InteractorSystem { get; private set; }
+    [field: SerializeField] public IDamageable Damageable { get; private set; }
+    [field: SerializeField] public IInteractable Interactable { get; private set; }
+    [field: SerializeField] public InteractableSystem InteractableSystem { get; private set; }
     [field: SerializeField] public SpriteFlashConfiguration CurrentFlashConfiguration { get; private set; }
     public SpriteFlashConfiguration DamagedFlash { get; private set; }
     public SpriteFlashConfiguration InvulnerableFlash { get; private set; }
@@ -31,42 +31,59 @@ public class SpriteManager : MonoBehaviour {
     private static readonly int _flashAmountID = Shader.PropertyToID("_FlashAmount");
     private static readonly int _alphaAmountID = Shader.PropertyToID("_AlphaAmount");
     private static readonly int _enableOutlineID = Shader.PropertyToID("_EnableOutline");
+    private static readonly int _eightDirectionsID = Shader.PropertyToID("_EightDirections");
+    private static readonly int _outlineColorID = Shader.PropertyToID("_OutlineColor");
     private static readonly int _outlineAmountID = Shader.PropertyToID("_OutlineAmount");
 
-    public Material[] _materials;
-    // private SpriteRenderer[] _spriteRenderers;
-    public SpriteRenderer spriteRenderer;
+    private Material[] _materials;
+    private SpriteRenderer[] _spriteRenderers;
+    private SpriteRenderer spriteRenderer;
 
     private Coroutine spriteFlashCoroutine;
     private WaitForSeconds colorChangeDelay;
 
     private void OnEnable() {
         if (HealthSystem.IsNotNull()) {
-            this.HealthSystem.OnDamaged += StartDamageFlash;
-            this.HealthSystem.OnEntityDead += StartDamageFlash;
+            this.HealthSystem.OnEntityDamaged += StartDamageFlash;
+            this.HealthSystem.OnEntityDeath += StartDamageFlash;
             this.HealthSystem.OnInvulnerabilityStart += StartInvulnerabilityFlash;
             this.HealthSystem.OnInvulnerabilityEnd += DisableIsFlashing;
         }
 
-        // this.InteractorSystem.OnInteracted += StartInteractedFlash;
+        if (InteractableSystem.IsNotNull()) {
+            this.InteractableSystem.OnInteractionState += SetInteractedOutline;
+            this.InteractableSystem.OnInteracted += StartInteractedFlash;
+        }
     }
 
     private void OnDisable() {
         if (HealthSystem.IsNotNull()) {
-            this.HealthSystem.OnDamaged -= StartDamageFlash;
-            this.HealthSystem.OnEntityDead -= StartDamageFlash;
+            this.HealthSystem.OnEntityDamaged -= StartDamageFlash;
+            this.HealthSystem.OnEntityDeath -= StartDamageFlash;
             this.HealthSystem.OnInvulnerabilityStart -= StartInvulnerabilityFlash;
             this.HealthSystem.OnInvulnerabilityEnd -= DisableIsFlashing;
         }
 
-        // this.InteractorSystem.OnInteracted -= StartInteractedFlash;
+        if (InteractableSystem.IsNotNull()) {
+            this.InteractableSystem.OnInteractionState -= SetInteractedOutline;
+            this.InteractableSystem.OnInteracted -= StartInteractedFlash;
+        }
     }
 
     private void Awake() {
-        if (Entity == null && this.HasComponentInHierarchy<Entity>()) Entity = this.GetComponentInHierarchy<Entity>();
-        if (HealthSystem == null) HealthSystem = this.GetComponentInHierarchy<HealthSystem>();
-        if (DamageableBehavior == null) DamageableBehavior = this.GetComponentInHierarchy<IDamageable>();
-        if (InteractableBehavior == null) InteractableBehavior = this.GetComponentInHierarchy<IInteractable>();
+        if (Entity.IsNull() && this.HasComponentInHierarchy<Entity>()) Entity = this.GetComponentInHierarchy<Entity>();
+        if (Damageable.IsNull()) Damageable = this.GetComponentInHierarchy<IDamageable>();
+        if (Interactable.IsNull()) Interactable = this.GetComponentInHierarchy<IInteractable>();
+
+        if (HealthSystem.IsNull() && Damageable.IsNotNull()) {
+            HealthSystem = Damageable.HealthSystem;
+            DamagedFlash = HealthSystem.DamagedFlash;
+            InvulnerableFlash = HealthSystem.InvulnerableFlash;
+        }
+        if (InteractableSystem.IsNull() && Interactable.IsNotNull()) {
+            InteractableSystem = Interactable.InteractableSystem;
+            InteractedFlash = InteractableSystem.InteractedFlash;
+        }
 
         if (spriteRenderer == null) spriteRenderer = this.GetComponentInHierarchy<SpriteRenderer>();
         _materials = new Material[1];
@@ -79,14 +96,6 @@ public class SpriteManager : MonoBehaviour {
     }
 
     private void Start() {
-        if (HealthSystem != null) {
-            if (HealthSystem.DamagedFlash != null) DamagedFlash = HealthSystem.DamagedFlash;
-            if (HealthSystem.InvulnerableFlash != null) InvulnerableFlash = HealthSystem.InvulnerableFlash;
-        }
-
-        // if (InteractorSystem != null) {
-        //     if (InteractorSystem.InteractedFlash != null) InteractedFlash = InteractorSystem.InteractedFlash;
-        // }
         SetDefaultValues();
     }
 
@@ -125,21 +134,25 @@ public class SpriteManager : MonoBehaviour {
     }
 
     public void StartDamageFlash(object sender, OnEntityDamagedEventArgs eventArgs) {
-        // StartFlash(HealthSystem.entityData.damageFlash);
-        // Material mat = Instantiate(eventArgs.CurrentMaterial);
-        // spriteRenderer.material = mat;
-        StartFlash(DamagedFlash);
+        StartFlash(eventArgs.CurrentFlash);
     }
 
     public void StartInvulnerabilityFlash(object sender, OnEntityDamagedEventArgs eventArgs) {
-        // StartFlash(HealthSystem.entityData.invulnerabilityFlash);
-        // Material mat = Instantiate(eventArgs.CurrentMaterial);
-        // spriteRenderer.material = mat;
-        StartFlash(InvulnerableFlash);
+        StartFlash(eventArgs.CurrentFlash);
     }
 
-    public void StartInteractedFlash(object sender, OnEntityDamagedEventArgs eventArgs) {
-        StartFlash(InteractedFlash);
+    public void StartInteractedFlash(object sender, OnEntityInteractedEventArgs eventArgs) {
+        StartFlash(eventArgs.CurrentFlash);
+    }
+
+    public void SetCurrentFlash(object sender, OnEntityDamagedEventArgs eventArgs) {
+
+    }
+
+    public void SetInteractedOutline(object sender, bool enable) {
+        for (int i = 0; i < _materials.Length; i++) {
+            _materials[i].SetInt(_enableOutlineID, enable ? 1 : 0);
+        }
     }
 
     private void StartFlash(SpriteFlashConfiguration configuration) {

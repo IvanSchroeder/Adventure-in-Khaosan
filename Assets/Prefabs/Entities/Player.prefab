@@ -99,6 +99,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <Entity>k__BackingField: {fileID: 3125253531432767928}
   <HealthSystem>k__BackingField: {fileID: 5509863583808375652}
+  <InteractableSystem>k__BackingField: {fileID: 0}
   <CurrentFlashConfiguration>k__BackingField: {fileID: 11400000, guid: 4d82b7bcf41c0e646937f0d0d6aca977, type: 2}
   <DefaultFlashColor>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
   <CurrentFlashColor>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
@@ -109,8 +110,6 @@ MonoBehaviour:
   <CurrentAmountIndex>k__BackingField: 0
   <CurrentAlphaIndex>k__BackingField: 0
   <CurrentAmountOfFlashes>k__BackingField: 0
-  _materials: []
-  spriteRenderer: {fileID: 7174821088211015114}
 --- !u!1 &443455453067590178
 GameObject:
   m_ObjectHideFlags: 0
@@ -534,19 +533,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   entityData: {fileID: 11400000, guid: 82651798b0a1f594e9210ad3f643c9b0, type: 2}
   playerData: {fileID: 11400000, guid: 82651798b0a1f594e9210ad3f643c9b0, type: 2}
-  <InputHandler>k__BackingField: {fileID: 3125253531432767935}
   <Rb>k__BackingField: {fileID: 3125253531432767930}
   <MovementCollider>k__BackingField: {fileID: 3125253531432767931}
   <Anim>k__BackingField: {fileID: 3643447841544891557}
   <PlayerSprite>k__BackingField: {fileID: 7174821088211015114}
-  <Interactor>k__BackingField: {fileID: 7832010473918510910}
   <InteractTrigger>k__BackingField: {fileID: 903490805235740337}
-  <HealthSystem>k__BackingField: {fileID: 5509863583808375652}
   <CameraTarget>k__BackingField: {fileID: 5762768655862755544}
-  groundCheck: {fileID: 3125253531717848553}
-  ceilingCheck: {fileID: 3125253530865429025}
-  wallCheck: {fileID: 3125253531543866480}
-  ledgeCheck: {fileID: 3125253530585205663}
+  <HitboxTrigger>k__BackingField: {fileID: 5362580700939068921}
+  <HealthSystem>k__BackingField: {fileID: 5509863583808375652}
+  <SpriteManager>k__BackingField: {fileID: 3850655310884617581}
+  <InteractorTrigger>k__BackingField: {fileID: 903490805235740337}
+  <InteractorSystem>k__BackingField: {fileID: 7848817237780654624}
+  <InputHandler>k__BackingField: {fileID: 3125253531432767935}
+  <GroundCheck>k__BackingField: {fileID: 3125253531717848553}
+  <CeilingCheck>k__BackingField: {fileID: 3125253530865429025}
+  <WallCheck>k__BackingField: {fileID: 3125253531543866480}
+  <LedgeCheck>k__BackingField: {fileID: 3125253530585205663}
   detectedPos: {x: 0, y: 0}
   cornerPos: {x: 0, y: 0}
   startPos: {x: 0, y: 0}
@@ -816,18 +818,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e9bb72ce760812449baa101186d4d2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  entity: {fileID: 3125253531432767928}
-  entityData: {fileID: 11400000, guid: 82651798b0a1f594e9210ad3f643c9b0, type: 2}
-  damagedBy:
+  <Entity>k__BackingField: {fileID: 3125253531432767928}
+  <EntityData>k__BackingField: {fileID: 11400000, guid: 82651798b0a1f594e9210ad3f643c9b0, type: 2}
+  <HitboxTrigger>k__BackingField: {fileID: 5362580700939068921}
+  <SpriteManager>k__BackingField: {fileID: 3850655310884617581}
+  <DamagedBy>k__BackingField:
     serializedVersion: 2
     m_Bits: 4352
-  <HitboxTrigger>k__BackingField: {fileID: 5362580700939068921}
   <HealthType>k__BackingField: 1
-  <SpriteFlashMaterial>k__BackingField: {fileID: 2100000, guid: a6a0e8b29d967f0489f0f4c10bcb3c9a, type: 2}
   <DamagedFlash>k__BackingField: {fileID: 11400000, guid: 0514c15ea549b1f40b1d147ef537951e, type: 2}
   <InvulnerableFlash>k__BackingField: {fileID: 11400000, guid: 4d82b7bcf41c0e646937f0d0d6aca977, type: 2}
   <IsRespawneable>k__BackingField: 1
   <CanRespawn>k__BackingField: 0
+  <HasInfiniteLives>k__BackingField: 0
   <CurrentLives>k__BackingField: 0
   <MaxLives>k__BackingField: 0
   <MaxHealth>k__BackingField: 0
@@ -873,6 +876,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7832010473918510910}
   - component: {fileID: 903490805235740337}
+  - component: {fileID: 7848817237780654624}
   m_Layer: 14
   m_Name: Interactor
   m_TagString: Untagged
@@ -921,3 +925,16 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.5, y: 0.5}
   m_EdgeRadius: 0
+--- !u!114 &7848817237780654624
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9067804555370436997}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b2d9b404c6f35e42aa0d6ae632a355c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <CanInteract>k__BackingField: 1

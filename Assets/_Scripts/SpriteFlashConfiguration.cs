@@ -28,10 +28,9 @@ public class SpriteFlashConfiguration : ScriptableObject {
     [field: SerializeField] public ColorsListType ColorsType { get; private set; } = ColorsListType.Set;
     [HideInInspector] public List<Color> SelectedColorsList { get; private set; }
     [field: SerializeField, ColorUsage(true, true)] public List<Color> SetColorsList { get; private set; }
-    // [field: SerializeField, ColorUsage(true, true)] public List<Color> LerpedColorsList { get; private set; }
+    [field: SerializeField] public AnimationCurve FlashAnimationCurve { get; private set; } 
     // [field: SerializeField, ColorUsage(true, true)] public Color StartColor { get; private set; } = Color.white;
     // [field: SerializeField, ColorUsage(true, true)] public Color EndColor { get; private set; } = Color.black;
-    // [field: SerializeField] public int ColorsSteps { get; private set; } = 2;
 
     [field: SerializeField, Range(0f, 1f), Space(20f), Header("--- Flash Amount Parameters ---"), Space(5f)] public float MinFlashAmount { get; private set; } = 0;
     [field: SerializeField, Range(0f, 1f)] public float MaxFlashAmount { get; private set; } = 1;
@@ -43,11 +42,9 @@ public class SpriteFlashConfiguration : ScriptableObject {
     [field: SerializeField] public AlphasListType AlphasType { get; private set; } = AlphasListType.Set;
     [HideInInspector] public List<float> SelectedAlphasList { get; private set; }
     [field: SerializeField] public List<float> SetAlphasList { get; private set; }
-    // [field: SerializeField] public List<float> LerpedAlphasList { get; private set; }
-    // [field: SerializeField] public int AlphasSteps { get; private set; } = 2;
+    [field: SerializeField] public AnimationCurve AlphaAnimationCurve { get; private set; }
     [field: SerializeField, Range(0f, 1f)] public float MinAlphaAmount { get; private set; } = 0;
     [field: SerializeField, Range(0f, 1f)] public float MaxAlphaAmount { get; private set; } = 1;
-
 
     private void OnValidate() {
         Init();
@@ -63,56 +60,15 @@ public class SpriteFlashConfiguration : ScriptableObject {
 
     private void GetColorsLists() {
         if (ChangeColor) {
-            switch (ColorsType) {
-                case ColorsListType.Set:
-                    TotalColors = SetColorsList.Count;
+            TotalColors = SetColorsList.Count;
 
-                    if (InvertColors) {
-                        InvertColors = false;
-                        SetColorsList = (List<Color>)SetColorsList.Flip();
-                    }
-
-                    SelectedColorsList = new List<Color>(SetColorsList);
-                break;
-                // case ColorsListType.Lerped:
-                //     LerpedColorsList = new List<Color>();
-
-                //     float diff = 1f - 0f;
-                //     float div = ColorsSteps - 1;
-                //     float increment = diff / div;
-                //     float currentIncrement = 0;
-
-                //     Color newColor = Color.white;
-
-                //     newColor = StartColor;
-
-                //     for (int index = 0; index < ColorsSteps; index++) {
-                //         if (index == 0) {
-                //             newColor = StartColor;
-                //         }
-                //         else if (index < ColorsSteps - 1) {
-                //             newColor = Color.Lerp(StartColor, EndColor, currentIncrement);
-                //         }
-                //         else {
-                //             newColor = EndColor;
-                //         }
-
-                //         currentIncrement += increment;
-                //         LerpedColorsList.Add(newColor);
-                //     }
-
-                //     TotalColors = LerpedColorsList.Count;
-
-                //     if (InvertColors) {
-                //         var tempList = LerpedColorsList.Flip();
-                //         LerpedColorsList = new List<Color>(tempList);
-                //     }
-
-                //     SelectedColorsList = new List<Color>(LerpedColorsList);
-                // break;
+            if (InvertColors) {
+                InvertColors = false;
+                SetColorsList = (List<Color>)SetColorsList.Flip();
             }
+
+            SelectedColorsList = new List<Color>(SetColorsList);
         }
-        // else LerpedColorsList = new List<Color>();
     }
 
     private void GetAlphasLists() {
@@ -125,56 +81,20 @@ public class SpriteFlashConfiguration : ScriptableObject {
         }
 
         if (ChangeAlpha) {
-            switch (AlphasType) {
-                case AlphasListType.Set:
-                    SetAlphasList = new List<float>();
-                    SetAlphasList.Add(MinAlphaAmount);
-                    SetAlphasList.Add(MaxAlphaAmount);
+            SetAlphasList = new List<float>();
+            SetAlphasList.Add(MinAlphaAmount);
+            SetAlphasList.Add(MaxAlphaAmount);
 
-                    if (InvertAlphas) {
-                        InvertAlphas = false;
-                        SetAlphasList = (List<float>)SetAlphasList.Flip();
-                    }
-
-                    TotalAlphas = SetAlphasList.Count;
-                    SelectedAlphasList = new List<float>(SetAlphasList);
-                break;
-                // case AlphasListType.Lerped:
-                //     LerpedAlphasList = new List<float>();
-
-                //     float diff = MaxAlphaAmount - MinAlphaAmount;
-                //     float div = AlphasSteps - 1;
-                //     float increment = diff / div;
-                //     float alphaAmount = MinAlphaAmount;
-
-                //     for (int index = 0; index < AlphasSteps; index++) {
-                //         if (index == 0) {
-                //             alphaAmount = MinAlphaAmount;
-                //         }
-                //         else if (index < AlphasSteps - 1) {
-                //             alphaAmount += increment;
-                //         }
-                //         else {
-                //             alphaAmount = MaxAlphaAmount;
-                //         }
-
-                //         LerpedAlphasList.Add(alphaAmount);
-                //     }
-
-                //     TotalAlphas = LerpedAlphasList.Count;
-
-                //     if (InvertAlphas) {
-                //         InvertAlphas = false;
-                //         LerpedAlphasList = (List<float>)LerpedAlphasList.Flip();
-                //     }
-
-                //     SelectedAlphasList = new List<float>(LerpedAlphasList);
-                // break;
+            if (InvertAlphas) {
+                InvertAlphas = false;
+                SetAlphasList = (List<float>)SetAlphasList.Flip();
             }
+
+            TotalAlphas = SetAlphasList.Count;
+            SelectedAlphasList = new List<float>(SetAlphasList);
         }
         else {
             SetAlphasList = new List<float>();
-            // LerpedAlphasList = new List<float>();
         }
     }
 }

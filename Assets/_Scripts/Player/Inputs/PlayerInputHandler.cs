@@ -12,6 +12,8 @@ public class PlayerInputHandler : MonoBehaviour {
     public bool JumpInputStop { get; private set; }
     public bool JumpInputHold { get; private set; }
     public bool GrabInput { get; private set; }
+    public bool AttackInput { get; private set; }
+    public bool AttackInputHold { get; private set; }
 
     [field: SerializeField] public bool LockInputs { get; private set; }
     [field: SerializeField] public float InputHoldTime { get; private set; } = 0.2f;
