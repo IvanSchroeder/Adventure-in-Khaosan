@@ -22,7 +22,6 @@ public class Checkpoint : MonoBehaviour, IInteractable {
     public bool isStartingCheckpoint = false;
     public bool isFinalCheckpoint = false;
 
-    // public Action<Checkpoint> OnCheckpointActive;
     public static EventHandler<Checkpoint> OnCheckpointActive;
     public EventHandler<OnEntityInteractedEventArgs> OnInteracted;
 
@@ -43,12 +42,6 @@ public class Checkpoint : MonoBehaviour, IInteractable {
         isActive = false;
     }
 
-    public void Start() {
-        if (isStartingCheckpoint) {
-            InteractableSystem.Interact();
-        }
-    }
-
     public void SetActiveCheckpoint(object sender, OnEntityInteractedEventArgs entityInteracted) {
         isActive = true;
         Anim.SetBool("isActive", isActive);
@@ -56,6 +49,7 @@ public class Checkpoint : MonoBehaviour, IInteractable {
 
         Debug.Log($"Interacted with {this.transform.name}");
 
+        entityInteracted.CurrentFlash = InteractableSystem.InteractedFlash;
         OnInteracted?.Invoke(this, entityInteracted);
         OnCheckpointActive?.Invoke(this, this);
     }

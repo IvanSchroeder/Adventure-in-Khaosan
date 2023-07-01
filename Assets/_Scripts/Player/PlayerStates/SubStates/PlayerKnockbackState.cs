@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ExtensionMethods;
 
 public class PlayerKnockbackState : PlayerState {
     public PlayerKnockbackState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
@@ -41,11 +42,13 @@ public class PlayerKnockbackState : PlayerState {
         }
 
         if (cumulatedKnockbackTime < playerData.maxKnockbackTime) cumulatedKnockbackTime += Time.deltaTime;
-        if (cumulatedKnockbackTime < playerData.minKnockbackTime) return;
         
         if (isGrounded) {
             stateMachine.ChangeState(player.LandState);
         }
+
+        if (cumulatedKnockbackTime < playerData.minKnockbackTime) return;
+
         else if (cumulatedKnockbackTime >= playerData.maxKnockbackTime) {
             stateMachine.ChangeState(player.AirborneState);
         }

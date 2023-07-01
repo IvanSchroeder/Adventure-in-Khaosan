@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ExtensionMethods;
 
 public class PlayerWallGrabState : PlayerTouchingWallState {
     public PlayerWallGrabState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
@@ -39,36 +40,40 @@ public class PlayerWallGrabState : PlayerTouchingWallState {
 
         if (isExitingState) return;
 
-        if (isTouchingWall & !isTouchingLedge) {
+        if (playerData.canLedgeClimb && isTouchingWall & !isTouchingLedge) {
             player.LedgeClimbState.SetDetectedPosition(player.transform.position);
             stateMachine.ChangeState(player.LedgeClimbState);
         }
         else if (xInput == -player.FacingDirection) {
             WallHop(playerData.wallHopSpeed, playerData.wallHopDirectionOffAngle, player.FacingDirection);
         }
+        else if (player.CheckGround(playerData.platformLayer) && xInput == 0) {
+            stateMachine.ChangeState(player.LandState);
+
+        }
         else if (playerData.autoWallGrab) {
-            if (xInput == player.FacingDirection && yInput != 0) {
+            if (playerData.canWallClimb && xInput == player.FacingDirection && yInput != 0) {
                 stateMachine.ChangeState(player.WallClimbState);
             }
             else if (xInput == 0) {
-                if (player.CheckGround(playerData.platformLayer))
-                    stateMachine.ChangeState(player.LandState);
-                else
+                if (playerData.canWallSlide && playerData.autoWallSlide)
                     stateMachine.ChangeState(player.WallSlideState);
+                else
+                    stateMachine.ChangeState(player.AirborneState);
             }
         }
         else if (!playerData.autoWallGrab) {
-            if (grabInput) {
+            if (playerData.canWallClimb && grabInput) {
                 if (yInput != 0) {
                     stateMachine.ChangeState(player.WallClimbState);
                 }
             }
             else if (!grabInput) {
-                if (xInput == 0 && playerData.autoWallSlide) {
-                    if (player.CheckGround(playerData.platformLayer))
-                        stateMachine.ChangeState(player.LandState);
-                    else
+                if (xInput == 0) {
+                    if (playerData.canWallSlide && playerData.autoWallSlide)
                         stateMachine.ChangeState(player.WallSlideState);
+                    else
+                        stateMachine.ChangeState(player.AirborneState);
                 }
             }
         }

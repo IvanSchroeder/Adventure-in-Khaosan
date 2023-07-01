@@ -44,10 +44,10 @@ Material:
     m_Floats:
     - _BackwardScroll: 1
     - _DownwardScroll: 1
-    - _EnableScroll: 0
+    - _EnableScroll: 1
     - _ForwardScroll: 1
     - _HorizontalScroll: 1
-    - _HorizontalScrollSpeed: 0.05
+    - _HorizontalScrollSpeed: 0.025
     - _UpwardScroll: 1
     - _VerticalScroll: 0
     - _VerticalScrollSpeed: 0.05

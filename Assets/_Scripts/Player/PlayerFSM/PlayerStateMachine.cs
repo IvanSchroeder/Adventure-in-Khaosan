@@ -10,8 +10,8 @@ public class PlayerStateMachine {
         CurrentState.Enter();
     }
 
-    public void ChangeState(PlayerState newState) {
-        if (CurrentState == newState) return;
+    public void ChangeState(PlayerState newState/*, bool canChange = true*/) {
+        if (CurrentState == newState /*|| !canChange*/) return;
         CurrentState.Exit();
         CurrentState = newState;
         CurrentState.Enter();

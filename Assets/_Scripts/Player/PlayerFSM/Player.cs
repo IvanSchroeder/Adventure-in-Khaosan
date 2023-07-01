@@ -22,6 +22,7 @@ public class Player : Entity, IDamageable, IInteractor {
     public PlayerMoveState MoveState { get; private set; }
     public PlayerCrouchIdleState CrouchIdleState { get; private set; }
     public PlayerCrouchMoveState CrouchMoveState { get; private set; }
+    public PlayerGroundSlideState GroundSlideState { get; private set; }
     public PlayerJumpState JumpState { get; private set; }
     public PlayerAirborneState AirborneState { get; private set; }
     public PlayerLandState LandState { get; private set; }
@@ -63,12 +64,14 @@ public class Player : Entity, IDamageable, IInteractor {
     public Vector2 CurrentVelocity { get; private set; }
     public int FacingDirection { get; private set; } = 1;
 
-    public Vector2 detectedPos;
-    public Vector2 cornerPos;
-    public Vector2 startPos;
-    public Vector2 stopPos;
-    public Vector2 groundHitPos;
-    public Vector2 lastContactPoint;
+    [HideInInspector] public Vector2 detectedPos;
+    [HideInInspector] public Vector2 cornerPos;
+    [HideInInspector] public Vector2 startPos;
+    [HideInInspector] public Vector2 stopPos;
+    [HideInInspector] public Vector2 groundHitPos;
+    [HideInInspector] public Vector2 wallHitPos;
+    [HideInInspector] public Vector2 ceilingHitPos;
+    [HideInInspector] public Vector2 lastContactPoint;
 
     [SerializeField] private bool drawGizmos;
 
@@ -110,6 +113,7 @@ public class Player : Entity, IDamageable, IInteractor {
         MoveState = new PlayerMoveState(this, StateMachine, playerData, "move");
         CrouchIdleState = new PlayerCrouchIdleState(this, StateMachine, playerData, "crouchIdle");
         CrouchMoveState = new PlayerCrouchMoveState(this, StateMachine, playerData, "crouchMove");
+        GroundSlideState = new PlayerGroundSlideState(this, StateMachine, playerData, "groundSlide");
         JumpState = new PlayerJumpState(this, StateMachine, playerData, "airborne");
         AirborneState = new PlayerAirborneState(this, StateMachine, playerData, "airborne");
         LandState = new PlayerLandState(this, StateMachine, playerData, "land");
@@ -312,16 +316,16 @@ public class Player : Entity, IDamageable, IInteractor {
         else if (FacingDirection == -1) PlayerSprite.flipX = true;
     }
 
-    public void CalculateColliderHeight(float height) {
-        Vector2 center = MovementCollider.offset;
-        workspace.Set(MovementCollider.size.x, height);
+    // public void CalculateColliderHeight(float height) {
+    //     Vector2 center = MovementCollider.offset;
+    //     workspace.Set(MovementCollider.size.x, height);
 
-        center.y += (height - MovementCollider.size.y) / 2;
-        MovementCollider.size = workspace;
-        MovementCollider.offset = center;
+    //     center.y += (height - MovementCollider.size.y) / 2;
+    //     MovementCollider.size = workspace;
+    //     MovementCollider.offset = center;
 
-        CeilingCheck.position = new Vector2(CeilingCheck.position.x, MovementCollider.bounds.max.y);
-    }
+    //     CeilingCheck.position = new Vector2(CeilingCheck.position.x, MovementCollider.bounds.max.y);
+    // }
 
     public void SetColliderParameters(BoxCollider2D collider, ColliderConfiguration colliderConfig) {
         collider.offset = colliderConfig.Offset;

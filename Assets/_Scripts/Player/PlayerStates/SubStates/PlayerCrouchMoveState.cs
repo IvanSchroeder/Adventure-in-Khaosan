@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ExtensionMethods;
 
 public class PlayerCrouchMoveState : PlayerGroundedState {
     public PlayerCrouchMoveState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
@@ -24,9 +25,11 @@ public class PlayerCrouchMoveState : PlayerGroundedState {
 
         player.CheckFacingDirection(xInput);
 
+        player.SetColliderParameters(player.MovementCollider, playerData.crouchColliderConfig);
+
         if (isExitingState) return;
 
-        if (xInput == 0 || (player.Rb.velocity.x != 0f && isTouchingWall)) {
+        if (xInput == 0 || (player.CurrentVelocity.x != 0f && isTouchingWall)) {
             stateMachine.ChangeState(player.CrouchIdleState);
         }
         else if (yInput != -1 && !isTouchingCeiling) {

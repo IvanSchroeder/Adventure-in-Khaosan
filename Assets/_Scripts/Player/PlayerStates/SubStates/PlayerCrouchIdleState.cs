@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ExtensionMethods;
 
 public class PlayerCrouchIdleState : PlayerGroundedState {
     protected float cameraOffsetDelay = 1f;
@@ -28,20 +29,21 @@ public class PlayerCrouchIdleState : PlayerGroundedState {
     public override void LogicUpdate() {
         base.LogicUpdate();
 
-        if (isExitingState) return;
-
         player.SetColliderParameters(player.MovementCollider, playerData.crouchColliderConfig);
+
+        if (isExitingState) return;
 
         if (xInput != 0) {
             player.CheckFacingDirection(xInput);
-            if(!isTouchingWall) stateMachine.ChangeState(player.CrouchMoveState);
+
+            if(playerData.canMove && !isTouchingWall) stateMachine.ChangeState(player.CrouchMoveState);
             else if (yInput != -1 && !isTouchingCeiling) {
                 player.SetColliderParameters(player.MovementCollider, playerData.standingColliderConfig);
                 stateMachine.ChangeState(player.IdleState);
             }
         }
         else if (yInput != -1 && !isTouchingCeiling) {
-            player.CalculateColliderHeight(playerData.standColliderHeight);
+            player.SetColliderParameters(player.MovementCollider, playerData.standingColliderConfig);
             stateMachine.ChangeState(player.IdleState);
         }
         else if (isTouchingCeiling) {
@@ -57,7 +59,7 @@ public class PlayerCrouchIdleState : PlayerGroundedState {
     public override void PhysicsUpdate() {
         base.PhysicsUpdate();
 
-        player.SetVelocityX(xInput * playerData.crouchWalkSpeed, playerData.crouchDecceleration, playerData.lerpVelocity);
+        player.SetVelocityX(0f, playerData.crouchDecceleration, playerData.lerpVelocity);
         player.SetVelocityY(player.CurrentVelocity.y);
     }
 }

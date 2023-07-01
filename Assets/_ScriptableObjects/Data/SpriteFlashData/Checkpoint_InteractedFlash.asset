@@ -16,9 +16,9 @@ MonoBehaviour:
   <LoopFlash>k__BackingField: 0
   <DefaultFlashTime>k__BackingField: 0.1
   <CurrentFlashTime>k__BackingField: 0.1
-  <MaxAmountOfFlashes>k__BackingField: 1
+  <MaxAmountOfFlashes>k__BackingField: 2
   <ChangeColor>k__BackingField: 1
-  <FlashesPerColor>k__BackingField: 1
+  <FlashesPerColor>k__BackingField: 2
   <TotalColors>k__BackingField: 1
   <InvertColors>k__BackingField: 0
   <ColorsType>k__BackingField: 0

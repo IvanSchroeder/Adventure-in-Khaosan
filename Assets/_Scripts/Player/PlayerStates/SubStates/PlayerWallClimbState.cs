@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ExtensionMethods;
 
 public class PlayerWallClimbState : PlayerTouchingWallState {
     public PlayerWallClimbState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
@@ -24,18 +25,18 @@ public class PlayerWallClimbState : PlayerTouchingWallState {
 
         if (isExitingState) return;
 
-        if (isTouchingWall & !isTouchingLedge && yInput == 1) {
+        if (playerData.canLedgeClimb && isTouchingWall & !isTouchingLedge && yInput == 1) {
             player.LedgeClimbState.SetDetectedPosition(player.transform.position);
             stateMachine.ChangeState(player.LedgeClimbState);
         }
         else if (xInput == -player.FacingDirection) {
             WallHop(playerData.wallHopSpeed, playerData.wallHopDirectionOffAngle, player.FacingDirection);
         }
-        else if (!playerData.autoWallGrab) {
+        else if (playerData.canWallSlide && !playerData.autoWallGrab) {
             if (grabInput)
                 if (yInput != 0)
                     return;
-                else 
+                else
                     stateMachine.ChangeState(player.WallGrabState);
             else {
                 if (playerData.autoWallSlide && isTouchingWall && xInput != -player.FacingDirection)
@@ -46,7 +47,7 @@ public class PlayerWallClimbState : PlayerTouchingWallState {
                     stateMachine.ChangeState(player.AirborneState);
             }
         }
-        else if (playerData.autoWallGrab) {
+        else if (playerData.canWallSlide && playerData.autoWallGrab) {
             if (xInput == player.FacingDirection && yInput == 0)
                 stateMachine.ChangeState(player.WallGrabState);
             else if (xInput != player.FacingDirection && yInput == 0)

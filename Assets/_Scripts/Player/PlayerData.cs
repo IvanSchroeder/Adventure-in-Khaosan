@@ -36,6 +36,21 @@ public class PlayerData : EntityData {
 
     [Space(20)]
 
+    [Header("--- States Locks ---")]
+    [Space(5)]
+    public bool canMove = true;
+    public bool canSprint = true;
+    public bool canCrouch = true;
+    public bool canGroundSlide = true;
+    public bool canJump = true;
+    public bool canWallSlide = true;
+    public bool canWallClimb = true;
+    public bool canLedgeClimb = true;
+    public bool canWallJump = true;
+    public bool canAttack = true;
+
+    [Space(20)]
+
     [Header("--- States Info ---")]
     [Space(5)]
     public bool isGrounded;
@@ -43,7 +58,13 @@ public class PlayerData : EntityData {
     public bool isOnPlatform;
     public bool isIgnoringPlatforms;
     public bool isOnSlope;
+    public bool isMoving;
+    public bool isRunning;
+    public bool isRunningAtMaxSpeed;
+    public bool isSprinting;
+    public bool isSprintingAtMaxSpeed;
     public bool isCrouching;
+    public bool isGroundSliding;
     public bool isAirborne;
     public bool isJumping;
     public bool isAscending;
@@ -58,6 +79,7 @@ public class PlayerData : EntityData {
     public bool isWallSliding;
     public bool isWallGrabing;
     public bool isWallClimbing;
+    public bool isWallJumping;
     public bool isHanging;
     public bool isClimbing;
     public bool isDamaged;
@@ -65,8 +87,8 @@ public class PlayerData : EntityData {
     public bool isDeadOnGround;
     public bool isInvulnerable;
     public bool isAnimationFinished;
-    public bool isExitingState;
     public bool isAbilityDone;
+    public bool isExitingState;
     public bool hasCoyoteTime;
     public bool hasWallJumpCoyoteTime;
 
@@ -98,16 +120,23 @@ public class PlayerData : EntityData {
     [Space(5)]
     // public bool enableFriction = true;
     public bool stickToGround;
-    [Range(0f, 10f)] public float runSpeed;
-    [Range(0f, 10f)] public float maxRunSpeed;
-    [Range(0f, 30f)] public float maxHorizontalSpeed;
-    public float maxRunSpeedThreshold;
-    [Range(0f, 5f)] public float crouchWalkSpeed;
     public bool lerpVelocity = false;
+    public bool conserveMomentum = false;
+    [Range(0f, 10f)] public float runSpeed;
+    [Range(0f, 5f)] public float crouchWalkSpeed;
+    [Range(0f, 30f)] public float sprintSpeed;
+    [Range(0f, 1f)] public float maxRunSpeedThreshold;
+    [Range(0f, 30f)] public float maxHorizontalSpeed;
     [Range(0, 100)] public int runAcceleration;
     [Range(0, 100)] public int runDecceleration;
+    [Range(0, 100)] public int sprintAcceleration;
+    [Range(0, 100)] public int sprintDecceleration;
     [Range(0, 100)] public int crouchAcceleration;
     [Range(0, 100)] public int crouchDecceleration;
+    [Range(0.2f, 5f)] public float groundSlideDuration;
+    [Range(0f, 15f)] public float groundSlideSpeed;
+    [Range(0, 100)] public int groundSlideAcceleration;
+    [Range(0, 100)] public int groundSlideDecceleration;
     [Range(0, 100)] public int deathSlideDecceleration;
 
     [Space(5)]
@@ -257,7 +286,13 @@ public class PlayerData : EntityData {
         isOnPlatform = false;
         isIgnoringPlatforms = false;
         isOnSlope = false;
+        isMoving = false;
+        isRunning = false;
+        isRunningAtMaxSpeed = false;
+        isSprinting = false;
+        isSprintingAtMaxSpeed = false;
         isCrouching = false;
+        isGroundSliding = false;
         isAirborne = false;
         isJumping = false;
         isAscending = false;

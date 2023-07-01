@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ExtensionMethods;
 
 public class PlayerGroundedState : PlayerState {
     protected RaycastHit2D groundHit;
@@ -25,7 +26,9 @@ public class PlayerGroundedState : PlayerState {
     public override void LogicUpdate() {
         base.LogicUpdate();
 
-        if (jumpInput && player.JumpState.CanJump() && !isTouchingCeiling && !isIgnoringPlatforms && yInput != -1) {
+        if (isExitingState) return;
+
+        if (playerData.canJump && jumpInput && player.JumpState.CanJump() && !isTouchingCeiling && !isIgnoringPlatforms) {
             coyoteTime = false;
             stateMachine.ChangeState(player.JumpState);
         }
@@ -33,7 +36,7 @@ public class PlayerGroundedState : PlayerState {
             player.AirborneState.StartCoyoteTime();
             stateMachine.ChangeState(player.AirborneState);
         }
-        else if (isTouchingWall && ((playerData.autoWallGrab && xInput == player.FacingDirection) || (!playerData.autoWallGrab && grabInput)) && isTouchingLedge) {
+        else if (playerData.canWallSlide && playerData.canWallClimb && isTouchingWall && ((playerData.autoWallGrab && xInput == player.FacingDirection) || (!playerData.autoWallGrab && grabInput)) && isTouchingLedge) {
             stateMachine.ChangeState(player.WallGrabState);
         }
     }
@@ -41,16 +44,17 @@ public class PlayerGroundedState : PlayerState {
     public override void PhysicsUpdate() {
         base.PhysicsUpdate();
 
-        if (playerData.stickToGround) {
-            // groundHit = player.GetGroundHit();
-            groundHit = Physics2D.Raycast((Vector2)player.GroundCheck.position + (Vector2.up * playerData.groundCheckOffset.y), Vector2.down, playerData.groundCheckDistance * 1.5f, playerData.groundLayer);
-            player.groundHitPos = groundHit.point;
+        groundHit = Physics2D.Raycast((Vector2)player.GroundCheck.position + (Vector2.up * playerData.groundCheckOffset.y), Vector2.down, playerData.groundCheckDistance * 1.5f, playerData.groundLayer);
+        player.groundHitPos = groundHit.point;
 
-            if (groundHit) {
-                Vector2 temp = Vector2.zero;
-                temp.Set(player.transform.position.x, groundHit.point.y + 0.05f);
-                player.transform.position = temp;
-            }
-        }
+        // if (playerData.stickToGround) {
+        //     // groundHit = player.GetGroundHit();
+
+        //     if (groundHit) {
+        //         Vector2 temp = Vector2.zero;
+        //         temp.Set(player.transform.position.x, groundHit.point.y + 0.05f);
+        //         player.transform.position = temp;
+        //     }
+        // }
     }
 }

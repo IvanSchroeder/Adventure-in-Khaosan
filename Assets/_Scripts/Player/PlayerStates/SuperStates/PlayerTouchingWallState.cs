@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ExtensionMethods;
 
 public class PlayerTouchingWallState : PlayerState {
     protected float wallHitX;
+    protected RaycastHit2D wallHit;
 
     public PlayerTouchingWallState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
     }
@@ -32,6 +34,8 @@ public class PlayerTouchingWallState : PlayerState {
     public override void Exit() {
         base.Exit();
 
+        if (isExitingState) return;
+
         player.Rb.gravityScale = playerData.defaultGravityScale;
 
         isTouchingWall = player.CheckWall();
@@ -55,29 +59,20 @@ public class PlayerTouchingWallState : PlayerState {
 
         if (isExitingState) return;
         
-        if (jumpInput && yInput != -1 && !isOnPlatform) {
+        if (playerData.canWallJump && jumpInput && yInput != -1 && !isOnPlatform) {
             player.WallJumpState.GetWallJumpDirection(isTouchingWall);
             stateMachine.ChangeState(player.WallJumpState);
         }
         else if (!isTouchingWall) {
             stateMachine.ChangeState(player.AirborneState);
         }
-        // else if (!isWallGrabing && !isWallClimbing && isOnSolidGround) {
-        //     if (((!playerData.autoWallGrab && grabInput) || (playerData.autoWallGrab && xInput == player.FacingDirection) && yInput == 0))
-        //         stateMachine.ChangeState(player.WallGrabState);
-        //     else if (((!playerData.autoWallGrab && grabInput) || (playerData.autoWallGrab && xInput == player.FacingDirection) && yInput != 0))
-        //         stateMachine.ChangeState(player.WallClimbState);
-        //     else if ((!playerData.autoWallGrab && (!grabInput || playerData.autoWallSlide)) || (playerData.autoWallGrab && xInput == -player.FacingDirection))
-        //         stateMachine.ChangeState(player.LandState);
-        // }
-        // else if (!playerData.autoWallGrab && !playerData.autoWallSlide && xInput == -player.FacingDirection) {
-        //     player.SetForce(playerData.wallJumpSpeed, playerData.wallHopDirectionOffAngle, player.FacingDirection);
-        //     stateMachine.ChangeState(player.AirborneState);
-        // }
     }
 
     public override void PhysicsUpdate() {
         base.PhysicsUpdate();
+        
+        wallHit = Physics2D.Raycast((Vector2)player.GroundCheck.position + (Vector2.up * playerData.wallCheckOffset.y), Vector2.right * player.FacingDirection, playerData.wallCheckDistance * 1.5f, playerData.wallLayer);
+        player.wallHitPos = wallHit.point;
     }
 
     public void WallHop(float velocity, Vector2 angle, int direction) {

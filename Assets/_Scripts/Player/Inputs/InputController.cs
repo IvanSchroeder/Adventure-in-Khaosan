@@ -78,4 +78,7 @@ public class InputController : ScriptableObject, InputMaster.IGameplayActions {
 
     public void OnGrab(InputAction.CallbackContext context) {
     }
+
+    public void OnAttack(InputAction.CallbackContext context) {
+    }
 }

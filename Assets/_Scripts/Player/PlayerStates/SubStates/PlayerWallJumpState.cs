@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ExtensionMethods;
 
 public class PlayerWallJumpState : PlayerAbilityState {
     private int wallJumpDirection;
@@ -39,8 +40,27 @@ public class PlayerWallJumpState : PlayerAbilityState {
     public override void LogicUpdate() {
         base.LogicUpdate();
 
+        if (isExitingState) return;
+
+        CheckWallJumpMultiplier();
+
         if (Time.time >= startTime + playerData.wallJumpTime)
             isAbilityDone = true;
+    }
+
+    private void CheckWallJumpMultiplier() {
+        // if (!isWallJumping) return;
+
+        if (jumpInputStop) {
+            player.SetVelocityY(player.CurrentVelocity.y * playerData.variableJumpHeightMultiplier);
+            // isWallJumping = false;
+            player.InputHandler.UseJumpStopInput();
+            isAbilityDone = true;
+        }
+        else if (isFalling) {
+            isAbilityDone = true;
+            // isWallJumping = false;
+        }
     }
 
     public void GetWallJumpDirection(bool isTouchingWall) {

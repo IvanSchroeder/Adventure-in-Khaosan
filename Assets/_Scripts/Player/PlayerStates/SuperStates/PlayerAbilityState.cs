@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ExtensionMethods;
 
 public class PlayerAbilityState : PlayerState {
     public PlayerAbilityState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
@@ -32,6 +33,8 @@ public class PlayerAbilityState : PlayerState {
 
     public override void LogicUpdate() {
         base.LogicUpdate();
+
+        if (isExitingState) return;
 
         if (isAbilityDone) {
             if (isGrounded && isFalling)

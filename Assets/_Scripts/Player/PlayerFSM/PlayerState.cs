@@ -14,7 +14,13 @@ public class PlayerState {
     protected bool isOnPlatform;
     protected bool isIgnoringPlatforms;
     protected bool isOnSlope;
+    protected bool isMoving;
+    protected bool isRunning;
+    protected bool isRunningAtMaxSpeed;
+    protected bool isSprinting;
+    protected bool isSprintingAtMaxSpeed;
     protected bool isCrouching;
+    protected bool isGroundSliding;
     protected bool isAirborne;
     protected bool isJumping;
     protected bool isAscending;
@@ -48,7 +54,9 @@ public class PlayerState {
     protected bool jumpInputStop;
     protected bool jumpInputHold;
     protected bool grabInput;
-
+    protected bool attackInput;
+    protected bool attackInputStop;
+    protected bool attackInputHold;
 
     protected int amountOfJumpsLeft;
     protected float startTimeMaxRunSpeed;
@@ -149,6 +157,9 @@ public class PlayerState {
         jumpInput = player.InputHandler.JumpInput;
         jumpInputStop = player.InputHandler.JumpInputStop;
         jumpInputHold = player.InputHandler.JumpInputHold;
+        attackInput = player.InputHandler.AttackInput;
+        attackInputStop = player.InputHandler.AttackInputStop;
+        attackInputHold = player.InputHandler.AttackInputHold;
         if (!playerData.autoWallGrab) grabInput = player.InputHandler.GrabInput;
     }
 
@@ -175,7 +186,13 @@ public class PlayerState {
         playerData.isOnPlatform = isOnPlatform;
         playerData.isIgnoringPlatforms = isIgnoringPlatforms;
         playerData.isOnSlope = isOnSlope;
+        playerData.isMoving = isMoving;
+        playerData.isRunning = isRunning;
+        playerData.isRunningAtMaxSpeed = isRunningAtMaxSpeed;
+        playerData.isSprinting = isSprinting;
+        playerData.isSprintingAtMaxSpeed = isSprintingAtMaxSpeed;
         playerData.isCrouching = isCrouching;
+        playerData.isGroundSliding = isGroundSliding;
         playerData.isAirborne = isAirborne;
         playerData.isJumping = isJumping;
         playerData.isAscending = isAscending;

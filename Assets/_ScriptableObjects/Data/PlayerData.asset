@@ -48,12 +48,28 @@ MonoBehaviour:
   jumpInputStop: 0
   jumpInputHold: 0
   grabInput: 0
+  canMove: 1
+  canSprint: 1
+  canCrouch: 1
+  canGroundSlide: 1
+  canJump: 1
+  canWallSlide: 1
+  canWallClimb: 1
+  canLedgeClimb: 1
+  canWallJump: 1
+  canAttack: 0
   isGrounded: 0
   isOnSolidGround: 0
   isOnPlatform: 0
   isIgnoringPlatforms: 0
   isOnSlope: 0
+  isMoving: 0
+  isRunning: 0
+  isRunningAtMaxSpeed: 0
+  isSprinting: 0
+  isSprintingAtMaxSpeed: 0
   isCrouching: 0
+  isGroundSliding: 0
   isAirborne: 0
   isJumping: 0
   isAscending: 0
@@ -68,6 +84,7 @@ MonoBehaviour:
   isWallSliding: 0
   isWallGrabing: 0
   isWallClimbing: 0
+  isWallJumping: 0
   isHanging: 0
   isClimbing: 0
   isDamaged: 0
@@ -75,21 +92,28 @@ MonoBehaviour:
   isDeadOnGround: 0
   isInvulnerable: 0
   isAnimationFinished: 0
-  isExitingState: 0
   isAbilityDone: 0
+  isExitingState: 0
   hasCoyoteTime: 0
   hasWallJumpCoyoteTime: 0
   stickToGround: 0
-  runSpeed: 10
-  maxRunSpeed: 10
-  maxHorizontalSpeed: 30
-  maxRunSpeedThreshold: 0
-  crouchWalkSpeed: 3
   lerpVelocity: 1
-  runAcceleration: 40
+  conserveMomentum: 1
+  runSpeed: 10
+  crouchWalkSpeed: 5
+  sprintSpeed: 30
+  maxRunSpeedThreshold: 1
+  maxHorizontalSpeed: 30
+  runAcceleration: 11
   runDecceleration: 50
+  sprintAcceleration: 52
+  sprintDecceleration: 10
   crouchAcceleration: 40
   crouchDecceleration: 40
+  groundSlideDuration: 0.5
+  groundSlideSpeed: 15
+  groundSlideAcceleration: 80
+  groundSlideDecceleration: 56
   deathSlideDecceleration: 5
   lerpVelocityInAir: 1
   airAcceleration: 65

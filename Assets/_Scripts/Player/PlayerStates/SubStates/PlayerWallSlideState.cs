@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ExtensionMethods;
 
 public class PlayerWallSlideState : PlayerTouchingWallState {
     public PlayerWallSlideState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
@@ -24,7 +25,7 @@ public class PlayerWallSlideState : PlayerTouchingWallState {
 
         if (isExitingState) return;
 
-        if (isTouchingWall & !isTouchingLedge) {
+        if (playerData.canLedgeClimb && isTouchingWall & !isTouchingLedge) {
             player.LedgeClimbState.SetDetectedPosition(player.transform.position);
             stateMachine.ChangeState(player.LedgeClimbState);
         }
@@ -32,19 +33,18 @@ public class PlayerWallSlideState : PlayerTouchingWallState {
             WallHop(playerData.wallHopSpeed, playerData.wallHopDirectionOffAngle, player.FacingDirection);
             return;
         }
+        else if (isOnSolidGround || (isOnPlatform && yInput != -1)) {
+            stateMachine.ChangeState(player.LandState);
+        }
         else if (!playerData.autoWallGrab) {
-            if (grabInput)
+            if (playerData.canWallClimb && grabInput)
                 stateMachine.ChangeState(player.WallGrabState);
-            else if (isOnSolidGround || (isOnPlatform && yInput != -1))
-                stateMachine.ChangeState(player.LandState);
         }
         else if (playerData.autoWallGrab) {
-            if (xInput == player.FacingDirection || yInput > 0)
+            if (playerData.canWallClimb && yInput == 1)
                 stateMachine.ChangeState(player.WallClimbState);
-            else if (xInput == player.FacingDirection && yInput == 0)
+            else if (playerData.canWallClimb && xInput == player.FacingDirection && yInput == 0)
                 stateMachine.ChangeState(player.WallGrabState);
-            else if (isOnSolidGround || (isOnPlatform && yInput != -1))
-                stateMachine.ChangeState(player.LandState);
         }
         else if (!isTouchingWall) {
             stateMachine.ChangeState(player.AirborneState);

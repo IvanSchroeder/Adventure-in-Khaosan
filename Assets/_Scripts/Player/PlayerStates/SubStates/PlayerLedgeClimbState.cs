@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ExtensionMethods;
 
 public class PlayerLedgeClimbState : PlayerState {
     private Vector2 detectedPos;
@@ -31,7 +32,6 @@ public class PlayerLedgeClimbState : PlayerState {
         if (playerData.autoWallGrab && yInput != 0)
             yInput = 0;
 
-        hasSpace = true;
         player.SetVelocityX(0f);
         player.SetVelocityY(0f);
         player.transform.position = detectedPos;
@@ -41,6 +41,8 @@ public class PlayerLedgeClimbState : PlayerState {
         stopPos.Set(cornerPos.x + (player.FacingDirection * playerData.stopOffset.x), cornerPos.y + playerData.stopOffset.y);
 
         player.transform.position = startPos;
+
+        hasSpace = CheckForSpace();
 
         player.CameraTarget.SetTargetPosition(Vector3.zero, 0f, true);
         //player.CameraTarget.OffsetTargetTowards(Vector3.zero, 0f, true);
@@ -73,8 +75,6 @@ public class PlayerLedgeClimbState : PlayerState {
         player.stopPos = stopPos;
 
         if (isAnimationFinished) {
-            hasSpace = CheckForSpace();
-
             if (hasSpace) {
                 player.SetColliderParameters(player.MovementCollider, playerData.standingColliderConfig);
                 stateMachine.ChangeState(player.IdleState);
@@ -102,17 +102,17 @@ public class PlayerLedgeClimbState : PlayerState {
 
             }
 
-            if (isHanging && !isClimbing && xInput == player.FacingDirection) {
+            if (isHanging && !isClimbing && xInput == player.FacingDirection && (hasSpace || (!hasSpace && playerData.canCrouch))) {
                 // CheckForSpace();
                 isClimbing = true;
                 player.Anim.SetBool("climbLedge", true);
                 player.CameraTarget.SetTargetPosition(stopPos + (Vector2.up * 2f));
             }
-            else if (isHanging && !isClimbing && jumpInput && xInput == -player.FacingDirection) {
+            else if (playerData.canWallJump && isHanging && !isClimbing && jumpInput && xInput == -player.FacingDirection) {
                 player.WallJumpState.GetWallJumpDirection(isTouchingWall);
                 stateMachine.ChangeState(player.WallJumpState);
             }
-            else if (isHanging && !isClimbing && jumpInput && xInput == 0) {
+            else if (playerData.canJump && isHanging && !isClimbing && jumpInput && xInput == 0) {
                 coyoteTime = false;
                 player.transform.position += Vector3.up * 0.2f;
                 stateMachine.ChangeState(player.JumpState);
@@ -121,7 +121,7 @@ public class PlayerLedgeClimbState : PlayerState {
                 player.transform.position += Vector3.down * 0.2f;
                 stateMachine.ChangeState(player.AirborneState);
             }
-            else if (isHanging && !isClimbing && grabInput && yInput == -1) {
+            else if (playerData.canWallClimb && isHanging && !isClimbing && grabInput && yInput == -1) {
                 player.transform.position += Vector3.down * 0.2f;
                 stateMachine.ChangeState(player.WallClimbState);
             }

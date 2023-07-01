@@ -132,9 +132,12 @@ public class LevelManager : MonoBehaviour {
         Checkpoint[] checkpointArray = GameObject.FindObjectsOfType<Checkpoint>();
 
         for (int i = 0; i < checkpointArray.Count(); i++) {
+            checkpointArray[i].checkpointOrderID = i;
             CheckpointsList.Add(checkpointArray[i]);
             Debug.Log($"Checkpoint {checkpointArray[i]} added");
         }
+
+        CheckpointsList.OrderBy(ch => ch.checkpointOrderID);
 
         startingCheckpoint = CheckpointsList.GetFirstElement();
         currentCheckpoint = startingCheckpoint;
@@ -177,6 +180,8 @@ public class LevelManager : MonoBehaviour {
     private void EnableCheckpoints() {
         startingCheckpoint.isStartingCheckpoint = true;
         lastCheckpoint.isFinalCheckpoint = true;
+
+        startingCheckpoint.InteractableSystem.Interact();
     }
 
     public IEnumerator LoadLevelRoutine() {

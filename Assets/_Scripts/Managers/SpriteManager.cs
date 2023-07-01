@@ -12,9 +12,6 @@ public class SpriteManager : MonoBehaviour {
     [field: SerializeField] public IInteractable Interactable { get; private set; }
     [field: SerializeField] public InteractableSystem InteractableSystem { get; private set; }
     [field: SerializeField] public SpriteFlashConfiguration CurrentFlashConfiguration { get; private set; }
-    public SpriteFlashConfiguration DamagedFlash { get; private set; }
-    public SpriteFlashConfiguration InvulnerableFlash { get; private set; }
-    public SpriteFlashConfiguration InteractedFlash { get; private set; }
 
     [field: SerializeField, ColorUsage(true, true)] public Color DefaultFlashColor { get; private set; } = Color.white;
     [field: SerializeField, ColorUsage(true, true)] public Color CurrentFlashColor { get; private set; } = Color.white;
@@ -44,29 +41,29 @@ public class SpriteManager : MonoBehaviour {
 
     private void OnEnable() {
         if (HealthSystem.IsNotNull()) {
-            this.HealthSystem.OnEntityDamaged += StartDamageFlash;
-            this.HealthSystem.OnEntityDeath += StartDamageFlash;
-            this.HealthSystem.OnInvulnerabilityStart += StartInvulnerabilityFlash;
+            this.HealthSystem.OnEntityDamaged += SetCurrentDamageableFlash;
+            this.HealthSystem.OnEntityDeath += SetCurrentDamageableFlash;
+            this.HealthSystem.OnInvulnerabilityStart += SetCurrentDamageableFlash;
             this.HealthSystem.OnInvulnerabilityEnd += DisableIsFlashing;
         }
 
         if (InteractableSystem.IsNotNull()) {
             this.InteractableSystem.OnInteractionState += SetInteractedOutline;
-            this.InteractableSystem.OnInteracted += StartInteractedFlash;
+            this.InteractableSystem.OnInteracted += SetCurrentInteractableFlash;
         }
     }
 
     private void OnDisable() {
         if (HealthSystem.IsNotNull()) {
-            this.HealthSystem.OnEntityDamaged -= StartDamageFlash;
-            this.HealthSystem.OnEntityDeath -= StartDamageFlash;
-            this.HealthSystem.OnInvulnerabilityStart -= StartInvulnerabilityFlash;
+            this.HealthSystem.OnEntityDamaged -= SetCurrentDamageableFlash;
+            this.HealthSystem.OnEntityDeath -= SetCurrentDamageableFlash;
+            this.HealthSystem.OnInvulnerabilityStart -= SetCurrentDamageableFlash;
             this.HealthSystem.OnInvulnerabilityEnd -= DisableIsFlashing;
         }
 
         if (InteractableSystem.IsNotNull()) {
             this.InteractableSystem.OnInteractionState -= SetInteractedOutline;
-            this.InteractableSystem.OnInteracted -= StartInteractedFlash;
+            this.InteractableSystem.OnInteracted -= SetCurrentInteractableFlash;
         }
     }
 
@@ -77,12 +74,9 @@ public class SpriteManager : MonoBehaviour {
 
         if (HealthSystem.IsNull() && Damageable.IsNotNull()) {
             HealthSystem = Damageable.HealthSystem;
-            DamagedFlash = HealthSystem.DamagedFlash;
-            InvulnerableFlash = HealthSystem.InvulnerableFlash;
         }
         if (InteractableSystem.IsNull() && Interactable.IsNotNull()) {
             InteractableSystem = Interactable.InteractableSystem;
-            InteractedFlash = InteractableSystem.InteractedFlash;
         }
 
         if (spriteRenderer == null) spriteRenderer = this.GetComponentInHierarchy<SpriteRenderer>();
@@ -125,28 +119,43 @@ public class SpriteManager : MonoBehaviour {
         IsFlashing = false;
     }
 
-    private void SetSpriteFlashConfiguration(SpriteFlashConfiguration config) {
-        if (config == null) return;
-        CurrentFlashConfiguration = config;
-        CurrentFlashConfiguration.Init();
+    // public void StartDamageFlash(object sender, OnEntityDamagedEventArgs eventArgs) {
+    //     CurrentFlashConfiguration = eventArgs.CurrentFlash;
+    //     StartFlash(CurrentFlashConfiguration);
+    // }
+
+    // public void StartInvulnerabilityFlash(object sender, OnEntityDamagedEventArgs eventArgs) {
+    //     CurrentFlashConfiguration = eventArgs.CurrentFlash;
+    //     StartFlash(CurrentFlashConfiguration);
+    // }
+
+    // public void StartInteractedFlash(object sender, OnEntityInteractedEventArgs eventArgs) {
+    //     CurrentFlashConfiguration = eventArgs.CurrentFlash;
+    //     StartFlash(CurrentFlashConfiguration);
+    // }
+
+    public void SetCurrentDamageableFlash(object sender, OnEntityDamagedEventArgs eventArgs) {
+        if (eventArgs.CurrentFlash.IsNull()) return;
+
+        CurrentFlashConfiguration = eventArgs.CurrentFlash;
+        InitializeFlashConfiguration(CurrentFlashConfiguration);
+
+        StartFlash(CurrentFlashConfiguration);
+    }
+
+    public void SetCurrentInteractableFlash(object sender, OnEntityInteractedEventArgs eventArgs) {
+        if (eventArgs.CurrentFlash.IsNull()) return;
+
+        CurrentFlashConfiguration = eventArgs.CurrentFlash;
+        InitializeFlashConfiguration(CurrentFlashConfiguration);
+
+        StartFlash(CurrentFlashConfiguration);
+    }
+
+    private void InitializeFlashConfiguration(SpriteFlashConfiguration config) {
+        config.Init();
         Init();
-        colorChangeDelay = new WaitForSeconds(CurrentFlashConfiguration.SecondsBetweenFlashes);
-    }
-
-    public void StartDamageFlash(object sender, OnEntityDamagedEventArgs eventArgs) {
-        StartFlash(eventArgs.CurrentFlash);
-    }
-
-    public void StartInvulnerabilityFlash(object sender, OnEntityDamagedEventArgs eventArgs) {
-        StartFlash(eventArgs.CurrentFlash);
-    }
-
-    public void StartInteractedFlash(object sender, OnEntityInteractedEventArgs eventArgs) {
-        StartFlash(eventArgs.CurrentFlash);
-    }
-
-    public void SetCurrentFlash(object sender, OnEntityDamagedEventArgs eventArgs) {
-
+        colorChangeDelay = new WaitForSeconds(config.SecondsBetweenFlashes);
     }
 
     public void SetInteractedOutline(object sender, bool enable) {
@@ -179,7 +188,6 @@ public class SpriteManager : MonoBehaviour {
 
     private IEnumerator SpriteFlashRoutine(SpriteFlashConfiguration config) {
         IsFlashing = true;
-        SetSpriteFlashConfiguration(config);
 
         while ((CurrentFlashConfiguration.LoopFlash) || (!CurrentFlashConfiguration.LoopFlash && CurrentAmountOfFlashes < CurrentFlashConfiguration.MaxAmountOfFlashes)) {
             if (CurrentFlashConfiguration.ChangeColor) {
