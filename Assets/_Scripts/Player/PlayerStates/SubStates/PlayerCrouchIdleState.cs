@@ -35,12 +35,9 @@ public class PlayerCrouchIdleState : PlayerGroundedState {
 
         if (xInput != 0) {
             player.CheckFacingDirection(xInput);
-
-            if(playerData.canMove && !isTouchingWall) stateMachine.ChangeState(player.CrouchMoveState);
-            else if (yInput != -1 && !isTouchingCeiling) {
-                player.SetColliderParameters(player.MovementCollider, playerData.standingColliderConfig);
-                stateMachine.ChangeState(player.IdleState);
-            }
+            
+            if(playerData.canMove && !isTouchingWall)
+                stateMachine.ChangeState(player.CrouchMoveState);
         }
         else if (yInput != -1 && !isTouchingCeiling) {
             player.SetColliderParameters(player.MovementCollider, playerData.standingColliderConfig);

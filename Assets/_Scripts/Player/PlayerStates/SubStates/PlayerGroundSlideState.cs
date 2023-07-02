@@ -50,7 +50,7 @@ public class PlayerGroundSlideState : PlayerGroundedState {
             if (yInput == -1 || isTouchingCeiling) {
                 if (xInput == 0 && player.CurrentVelocity.x == 0f)
                     stateMachine.ChangeState(player.CrouchIdleState);
-                else if (xInput != 0 && player.CurrentVelocity.x.AbsoluteValue() > playerData.crouchWalkSpeed * 0.5f)
+                else if (xInput != 0 && player.CurrentVelocity.x.AbsoluteValue() < playerData.crouchWalkSpeed * 0.2f)
                     stateMachine.ChangeState(player.CrouchMoveState);
             }
             else {
@@ -58,7 +58,7 @@ public class PlayerGroundSlideState : PlayerGroundedState {
                     player.SetColliderParameters(player.MovementCollider, playerData.standingColliderConfig);
                     stateMachine.ChangeState(player.IdleState);
                 }
-                else if (xInput != 0 && player.CurrentVelocity.x.AbsoluteValue() > playerData.runSpeed * 0.5f)
+                else if (xInput != 0 && player.CurrentVelocity.x.AbsoluteValue() < playerData.runSpeed * 0.2f)
                     player.SetColliderParameters(player.MovementCollider, playerData.standingColliderConfig);
                     stateMachine.ChangeState(player.MoveState);
             }
@@ -71,15 +71,16 @@ public class PlayerGroundSlideState : PlayerGroundedState {
         if (isExitingState) return;
 
         if (stopSlide) {
-            if (yInput == -1 && xInput == player.FacingDirection) {
-                player.SetVelocityX(xInput * playerData.crouchWalkSpeed * 0.5f, playerData.groundSlideDecceleration, playerData.lerpVelocity);
-            }
-            else if (yInput != -1 && xInput == player.FacingDirection) {
-                player.SetVelocityX(xInput * playerData.runSpeed * 0.5f, playerData.groundSlideDecceleration, playerData.lerpVelocity);
-            }
-            else {
-                player.SetVelocityX(0f, playerData.groundSlideDecceleration, playerData.lerpVelocity);
-            }
+            player.SetVelocityX(0f, playerData.groundSlideDecceleration, playerData.lerpVelocity);
+            // if (yInput == -1 && xInput == player.FacingDirection) {
+            //     player.SetVelocityX(0f, playerData.groundSlideDecceleration, playerData.lerpVelocity);
+            // }
+            // else if (yInput != -1 && xInput == player.FacingDirection) {
+            //     player.SetVelocityX(0f, playerData.groundSlideDecceleration, playerData.lerpVelocity);
+            // }
+            // else if (xInput == 0) {
+            //     player.SetVelocityX(0f, playerData.groundSlideDecceleration, playerData.lerpVelocity);
+            // }
         }
         else {
             if (playerData.conserveMomentum && player.CurrentVelocity.x.AbsoluteValue() > playerData.groundSlideSpeed)

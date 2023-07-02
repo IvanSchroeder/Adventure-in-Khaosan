@@ -20,13 +20,13 @@ MonoBehaviour:
     <Offset>k__BackingField: {x: 0, y: 0.75}
     <Size>k__BackingField: {x: 1, y: 1.5}
   facingDirection: 1
-  currentLives: 0
+  currentLives: 3
   currentHealth: 0
-  currentHearts: 0
+  currentHearts: 1
   currentLayer: Player
   currentGravityScale: 3
   currentFallSpeed: 12
-  amountOfJumpsLeft: 1
+  amountOfJumpsLeft: 0
   slopeDownAngle: 0
   slopeSideAngle: 0
   cumulatedKnockbackTime: 0
@@ -42,7 +42,7 @@ MonoBehaviour:
   maxKnockbackTime: 2
   deadOnGroundTime: 3
   xInput: 0
-  lastXInput: 0
+  lastXInput: 1
   yInput: 0
   jumpInput: 0
   jumpInputStop: 0
@@ -58,14 +58,15 @@ MonoBehaviour:
   canLedgeClimb: 1
   canWallJump: 1
   canAttack: 0
-  isGrounded: 0
-  isOnSolidGround: 0
+  isGrounded: 1
+  isOnSolidGround: 1
   isOnPlatform: 0
   isIgnoringPlatforms: 0
   isOnSlope: 0
   isMoving: 0
   isRunning: 0
   isRunningAtMaxSpeed: 0
+  isChangingDirections: 0
   isSprinting: 0
   isSprintingAtMaxSpeed: 0
   isCrouching: 0
@@ -101,19 +102,21 @@ MonoBehaviour:
   conserveMomentum: 1
   runSpeed: 10
   crouchWalkSpeed: 5
-  sprintSpeed: 30
+  sprintSpeed: 20
   maxRunSpeedThreshold: 1
   maxHorizontalSpeed: 30
-  runAcceleration: 11
-  runDecceleration: 50
-  sprintAcceleration: 52
-  sprintDecceleration: 10
-  crouchAcceleration: 40
-  crouchDecceleration: 40
+  runAcceleration: 50
+  runDecceleration: 30
+  runDirectionChangeAcceleration: 20
+  sprintAcceleration: 35
+  sprintDecceleration: 40
+  sprintDirectionChangeAcceleration: 64
+  crouchAcceleration: 98
+  crouchDecceleration: 75
   groundSlideDuration: 0.5
   groundSlideSpeed: 15
   groundSlideAcceleration: 80
-  groundSlideDecceleration: 56
+  groundSlideDecceleration: 50
   deathSlideDecceleration: 5
   lerpVelocityInAir: 1
   airAcceleration: 65

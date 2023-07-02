@@ -36,7 +36,7 @@ public class PlayerGroundedState : PlayerState {
             player.AirborneState.StartCoyoteTime();
             stateMachine.ChangeState(player.AirborneState);
         }
-        else if (playerData.canWallSlide && playerData.canWallClimb && isTouchingWall && ((playerData.autoWallGrab && xInput == player.FacingDirection) || (!playerData.autoWallGrab && grabInput)) && isTouchingLedge) {
+        else if (playerData.canWallSlide && playerData.canWallClimb && isTouchingWall && isTouchingLedge && ((playerData.autoWallGrab && xInput == player.FacingDirection) || (!playerData.autoWallGrab && grabInput))) {
             stateMachine.ChangeState(player.WallGrabState);
         }
     }

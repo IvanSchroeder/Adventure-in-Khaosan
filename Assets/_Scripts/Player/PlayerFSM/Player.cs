@@ -288,12 +288,16 @@ public class Player : Entity, IDamageable, IInteractor {
         return Physics2D.Raycast(LedgeCheck.position.ToVector2() + (Vector2.up * playerData.ledgeCheckOffset.y), Vector2.right * FacingDirection, playerData.ledgeCheckDistance, playerData.wallLayer);
     }
 
+    public bool CheckChangingDirections() {
+        return InputHandler.NormInputX != 0 && CurrentVelocity.x != 0 && InputHandler.NormInputX.Sign() != CurrentVelocity.x.Sign();
+    }
+
     public bool CheckFalling() {
-        return Rb.velocity.y <= playerData.fallThreshold && !playerData.isGrounded;
+        return CurrentVelocity.y <= playerData.fallThreshold && !playerData.isGrounded;
     }
 
     public bool CheckAscending() {
-        return Rb.velocity.y > 0.0f && !playerData.isGrounded;
+        return CurrentVelocity.y > 0.0f && !playerData.isGrounded;
     }
 
     public bool CheckCornerCorrection() {
@@ -315,17 +319,6 @@ public class Player : Entity, IDamageable, IInteractor {
         if (FacingDirection == 1) PlayerSprite.flipX = false;
         else if (FacingDirection == -1) PlayerSprite.flipX = true;
     }
-
-    // public void CalculateColliderHeight(float height) {
-    //     Vector2 center = MovementCollider.offset;
-    //     workspace.Set(MovementCollider.size.x, height);
-
-    //     center.y += (height - MovementCollider.size.y) / 2;
-    //     MovementCollider.size = workspace;
-    //     MovementCollider.offset = center;
-
-    //     CeilingCheck.position = new Vector2(CeilingCheck.position.x, MovementCollider.bounds.max.y);
-    // }
 
     public void SetColliderParameters(BoxCollider2D collider, ColliderConfiguration colliderConfig) {
         collider.offset = colliderConfig.Offset;

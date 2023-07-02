@@ -61,6 +61,7 @@ public class PlayerData : EntityData {
     public bool isMoving;
     public bool isRunning;
     public bool isRunningAtMaxSpeed;
+    public bool isChangingDirections;
     public bool isSprinting;
     public bool isSprintingAtMaxSpeed;
     public bool isCrouching;
@@ -123,14 +124,18 @@ public class PlayerData : EntityData {
     public bool lerpVelocity = false;
     public bool conserveMomentum = false;
     [Range(0f, 10f)] public float runSpeed;
+    [Range(0f, 1f)] public float maxRunSpeedThreshold;
     [Range(0f, 5f)] public float crouchWalkSpeed;
     [Range(0f, 30f)] public float sprintSpeed;
-    [Range(0f, 1f)] public float maxRunSpeedThreshold;
+    [Range(0f, 1f)] public float maxSprintSpeedThreshold;
+    [Range(0f, 2f)] public float sprintStopDelay;
     [Range(0f, 30f)] public float maxHorizontalSpeed;
     [Range(0, 100)] public int runAcceleration;
     [Range(0, 100)] public int runDecceleration;
+    [Range(0, 100)] public int runDirectionChangeAcceleration;
     [Range(0, 100)] public int sprintAcceleration;
     [Range(0, 100)] public int sprintDecceleration;
+    [Range(0, 100)] public int sprintDirectionChangeAcceleration;
     [Range(0, 100)] public int crouchAcceleration;
     [Range(0, 100)] public int crouchDecceleration;
     [Range(0.2f, 5f)] public float groundSlideDuration;
@@ -289,6 +294,7 @@ public class PlayerData : EntityData {
         isMoving = false;
         isRunning = false;
         isRunningAtMaxSpeed = false;
+        isChangingDirections = false;
         isSprinting = false;
         isSprintingAtMaxSpeed = false;
         isCrouching = false;

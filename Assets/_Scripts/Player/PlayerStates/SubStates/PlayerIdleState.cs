@@ -35,7 +35,7 @@ public class PlayerIdleState : PlayerGroundedState {
         if (playerData.canCrouch && yInput == -1)
             stateMachine.ChangeState(player.CrouchIdleState);
         else if (xInput != 0) {
-            if (playerData.canMove && !isTouchingWall)
+            if (playerData.canMove && (!isTouchingWall || !isTouchingLedge))
                 stateMachine.ChangeState(player.MoveState);
             else if (playerData.canWallClimb && isTouchingWall && isTouchingLedge && playerData.autoWallGrab && xInput == player.FacingDirection) {
                 if (playerData.autoWallGrab && xInput == player.FacingDirection && yInput == 0) 

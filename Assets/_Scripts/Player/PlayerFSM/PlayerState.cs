@@ -19,6 +19,7 @@ public class PlayerState {
     protected bool isRunningAtMaxSpeed;
     protected bool isSprinting;
     protected bool isSprintingAtMaxSpeed;
+    protected bool isChangingDirections;
     protected bool isCrouching;
     protected bool isGroundSliding;
     protected bool isAirborne;
@@ -93,10 +94,11 @@ public class PlayerState {
     }
 
     public virtual void Exit() {
-        player.Anim.SetBool(animBoolName, false);
         UpdateAnimator();
         UpdatePlayerStates();
-        CheckVerticallity();
+        CheckHorizontalMovement();
+        CheckVerticalMovement();
+        player.Anim.SetBool(animBoolName, false);
         isExitingState = true;
     }
 
@@ -104,7 +106,8 @@ public class PlayerState {
         CheckInputs();
         UpdateAnimator();
         UpdatePlayerStates();
-        CheckVerticallity();
+        CheckHorizontalMovement();
+        CheckVerticalMovement();
 
         if ((yInput == -1 && ((isOnPlatform && jumpInputHold) || isWallSliding || isFalling || isAirborne)) || isWallClimbing || isWallGrabing || isDead) {
             player.InputHandler.UseJumpInput();
@@ -124,7 +127,8 @@ public class PlayerState {
     }
 
     public virtual void DoChecks() {
-        CheckVerticallity();
+        CheckHorizontalMovement();
+        CheckVerticalMovement();
         CheckRaycasts();
     }
 
@@ -132,7 +136,11 @@ public class PlayerState {
 
     public virtual void AnimationFinishTrigger() => isAnimationFinished = true;
 
-    public void CheckVerticallity() {
+    public void CheckHorizontalMovement() {
+        isChangingDirections = player.CheckChangingDirections();
+    }
+
+    public void CheckVerticalMovement() {
         isAscending = player.CheckAscending();
         isFalling = player.CheckFalling();
     }
@@ -168,6 +176,9 @@ public class PlayerState {
         player.Anim.SetFloat("xVelocityNormalized", player.CurrentVelocity.normalized.x);
         player.Anim.SetFloat("yVelocityNormalized", player.CurrentVelocity.normalized.y);
         player.Anim.SetFloat("xInput", xInput);
+        player.Anim.SetBool("changingDirections", isChangingDirections);
+        player.Anim.SetBool("running", isRunning);
+        player.Anim.SetBool("sprinting", isSprintingAtMaxSpeed);
     }
 
     public void UpdatePlayerStates() {
@@ -191,6 +202,7 @@ public class PlayerState {
         playerData.isRunningAtMaxSpeed = isRunningAtMaxSpeed;
         playerData.isSprinting = isSprinting;
         playerData.isSprintingAtMaxSpeed = isSprintingAtMaxSpeed;
+        playerData.isChangingDirections = isChangingDirections;
         playerData.isCrouching = isCrouching;
         playerData.isGroundSliding = isGroundSliding;
         playerData.isAirborne = isAirborne;
