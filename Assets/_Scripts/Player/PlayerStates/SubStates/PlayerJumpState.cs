@@ -13,9 +13,9 @@ public class PlayerJumpState : PlayerAbilityState {
 
         player.InputHandler.UseJumpInput();
         player.SetVelocityY(playerData.jumpHeight);
-        // player.SetForce(playerData.jumpHeight, Vector2.up, xInput);
-        // isJumping = true;
-        player.AirborneState.SetIsJumping();
+        isJumping = true;
+        player.AirborneState.StopCoyoteTime();
+        // player.AirborneState.SetIsJumping();
         if (amountOfJumpsLeft > 0) DecreaseAmountOfJumpsLeft();
         else if (amountOfJumpsLeft < 0) amountOfJumpsLeft = 0;
         isAbilityDone = true;
@@ -23,13 +23,18 @@ public class PlayerJumpState : PlayerAbilityState {
 
     public override void Exit() {
         base.Exit();
+    }
 
-        isJumping = false;
+    public override void LogicUpdate() {
+        base.LogicUpdate();
     }
 
     public bool CanJump() {
+        if (!playerData.canJump) return false;
+
         if (amountOfJumpsLeft > 0) return true;
-        else return false;
+        
+        return false;
     }
 
     public void ResetAmountOfJumpsLeft() {

@@ -13,7 +13,7 @@ public class InteractorSystem : MonoBehaviour {
         if (Interactor.IsNull()) Interactor = this.GetComponentInHierarchy<IInteractor>();
 
         CanInteract = true;
-    }
+    } 
 
     public void OnTriggerEnter2D(Collider2D collision) {
         InteractableSystem interactableSystem = collision.GetComponentInHierarchy<InteractableSystem>();
@@ -25,14 +25,15 @@ public class InteractorSystem : MonoBehaviour {
         Interactor.CurrentInteractable = interactableEntity;
         interactableEntity.CurrentInteractor = Interactor;
 
-        if (!interactableSystem.RequiresInput) interactableSystem.Interact();
+        if (!interactableSystem.RequiresInput) Interactor.CurrentInteractable.InteractableSystem.Interact();
         else interactableSystem.SetInteractionState(true);
     }
 
     public void OnTriggerStay2D(Collider2D collision) {
         if (!CanInteract || !collision.HasComponentInHierarchy<IInteractable>()) return;
 
-        if (Interactor.CurrentInteractable.InteractableSystem.RequiresInput && CanInteract && Interactor.InputHandler.NormInputY == 1) {
+        if (Interactor.CurrentInteractable.InteractableSystem.RequiresInput && CanInteract && Interactor.InputHandler.InteractInput) {
+            Interactor.InputHandler.UseInteractInput();
             Interactor.CurrentInteractable.InteractableSystem.Interact();
         }
     }
@@ -44,6 +45,7 @@ public class InteractorSystem : MonoBehaviour {
 
         IInteractable interactableEntity = interactableSystem.Interactable;
 
+        if (Interactor.CurrentInteractable.InteractableSystem.WasInteracted) Interactor.CurrentInteractable.InteractableSystem.InteractionStop();
         Interactor.CurrentInteractable.InteractableSystem.SetInteractionState(false);
         Interactor.CurrentInteractable = null;
         interactableEntity.CurrentInteractor = null;

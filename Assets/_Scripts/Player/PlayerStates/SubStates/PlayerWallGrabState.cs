@@ -17,11 +17,6 @@ public class PlayerWallGrabState : PlayerTouchingWallState {
         base.AnimationTrigger();
     }
 
-    public override void DoChecks()
-    {
-        base.DoChecks();
-    }
-
     public override void Enter() {
         base.Enter();
 
@@ -44,12 +39,11 @@ public class PlayerWallGrabState : PlayerTouchingWallState {
             player.LedgeClimbState.SetDetectedPosition(player.transform.position);
             stateMachine.ChangeState(player.LedgeClimbState);
         }
-        else if (xInput == -player.FacingDirection) {
+        else if (xInput == -player.FacingDirection && !isWallJumping) {
             WallHop(playerData.wallHopSpeed, playerData.wallHopDirectionOffAngle, player.FacingDirection);
         }
         else if (player.CheckGround(playerData.platformLayer) && xInput == 0) {
             stateMachine.ChangeState(player.LandState);
-
         }
         else if (playerData.autoWallGrab) {
             if (playerData.canWallClimb && xInput == player.FacingDirection && yInput != 0) {

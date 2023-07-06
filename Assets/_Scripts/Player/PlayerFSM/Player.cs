@@ -4,7 +4,6 @@ using UnityEngine;
 using ExtensionMethods;
 using System;
 
-
 [Serializable]
 public struct ColliderConfiguration {
     [field: SerializeField] public Vector2 Offset { get; private set; }
@@ -34,7 +33,14 @@ public class Player : Entity, IDamageable, IInteractor {
     public PlayerKnockbackState KnockbackState { get; private set; }
     public PlayerDeathState DeathState { get; private set; }
 
-    [Header("General"), Space(5f)]
+    [Header("States")]
+    [Space(5f)]
+    private PlayerState CurrentState;
+    private PlayerState PreviousState;
+    public string CurrentStateName;
+    public string PreviousStateName;
+
+    [Space(10f), Header("General"), Space(5f)]
     public PlayerData playerData;
     [field: SerializeField] public Rigidbody2D Rb { get; private set; }
     [field: SerializeField] public BoxCollider2D MovementCollider { get; private set; }
@@ -52,10 +58,11 @@ public class Player : Entity, IDamageable, IInteractor {
     [field: SerializeField] public PlayerInputHandler InputHandler { get; set; }
     [field: SerializeField] public IInteractable CurrentInteractable { get; set; }
 
-    [field: SerializeField, Space(10f), Header("Checks"), Space(5f)] public Transform GroundCheck { get; private set; }
-    [field: SerializeField] public Transform CeilingCheck { get; private set; }
-    [field: SerializeField] public Transform WallCheck { get; private set; }
-    [field: SerializeField] public Transform LedgeCheck { get; private set; }
+    [field: SerializeField, Space(10f), Header("Checks"), Space(5f)] public Transform GroundPoint { get; private set; }
+    [field: SerializeField] public Transform MidPoint { get; private set; }
+    [field: SerializeField] public Transform CeilingPoint { get; private set; }
+    [field: SerializeField] public Transform WallPoint { get; private set; }
+    [field: SerializeField] public Transform LedgePoint { get; private set; }
 
     private Vector2 workspace;
     private float velocityX;
@@ -82,6 +89,14 @@ public class Player : Entity, IDamageable, IInteractor {
     public Action OnPlayerDeathEnd;
     public event Action OnLivesDepleted;
 
+    private void UpdateCurrentState(PlayerState current, PlayerState previous) {
+        CurrentState = current;
+        PreviousState = previous;
+
+        CurrentStateName = $"{CurrentState.ToString()}";
+        PreviousStateName = $"{PreviousState.ToString()}";
+    }
+
     private void OnEnable() {
         LevelManager.OnPlayerSpawn += StartInvulnerable;
         LevelManager.OnLevelFinished += StandOnCheckpoint;
@@ -92,6 +107,8 @@ public class Player : Entity, IDamageable, IInteractor {
 
         OnEntityDamaged += HealthSystem.ReduceHealth;
         OnInvulnerable += HealthSystem.SetInvulnerability;
+
+        StateMachine.OnStateChange += UpdateCurrentState;
     }
 
     private void OnDisable() {
@@ -104,10 +121,28 @@ public class Player : Entity, IDamageable, IInteractor {
 
         OnEntityDamaged -= HealthSystem.ReduceHealth;
         OnInvulnerable -= HealthSystem.SetInvulnerability;
+
+        StateMachine.OnStateChange -= UpdateCurrentState;
     }
 
     private void Awake() {
         StateMachine = new PlayerStateMachine();
+
+        // IdleState = PlayerState.CreateInstance<PlayerIdleState>(this, StateMachine, playerData, "idle");
+        // MoveState = PlayerState.CreateInstance<PlayerMoveState>(this, StateMachine, playerData, "move");
+        // CrouchIdleState = PlayerState.CreateInstance<PlayerCrouchIdleState>(this, StateMachine, playerData, "crouchIdle");
+        // CrouchMoveState = PlayerState.CreateInstance<PlayerCrouchMoveState>(this, StateMachine, playerData, "crouchMove");
+        // GroundSlideState = PlayerState.CreateInstance<PlayerGroundSlideState>(this, StateMachine, playerData, "groundSlide");
+        // JumpState = PlayerState.CreateInstance<PlayerJumpState>(this, StateMachine, playerData, "airborne");
+        // AirborneState = PlayerState.CreateInstance<PlayerAirborneState>(this, StateMachine, playerData, "airborne");
+        // LandState = PlayerState.CreateInstance<PlayerLandState>(this, StateMachine, playerData, "land");
+        // WallSlideState = PlayerState.CreateInstance<PlayerWallSlideState>(this, StateMachine, playerData, "wallSlide");
+        // WallGrabState = PlayerState.CreateInstance<PlayerWallGrabState>(this, StateMachine, playerData, "wallGrab");
+        // WallClimbState = PlayerState.CreateInstance<PlayerWallClimbState>(this, StateMachine, playerData, "wallClimb");
+        // WallJumpState = PlayerState.CreateInstance<PlayerWallJumpState>(this, StateMachine, playerData, "roll");
+        // LedgeClimbState = PlayerState.CreateInstance<PlayerLedgeClimbState>(this, StateMachine, playerData, "ledgeClimbState");
+        // KnockbackState = PlayerState.CreateInstance<PlayerKnockbackState>(this, StateMachine, playerData, "damaged");
+        // DeathState = PlayerState.CreateInstance<PlayerDeathState>(this, StateMachine, playerData, "dead");
 
         IdleState = new PlayerIdleState(this, StateMachine, playerData, "idle");
         MoveState = new PlayerMoveState(this, StateMachine, playerData, "move");
@@ -265,31 +300,32 @@ public class Player : Entity, IDamageable, IInteractor {
     }
 
     public bool CheckGround(LayerMask mask) {
-        return Physics2D.Raycast(GroundCheck.position.ToVector2() + (Vector2.right * playerData.groundCheckOffset.x) + (Vector2.up * playerData.groundCheckOffset.y), Vector2.down, playerData.groundCheckDistance, mask)
-            || Physics2D.Raycast(GroundCheck.position.ToVector2() + (Vector2.left * playerData.groundCheckOffset.x) + (Vector2.up * playerData.groundCheckOffset.y), Vector2.down, playerData.groundCheckDistance, mask)
-            || Physics2D.Raycast(GroundCheck.position.ToVector2() + (Vector2.up * playerData.groundCheckOffset.y), Vector2.down, playerData.groundCheckDistance, mask);
+        return Physics2D.Raycast(GroundPoint.position.ToVector2() + (Vector2.right * playerData.groundCheckOffset.x) + (Vector2.up * playerData.groundCheckOffset.y), Vector2.down, playerData.groundCheckDistance, mask)
+            || Physics2D.Raycast(GroundPoint.position.ToVector2() + (Vector2.left * playerData.groundCheckOffset.x) + (Vector2.up * playerData.groundCheckOffset.y), Vector2.down, playerData.groundCheckDistance, mask)
+            || Physics2D.Raycast(GroundPoint.position.ToVector2() + (Vector2.up * playerData.groundCheckOffset.y), Vector2.down, playerData.groundCheckDistance, mask);
     }
 
     public bool CheckCeiling() {
-        return Physics2D.Raycast(CeilingCheck.position.ToVector2() + (Vector2.right * playerData.ceilingCheckOffset) + (Vector2.down * playerData.ceilingCheckOffset.y), Vector2.up, playerData.ceilingCheckDistance, playerData.solidsLayer)
-            || Physics2D.Raycast(CeilingCheck.position.ToVector2() + (Vector2.left * playerData.ceilingCheckOffset) + (Vector2.down * playerData.ceilingCheckOffset.y), Vector2.up, playerData.ceilingCheckDistance, playerData.solidsLayer)
-            || Physics2D.Raycast(CeilingCheck.position.ToVector2() + (Vector2.down * playerData.ceilingCheckOffset.y), Vector2.up, playerData.ceilingCheckDistance, playerData.solidsLayer);
+        return Physics2D.Raycast(CeilingPoint.position.ToVector2() + (Vector2.right * playerData.ceilingCheckOffset) + (Vector2.down * playerData.ceilingCheckOffset.y), Vector2.up, playerData.ceilingCheckDistance, playerData.solidsLayer)
+            || Physics2D.Raycast(CeilingPoint.position.ToVector2() + (Vector2.left * playerData.ceilingCheckOffset) + (Vector2.down * playerData.ceilingCheckOffset.y), Vector2.up, playerData.ceilingCheckDistance, playerData.solidsLayer)
+            || Physics2D.Raycast(CeilingPoint.position.ToVector2() + (Vector2.down * playerData.ceilingCheckOffset.y), Vector2.up, playerData.ceilingCheckDistance, playerData.solidsLayer);
     }
 
     public bool CheckWall() {
-        return Physics2D.Raycast(WallCheck.position.ToVector2() + (Vector2.up * playerData.wallCheckOffset.y), Vector2.right * FacingDirection, playerData.wallCheckDistance, playerData.wallLayer);
+        return Physics2D.Raycast(WallPoint.position.ToVector2() + (Vector2.up * playerData.wallCheckOffset.y), Vector2.right * FacingDirection, playerData.wallCheckDistance, playerData.wallLayer);
     }
 
     public bool CheckBackWall() {
-        return Physics2D.Raycast(WallCheck.position.ToVector2() + (Vector2.up * playerData.wallCheckOffset.y), Vector2.right * -FacingDirection, playerData.wallCheckDistance, playerData.wallLayer);
+        return Physics2D.Raycast(WallPoint.position.ToVector2() + (Vector2.up * playerData.wallCheckOffset.y), Vector2.right * -FacingDirection, playerData.wallCheckDistance, playerData.wallLayer);
     }
 
     public bool CheckLedge() {
-        return Physics2D.Raycast(LedgeCheck.position.ToVector2() + (Vector2.up * playerData.ledgeCheckOffset.y), Vector2.right * FacingDirection, playerData.ledgeCheckDistance, playerData.wallLayer);
+        return Physics2D.Raycast(LedgePoint.position.ToVector2() + (Vector2.up * playerData.ledgeCheckOffset.y), Vector2.right * FacingDirection, playerData.ledgeCheckDistance, playerData.wallLayer);
     }
 
     public bool CheckChangingDirections() {
-        return InputHandler.NormInputX != 0 && CurrentVelocity.x != 0 && InputHandler.NormInputX.Sign() != CurrentVelocity.x.Sign();
+        return ((InputHandler.NormInputX != 0 && InputHandler.NormInputX.Sign() != CurrentVelocity.x.Sign())
+            || (InputHandler.NormInputX == 0 && FacingDirection.Sign() != CurrentVelocity.x.Sign())) && CurrentVelocity.x != 0;
     }
 
     public bool CheckFalling() {
@@ -300,11 +336,20 @@ public class Player : Entity, IDamageable, IInteractor {
         return CurrentVelocity.y > 0.0f && !playerData.isGrounded;
     }
 
+    public bool CheckForSpace(Vector2 originPoint) {
+        bool space = !Physics2D.Raycast(originPoint, Vector2.up, 1f, playerData.wallLayer);
+
+        if (space) Debug.DrawRay(originPoint, Vector2.up * 1f, Color.green, 1f);
+        else Debug.DrawRay(originPoint, Vector2.up * 1f, Color.red, 1f);
+
+        return space;
+    }
+
     public bool CheckCornerCorrection() {
-        RaycastHit2D edgeLeftHit = GetHeadHit(-playerData.cornerEdgeCheckOffset);
-        RaycastHit2D innerLeftHit = GetHeadHit(-playerData.cornerInnerCheckOffset);
-        RaycastHit2D edgeRightHit = GetHeadHit(playerData.cornerEdgeCheckOffset);
-        RaycastHit2D innerRightHit = GetHeadHit(playerData.cornerInnerCheckOffset);
+        RaycastHit2D edgeLeftHit = GetCeilingHit(-playerData.cornerEdgeCheckOffset);
+        RaycastHit2D innerLeftHit = GetCeilingHit(-playerData.cornerInnerCheckOffset);
+        RaycastHit2D edgeRightHit = GetCeilingHit(playerData.cornerEdgeCheckOffset);
+        RaycastHit2D innerRightHit = GetCeilingHit(playerData.cornerInnerCheckOffset);
 
         bool correctCorner = (edgeLeftHit && !innerLeftHit) || (edgeRightHit && !innerRightHit);
         return correctCorner;
@@ -325,7 +370,7 @@ public class Player : Entity, IDamageable, IInteractor {
         collider.size = colliderConfig.Size;
         playerData.currentColliderConfiguration = colliderConfig;
 
-        CeilingCheck.position = new Vector2(CeilingCheck.position.x, MovementCollider.bounds.max.y);
+        CeilingPoint.position = new Vector2(CeilingPoint.position.x, MovementCollider.bounds.max.y);
     }
 
     public void StandOnCheckpoint() {
@@ -344,7 +389,7 @@ public class Player : Entity, IDamageable, IInteractor {
         float newPos = 0f;
 
         // Push player to the right using left inner check
-        RaycastHit2D innerLeftHit = Physics2D.Raycast(CeilingCheck.position.ToVector2() - playerData.cornerInnerCheckOffset + Vector2.up * playerData.cornerCheckDistance, Vector2.left, playerData.topCheckDistance, playerData.solidsLayer);
+        RaycastHit2D innerLeftHit = Physics2D.Raycast(CeilingPoint.position.ToVector2() - playerData.cornerInnerCheckOffset + Vector2.up * playerData.cornerCheckDistance, Vector2.left, playerData.topCheckDistance, playerData.solidsLayer);
         if (innerLeftHit) {
             newPos = Vector2.Distance(new Vector2(innerLeftHit.point.x, transform.position.y) + Vector2.up * playerData.cornerCheckDistance,
                 transform.position.ToVector2() - playerData.cornerEdgeCheckOffset + Vector2.up * playerData.cornerCheckDistance);
@@ -354,7 +399,7 @@ public class Player : Entity, IDamageable, IInteractor {
         }
 
         // Push player to the left using right inner check
-        RaycastHit2D innerRightHit = Physics2D.Raycast(CeilingCheck.position.ToVector2() + playerData.cornerInnerCheckOffset + Vector2.up * playerData.cornerCheckDistance, Vector2.right, playerData.topCheckDistance, playerData.solidsLayer);;
+        RaycastHit2D innerRightHit = Physics2D.Raycast(CeilingPoint.position.ToVector2() + playerData.cornerInnerCheckOffset + Vector2.up * playerData.cornerCheckDistance, Vector2.right, playerData.topCheckDistance, playerData.solidsLayer);;
         if (innerRightHit) {
             newPos = Vector2.Distance(new Vector2(innerRightHit.point.x, transform.position.y) + Vector2.up * playerData.cornerCheckDistance,
                 transform.position.ToVector2() + playerData.cornerEdgeCheckOffset + Vector2.up * playerData.cornerCheckDistance);
@@ -362,75 +407,79 @@ public class Player : Entity, IDamageable, IInteractor {
             Rb.velocity = new Vector2(Rb.velocity.x, currentYVelocity);
         }
     }
-
-    public RaycastHit2D GetHeadHit(Vector2 offset) {
-        RaycastHit2D headHit = Physics2D.Raycast(CeilingCheck.position.ToVector2() + offset, Vector2.up, playerData.cornerCheckDistance, playerData.solidsLayer);
-        return headHit;
-    }
     
     public Vector2 GetCornerPosition() {
         Vector2 temp = Vector2.zero;
-        RaycastHit2D xHit = Physics2D.Raycast(WallCheck.position.ToVector2(), Vector2.right * FacingDirection, playerData.ledgeCheckDistance, playerData.wallLayer);
+        RaycastHit2D xHit = Physics2D.Raycast(WallPoint.position.ToVector2(), Vector2.right * FacingDirection, playerData.ledgeCheckDistance, playerData.wallLayer);
         float xDist = xHit.distance;
         temp.Set((xDist + 0.05f) * FacingDirection, 0f);
-        RaycastHit2D yHit = Physics2D.Raycast(LedgeCheck.position.ToVector2() + temp, Vector2.down, LedgeCheck.position.y - WallCheck.position.y + 0.05f, playerData.wallLayer);
+        RaycastHit2D yHit = Physics2D.Raycast(LedgePoint.position.ToVector2() + temp, Vector2.down, LedgePoint.position.y - WallPoint.position.y + 0.05f, playerData.wallLayer);
         float yDist = yHit.distance;
 
-        temp.Set(WallCheck.position.x + xDist * FacingDirection, LedgeCheck.position.y - yDist);
+        temp.Set(WallPoint.position.x + xDist * FacingDirection, LedgePoint.position.y - yDist);
 
         return temp;
     }
 
     public RaycastHit2D GetGroundHit() {
-        RaycastHit2D groundHit = Physics2D.Raycast(GroundCheck.position.ToVector2() + (Vector2.up * playerData.groundCheckOffset.y), Vector2.down, playerData.groundCheckDistance, playerData.groundLayer);
+        RaycastHit2D groundHit = Physics2D.Raycast(GroundPoint.position.ToVector2() + (Vector2.up * playerData.groundCheckOffset.y), Vector2.down, playerData.groundCheckDistance, playerData.groundLayer);
+        Debug.DrawRay(GroundPoint.position.ToVector2() + (Vector2.up * playerData.groundCheckOffset.y), Vector2.up * playerData.groundCheckDistance, Color.green, 3f);
         return groundHit;
     }
 
-    public RaycastHit2D GetWallHit() {
-        RaycastHit2D wallHit = Physics2D.Raycast(WallCheck.position, Vector2.right * FacingDirection, playerData.wallCheckDistance, playerData.wallLayer);
-        return wallHit;
+    public RaycastHit2D GetPlatformHit() {
+        RaycastHit2D platformHit = Physics2D.Raycast(MidPoint.position.ToVector2(), Vector2.down, 2f, playerData.platformLayer);
+        Debug.DrawRay(MidPoint.position, Vector2.up * 2f, Color.green, 3f);
+        return platformHit;
     }
 
-    public RaycastHit2D GetPlatformHit() {
-        RaycastHit2D platformHit = Physics2D.Raycast(GroundCheck.position, Vector2.down, playerData.groundCheckDistance, playerData.platformLayer);
-        return platformHit;
+    public RaycastHit2D GetCeilingHit(Vector2 offset) {
+        RaycastHit2D headHit = Physics2D.Raycast(CeilingPoint.position.ToVector2() + offset, Vector2.up, playerData.cornerCheckDistance, playerData.solidsLayer);
+        Debug.DrawRay(GroundPoint.position.ToVector2() + (Vector2.up * playerData.groundCheckOffset.y), Vector2.down * playerData.ceilingCheckDistance, Color.white, 3f);
+        return headHit;
+    }
+
+    public RaycastHit2D GetWallHit() {
+        RaycastHit2D wallHit = Physics2D.Raycast(WallPoint.position.ToVector2(), Vector2.right * FacingDirection, playerData.wallCheckDistance, playerData.wallLayer);
+        Debug.DrawRay(WallPoint.position.ToVector2(), Vector2.right * -FacingDirection * playerData.wallCheckDistance, Color.cyan, 3f);
+        return wallHit;
     }
 
     private void OnDrawGizmos() {
         if (!drawGizmos) return;
         Gizmos.color = Color.green;
         // Ground Check Raycasts
-        Gizmos.DrawRay(GroundCheck.position.ToVector2() + (Vector2.right * playerData.groundCheckOffset.x) + (Vector2.up * playerData.groundCheckOffset.y), Vector3.down * playerData.groundCheckDistance);
-        Gizmos.DrawRay(GroundCheck.position.ToVector2() + (Vector2.left * playerData.groundCheckOffset.x) + (Vector2.up * playerData.groundCheckOffset.y), Vector3.down * playerData.groundCheckDistance);
-        Gizmos.DrawRay(GroundCheck.position.ToVector2() + (Vector2.up * playerData.groundCheckOffset.y), Vector3.down * playerData.groundCheckDistance);
+        Gizmos.DrawRay(GroundPoint.position.ToVector2() + (Vector2.right * playerData.groundCheckOffset.x) + (Vector2.up * playerData.groundCheckOffset.y), Vector3.down * playerData.groundCheckDistance);
+        Gizmos.DrawRay(GroundPoint.position.ToVector2() + (Vector2.left * playerData.groundCheckOffset.x) + (Vector2.up * playerData.groundCheckOffset.y), Vector3.down * playerData.groundCheckDistance);
+        Gizmos.DrawRay(GroundPoint.position.ToVector2() + (Vector2.up * playerData.groundCheckOffset.y), Vector3.down * playerData.groundCheckDistance);
         
         // Ceiling Check Raycasts
-        Gizmos.DrawRay(CeilingCheck.position.ToVector2() + (playerData.ceilingCheckOffset * Vector2.right) + (Vector2.down * playerData.ceilingCheckOffset.y), Vector3.up * playerData.ceilingCheckDistance);
-        Gizmos.DrawRay(CeilingCheck.position.ToVector2() + (playerData.ceilingCheckOffset * Vector2.left) + (Vector2.down * playerData.ceilingCheckOffset.y), Vector3.up * playerData.ceilingCheckDistance);
-        Gizmos.DrawRay(CeilingCheck.position.ToVector2() + (Vector2.down * playerData.ceilingCheckOffset.y), Vector3.up * playerData.ceilingCheckDistance);
+        Gizmos.DrawRay(CeilingPoint.position.ToVector2() + (playerData.ceilingCheckOffset * Vector2.right) + (Vector2.down * playerData.ceilingCheckOffset.y), Vector3.up * playerData.ceilingCheckDistance);
+        Gizmos.DrawRay(CeilingPoint.position.ToVector2() + (playerData.ceilingCheckOffset * Vector2.left) + (Vector2.down * playerData.ceilingCheckOffset.y), Vector3.up * playerData.ceilingCheckDistance);
+        Gizmos.DrawRay(CeilingPoint.position.ToVector2() + (Vector2.down * playerData.ceilingCheckOffset.y), Vector3.up * playerData.ceilingCheckDistance);
 
         // Corner Check Raycasts
         // Edge
-        Gizmos.DrawRay(CeilingCheck.position.ToVector2() + playerData.cornerEdgeCheckOffset, Vector3.up * playerData.cornerCheckDistance);
-        Gizmos.DrawRay(CeilingCheck.position.ToVector2() - playerData.cornerEdgeCheckOffset, Vector3.up * playerData.cornerCheckDistance);
+        Gizmos.DrawRay(CeilingPoint.position.ToVector2() + playerData.cornerEdgeCheckOffset, Vector3.up * playerData.cornerCheckDistance);
+        Gizmos.DrawRay(CeilingPoint.position.ToVector2() - playerData.cornerEdgeCheckOffset, Vector3.up * playerData.cornerCheckDistance);
         // Inner
         Gizmos.color = Color.red;
-        Gizmos.DrawRay(CeilingCheck.position.ToVector2() + playerData.cornerInnerCheckOffset, Vector3.up * playerData.cornerCheckDistance);
-        Gizmos.DrawRay(CeilingCheck.position.ToVector2() - playerData.cornerInnerCheckOffset, Vector3.up * playerData.cornerCheckDistance);
+        Gizmos.DrawRay(CeilingPoint.position.ToVector2() + playerData.cornerInnerCheckOffset, Vector3.up * playerData.cornerCheckDistance);
+        Gizmos.DrawRay(CeilingPoint.position.ToVector2() - playerData.cornerInnerCheckOffset, Vector3.up * playerData.cornerCheckDistance);
         // Sides
         Gizmos.color = Color.cyan;
-        Gizmos.DrawRay(CeilingCheck.position.ToVector2() - playerData.cornerInnerCheckOffset + Vector2.up * playerData.cornerCheckDistance, Vector3.left * playerData.topCheckDistance);
-        Gizmos.DrawRay(CeilingCheck.position.ToVector2() + playerData.cornerInnerCheckOffset + Vector2.up * playerData.cornerCheckDistance, Vector3.right * playerData.topCheckDistance);
+        Gizmos.DrawRay(CeilingPoint.position.ToVector2() - playerData.cornerInnerCheckOffset + Vector2.up * playerData.cornerCheckDistance, Vector3.left * playerData.topCheckDistance);
+        Gizmos.DrawRay(CeilingPoint.position.ToVector2() + playerData.cornerInnerCheckOffset + Vector2.up * playerData.cornerCheckDistance, Vector3.right * playerData.topCheckDistance);
         
         // Wall Check Raycasts
         Gizmos.color = Color.cyan;
-        Gizmos.DrawRay(WallCheck.position.ToVector2() + (Vector2.up * playerData.wallCheckOffset.y), Vector2.right * FacingDirection * playerData.wallCheckDistance);
+        Gizmos.DrawRay(WallPoint.position.ToVector2() + (Vector2.up * playerData.wallCheckOffset.y), Vector2.right * FacingDirection * playerData.wallCheckDistance);
         Gizmos.color = Color.magenta;
-        Gizmos.DrawRay(WallCheck.position.ToVector2() + (Vector2.up * playerData.wallCheckOffset.y), Vector2.right * -FacingDirection * playerData.wallCheckDistance);
+        Gizmos.DrawRay(WallPoint.position.ToVector2() + (Vector2.up * playerData.wallCheckOffset.y), Vector2.right * -FacingDirection * playerData.wallCheckDistance);
 
         // Ledge Check Raycasts
         Gizmos.color = Color.yellow;
-        Gizmos.DrawRay(LedgeCheck.position.ToVector2() + (Vector2.up * playerData.ledgeCheckOffset.y), Vector3.right * FacingDirection * playerData.ledgeCheckDistance);
+        Gizmos.DrawRay(LedgePoint.position.ToVector2() + (Vector2.up * playerData.ledgeCheckOffset.y), Vector3.right * FacingDirection * playerData.ledgeCheckDistance);
     
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(groundHitPos, 0.5f);

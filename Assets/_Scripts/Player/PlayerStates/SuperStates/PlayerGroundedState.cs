@@ -9,14 +9,11 @@ public class PlayerGroundedState : PlayerState {
     public PlayerGroundedState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
     }
 
-    public override void DoChecks() {
-        base.DoChecks();
-    }
-
     public override void Enter() {
         base.Enter();
 
         player.JumpState.ResetAmountOfJumpsLeft();
+        player.InputHandler.UseJumpStopInput();
     }
 
     public override void Exit() {
@@ -29,6 +26,7 @@ public class PlayerGroundedState : PlayerState {
         if (isExitingState) return;
 
         if (playerData.canJump && jumpInput && player.JumpState.CanJump() && !isTouchingCeiling && !isIgnoringPlatforms) {
+            // bullet jump maybe? for a longer horizontal jump
             coyoteTime = false;
             stateMachine.ChangeState(player.JumpState);
         }
@@ -36,15 +34,15 @@ public class PlayerGroundedState : PlayerState {
             player.AirborneState.StartCoyoteTime();
             stateMachine.ChangeState(player.AirborneState);
         }
-        else if (playerData.canWallSlide && playerData.canWallClimb && isTouchingWall && isTouchingLedge && ((playerData.autoWallGrab && xInput == player.FacingDirection) || (!playerData.autoWallGrab && grabInput))) {
-            stateMachine.ChangeState(player.WallGrabState);
-        }
+        // else if (playerData.canWallSlide && playerData.canWallClimb && isTouchingWall && isTouchingLedge && ((playerData.autoWallGrab && xInput == player.FacingDirection) || (!playerData.autoWallGrab && grabInput))) {
+        //     stateMachine.ChangeState(player.WallGrabState);
+        // }
     }
 
     public override void PhysicsUpdate() {
         base.PhysicsUpdate();
 
-        groundHit = Physics2D.Raycast((Vector2)player.GroundCheck.position + (Vector2.up * playerData.groundCheckOffset.y), Vector2.down, playerData.groundCheckDistance * 1.5f, playerData.groundLayer);
+        groundHit = Physics2D.Raycast((Vector2)player.GroundPoint.position + (Vector2.up * playerData.groundCheckOffset.y), Vector2.down, playerData.groundCheckDistance * 1.5f, playerData.groundLayer);
         player.groundHitPos = groundHit.point;
 
         // if (playerData.stickToGround) {

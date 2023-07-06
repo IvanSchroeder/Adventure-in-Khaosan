@@ -29,9 +29,8 @@ public class PlayerWallSlideState : PlayerTouchingWallState {
             player.LedgeClimbState.SetDetectedPosition(player.transform.position);
             stateMachine.ChangeState(player.LedgeClimbState);
         }
-        else if (xInput == -player.FacingDirection) {
+        else if (xInput == -player.FacingDirection && !isWallJumping) {
             WallHop(playerData.wallHopSpeed, playerData.wallHopDirectionOffAngle, player.FacingDirection);
-            return;
         }
         else if (isOnSolidGround || (isOnPlatform && yInput != -1)) {
             stateMachine.ChangeState(player.LandState);

@@ -31,7 +31,10 @@ public abstract class EntityData : ScriptableObject {
     public int amountOfJumpsLeft;
     public float slopeDownAngle;
     public float slopeSideAngle;
+    public float cumulatedWallJumpCoyoteTime;
     public float cumulatedKnockbackTime;
+    public float cumulatedGroundSlideTime;
+    public float cumulatedGroundSlideCooldown;
 
     [Space(20)]
 

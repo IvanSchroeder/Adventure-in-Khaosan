@@ -21,8 +21,6 @@ public class Spikes : MonoBehaviour, IDamageDealer {
 
         if (damagedEntity.IsNull()) return;
 
-        Debug.Log($"Detected damageable {collision.transform.name}");
-
         HealthSystem entityHealthSystem = damagedEntity.HealthSystem;
 
         OnEntityDamagedEventArgs entityArgs = new OnEntityDamagedEventArgs(this, DamageAmount, collision.ClosestPoint(this.transform.position), entityHealthSystem.DamagedFlash);

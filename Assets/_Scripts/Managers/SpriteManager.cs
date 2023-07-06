@@ -48,8 +48,9 @@ public class SpriteManager : MonoBehaviour {
         }
 
         if (InteractableSystem.IsNotNull()) {
-            this.InteractableSystem.OnInteractionState += SetInteractedOutline;
             this.InteractableSystem.OnInteracted += SetCurrentInteractableFlash;
+            this.InteractableSystem.OnInteractionStop += SetCurrentInteractableFlash;
+            this.InteractableSystem.OnInteractionState += SetInteractedOutline;
         }
     }
 
@@ -62,8 +63,9 @@ public class SpriteManager : MonoBehaviour {
         }
 
         if (InteractableSystem.IsNotNull()) {
-            this.InteractableSystem.OnInteractionState -= SetInteractedOutline;
             this.InteractableSystem.OnInteracted -= SetCurrentInteractableFlash;
+            this.InteractableSystem.OnInteractionStop -= SetCurrentInteractableFlash;
+            this.InteractableSystem.OnInteractionState -= SetInteractedOutline;
         }
     }
 
@@ -119,21 +121,6 @@ public class SpriteManager : MonoBehaviour {
         IsFlashing = false;
     }
 
-    // public void StartDamageFlash(object sender, OnEntityDamagedEventArgs eventArgs) {
-    //     CurrentFlashConfiguration = eventArgs.CurrentFlash;
-    //     StartFlash(CurrentFlashConfiguration);
-    // }
-
-    // public void StartInvulnerabilityFlash(object sender, OnEntityDamagedEventArgs eventArgs) {
-    //     CurrentFlashConfiguration = eventArgs.CurrentFlash;
-    //     StartFlash(CurrentFlashConfiguration);
-    // }
-
-    // public void StartInteractedFlash(object sender, OnEntityInteractedEventArgs eventArgs) {
-    //     CurrentFlashConfiguration = eventArgs.CurrentFlash;
-    //     StartFlash(CurrentFlashConfiguration);
-    // }
-
     public void SetCurrentDamageableFlash(object sender, OnEntityDamagedEventArgs eventArgs) {
         if (eventArgs.CurrentFlash.IsNull()) return;
 
@@ -144,7 +131,7 @@ public class SpriteManager : MonoBehaviour {
     }
 
     public void SetCurrentInteractableFlash(object sender, OnEntityInteractedEventArgs eventArgs) {
-        if (eventArgs.CurrentFlash.IsNull()) return;
+        if (eventArgs.CurrentFlash.IsNull() || !eventArgs.ShouldFlash) return;
 
         CurrentFlashConfiguration = eventArgs.CurrentFlash;
         InitializeFlashConfiguration(CurrentFlashConfiguration);
@@ -158,9 +145,9 @@ public class SpriteManager : MonoBehaviour {
         colorChangeDelay = new WaitForSeconds(config.SecondsBetweenFlashes);
     }
 
-    public void SetInteractedOutline(object sender, bool enable) {
+    public void SetInteractedOutline(object sender, OnEntityInteractedEventArgs args) {
         for (int i = 0; i < _materials.Length; i++) {
-            _materials[i].SetInt(_enableOutlineID, enable ? 1 : 0);
+            _materials[i].SetInt(_enableOutlineID, args.ActiveOutline ? 1 : 0);
         }
     }
 
@@ -247,21 +234,18 @@ public class SpriteManager : MonoBehaviour {
 
     private void SetFlashColor(Color color) {
         for (int i = 0; i < _materials.Length; i++) {
-            // if (_materials[i].HasColor(_flashColorID))
             _materials[i].SetColor(_flashColorID, color);
         }
     }
 
     private void SetFlashAmount(float amount) {
         for (int i = 0; i < _materials.Length; i++) {
-            // if (_materials[i].HasFloat(_flashAmountID))
             _materials[i].SetFloat(_flashAmountID, amount);
         }
     }
 
     private void SetAlphaAmount(float amount) {
         for (int i = 0; i < _materials.Length; i++) {
-            // if (_materials[i].HasFloat(_alphaAmountID))
             _materials[i].SetFloat(_alphaAmountID, amount);
         }
     }

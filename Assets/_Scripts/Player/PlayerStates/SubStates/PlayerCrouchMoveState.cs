@@ -11,6 +11,7 @@ public class PlayerCrouchMoveState : PlayerGroundedState {
         base.Enter();
 
         isCrouching = true;
+        isMoving = true;
         player.SetColliderParameters(player.MovementCollider, playerData.crouchColliderConfig);
     }
 
@@ -18,6 +19,7 @@ public class PlayerCrouchMoveState : PlayerGroundedState {
         base.Exit();
 
         isCrouching = false;
+        isMoving = false;
     }
 
     public override void LogicUpdate() {

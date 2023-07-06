@@ -4,7 +4,8 @@ using UnityEngine;
 using ExtensionMethods;
 
 public class PlayerWallJumpState : PlayerAbilityState {
-    private int wallJumpDirection;
+    protected int wallJumpDirection;
+    protected Vector2 wallJumpDirectionVec;
 
     public PlayerWallJumpState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
     }
@@ -12,17 +13,22 @@ public class PlayerWallJumpState : PlayerAbilityState {
     public override void Enter() {
         base.Enter();
 
+        isWallJumping = true;
+
         player.InputHandler.UseJumpInput();
-        player.JumpState.ResetAmountOfJumpsLeft();
+        // player.SetVelocity(playerData.wallJumpSpeed, playerData.wallJumpDirectionOffAngle, wallJumpDirection);
+        wallJumpDirection = -player.FacingDirection;
         player.SetVelocity(playerData.wallJumpSpeed, playerData.wallJumpDirectionOffAngle, wallJumpDirection);
         player.CheckFacingDirection(wallJumpDirection);
+        player.JumpState.ResetAmountOfJumpsLeft();
         player.JumpState.DecreaseAmountOfJumpsLeft();
-
         player.AirborneState.StopWallJumpCoyoteTime();
     }
 
     public override void Exit() {
         base.Exit();
+
+        isWallJumping = false;
         
         // player.CheckFacingDirection(xInput);
 
@@ -49,19 +55,24 @@ public class PlayerWallJumpState : PlayerAbilityState {
     }
 
     private void CheckWallJumpMultiplier() {
-        // if (!isWallJumping) return;
+        if (!isWallJumping) return;
 
         if (jumpInputStop) {
-            player.SetVelocityY(player.CurrentVelocity.y * playerData.variableJumpHeightMultiplier);
-            // isWallJumping = false;
             player.InputHandler.UseJumpStopInput();
+            player.SetVelocityY(player.CurrentVelocity.y * playerData.variableJumpHeightMultiplier);
+            isWallJumping = false;
             isAbilityDone = true;
         }
         else if (isFalling) {
+            player.InputHandler.UseJumpStopInput();
             isAbilityDone = true;
-            // isWallJumping = false;
+            isWallJumping = false;
         }
     }
+
+    // public void SetNextWallJumpDirection(float x, float y) {
+    //     wallJumpDirectionVec = wallJumpDirectionVec
+    // }
 
     public void GetWallJumpDirection(bool isTouchingWall) {
         if (isTouchingWall)

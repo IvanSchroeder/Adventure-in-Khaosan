@@ -81,4 +81,15 @@ public class InputController : ScriptableObject, InputMaster.IGameplayActions {
 
     public void OnAttack(InputAction.CallbackContext context) {
     }
+
+    public void OnInteract(InputAction.CallbackContext context) {
+    }
+
+    public void OnUnplatform(InputAction.CallbackContext context) {
+    }
+
+    public void OnCrouch(InputAction.CallbackContext context)
+    {
+        throw new NotImplementedException();
+    }
 }

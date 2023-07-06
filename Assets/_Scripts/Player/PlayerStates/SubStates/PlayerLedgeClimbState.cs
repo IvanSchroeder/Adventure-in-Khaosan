@@ -9,8 +9,6 @@ public class PlayerLedgeClimbState : PlayerState {
     private Vector2 startPos;
     private Vector2 stopPos;
 
-    private bool hasSpace;
-
     public PlayerLedgeClimbState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
     }
 
@@ -42,7 +40,7 @@ public class PlayerLedgeClimbState : PlayerState {
 
         player.transform.position = startPos;
 
-        hasSpace = CheckForSpace();
+        hasSpace = player.CheckForSpace(stopPos + Vector2.up * 0.05f);
 
         player.CameraTarget.SetTargetPosition(Vector3.zero, 0f, true);
         //player.CameraTarget.OffsetTargetTowards(Vector3.zero, 0f, true);
@@ -103,13 +101,12 @@ public class PlayerLedgeClimbState : PlayerState {
             }
 
             if (isHanging && !isClimbing && xInput == player.FacingDirection && (hasSpace || (!hasSpace && playerData.canCrouch))) {
-                // CheckForSpace();
                 isClimbing = true;
                 player.Anim.SetBool("climbLedge", true);
                 player.CameraTarget.SetTargetPosition(stopPos + (Vector2.up * 2f));
             }
             else if (playerData.canWallJump && isHanging && !isClimbing && jumpInput && xInput == -player.FacingDirection) {
-                player.WallJumpState.GetWallJumpDirection(isTouchingWall);
+                // player.WallJumpState.GetWallJumpDirection(isTouchingWall);
                 stateMachine.ChangeState(player.WallJumpState);
             }
             else if (playerData.canJump && isHanging && !isClimbing && jumpInput && xInput == 0) {
@@ -130,11 +127,4 @@ public class PlayerLedgeClimbState : PlayerState {
     }
 
     public void SetDetectedPosition(Vector2 pos) => detectedPos = pos;
-
-    private bool CheckForSpace() {
-        bool space = !Physics2D.Raycast(stopPos + Vector2.up * 0.2f, Vector2.up, 1f, playerData.wallLayer);
-        if (space) Debug.DrawRay(stopPos + Vector2.up * 0.2f, Vector2.up * 1f, Color.green, 1f);
-        else Debug.DrawRay(stopPos + Vector2.up * 0.2f, Vector2.up * 1f, Color.red, 1f);
-        return space;
-    }
 }

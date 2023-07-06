@@ -54,8 +54,10 @@ public class LevelManager : MonoBehaviour {
         WorldMapManager.OnWorldMapLoaded -= SpawnPlayer;
         Checkpoint.OnCheckpointActive -= SetCurrentCheckpoint;
 
-        PlayerInstance.OnLivesDepleted -= GameOver;
-        PlayerInstance.OnPlayerDeathEnd -= RespawnPlayer;
+        if (PlayerInstance != null) {
+            PlayerInstance.OnLivesDepleted -= GameOver;
+            PlayerInstance.OnPlayerDeathEnd -= RespawnPlayer;
+        }
 
         CheckpointsList = new List<Checkpoint>();
         startingCheckpoint = null;

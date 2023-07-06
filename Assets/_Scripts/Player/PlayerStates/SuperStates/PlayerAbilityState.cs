@@ -17,10 +17,6 @@ public class PlayerAbilityState : PlayerState {
         base.AnimationTrigger();
     }
 
-    public override void DoChecks() {
-        base.DoChecks();
-    }
-
     public override void Enter() {
         base.Enter();
 

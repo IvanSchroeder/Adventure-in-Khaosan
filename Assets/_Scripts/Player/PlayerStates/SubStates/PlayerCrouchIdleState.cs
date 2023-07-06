@@ -13,6 +13,7 @@ public class PlayerCrouchIdleState : PlayerGroundedState {
         base.Enter();
 
         isCrouching = true;
+        isIdle = true;
         player.SetColliderParameters(player.MovementCollider, playerData.crouchColliderConfig);
 
         player.CameraTarget.SetTargetPosition(Vector3.down, 3f, true);
@@ -22,6 +23,7 @@ public class PlayerCrouchIdleState : PlayerGroundedState {
         base.Exit();
 
         isCrouching = false;
+        isIdle = false;
 
         player.CameraTarget.SetTargetPosition(Vector3.zero, 0f, true);
     }

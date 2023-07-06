@@ -20,11 +20,6 @@ public class PlayerTouchingWallState : PlayerState {
         base.AnimationTrigger();
     }
 
-    public override void DoChecks()
-    {
-        base.DoChecks();
-    }
-
     public override void Enter() {
         base.Enter();
 
@@ -51,16 +46,13 @@ public class PlayerTouchingWallState : PlayerState {
     public override void LogicUpdate() {
         base.LogicUpdate();
 
-        if (!isGrounded && isTouchingWall && ((!playerData.autoWallGrab && grabInput) || playerData.autoWallGrab) && !jumpInput) {
-            return;
-        }
-
-        player.CheckFacingDirection(xInput);
+        // if (!isGrounded && isTouchingWall && ((!playerData.autoWallGrab && grabInput) || playerData.autoWallGrab) && !jumpInput) {
+        //     return;
+        // }
 
         if (isExitingState) return;
         
-        if (playerData.canWallJump && jumpInput && yInput != -1 && !isOnPlatform) {
-            player.WallJumpState.GetWallJumpDirection(isTouchingWall);
+        if (playerData.canWallJump && jumpInput && (isTouchingWall || isTouchingBackWall || wallJumpCoyoteTime || hasTouchedWall) && yInput != -1) {
             stateMachine.ChangeState(player.WallJumpState);
         }
         else if (!isTouchingWall) {
@@ -71,7 +63,7 @@ public class PlayerTouchingWallState : PlayerState {
     public override void PhysicsUpdate() {
         base.PhysicsUpdate();
         
-        wallHit = Physics2D.Raycast((Vector2)player.GroundCheck.position + (Vector2.up * playerData.wallCheckOffset.y), Vector2.right * player.FacingDirection, playerData.wallCheckDistance * 1.5f, playerData.wallLayer);
+        wallHit = Physics2D.Raycast((Vector2)player.GroundPoint.position + (Vector2.up * playerData.wallCheckOffset.y), Vector2.right * player.FacingDirection, playerData.wallCheckDistance * 1.5f, playerData.wallLayer);
         player.wallHitPos = wallHit.point;
     }
 

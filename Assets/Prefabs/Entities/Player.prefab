@@ -311,7 +311,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5666071910508457419}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3125253530865429026
 GameObject:
@@ -342,7 +342,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5666071910508457419}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3125253531432767925
 GameObject:
@@ -516,6 +516,54 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 4420bdd6-dc61-4a31-ac2f-dc747c3abfcd
     m_ActionName: Gameplay/Attack[/Mouse/leftButton]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 3125253531432767935}
+        m_TargetAssemblyTypeName: PlayerInputHandler, Assembly-CSharp
+        m_MethodName: OnInteractInput
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: ae6a727d-cdb1-437b-b18e-c7ffcffc9a28
+    m_ActionName: Gameplay/Interact[/Keyboard/w,/Keyboard/upArrow]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 3125253531432767935}
+        m_TargetAssemblyTypeName: PlayerInputHandler, Assembly-CSharp
+        m_MethodName: OnUnplatformInput
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: c52605bd-f1e1-43e7-9bef-94fe4bbbf8b0
+    m_ActionName: Gameplay/Unplatform[/Keyboard/s,/Keyboard/downArrow]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 3125253531432767935}
+        m_TargetAssemblyTypeName: PlayerInputHandler, Assembly-CSharp
+        m_MethodName: OnCrouchInput
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 8f6fe5d6-c7ec-417f-acb8-c2dddc45f233
+    m_ActionName: Gameplay/Crouch[/Keyboard/s,/Keyboard/downArrow]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: Gamepad
   m_DefaultActionMap: Gameplay
@@ -548,6 +596,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   entityData: {fileID: 11400000, guid: 82651798b0a1f594e9210ad3f643c9b0, type: 2}
+  CurrentStateName: 
+  PreviousStateName: 
   playerData: {fileID: 11400000, guid: 82651798b0a1f594e9210ad3f643c9b0, type: 2}
   <Rb>k__BackingField: {fileID: 3125253531432767930}
   <MovementCollider>k__BackingField: {fileID: 3125253531432767931}
@@ -561,10 +611,11 @@ MonoBehaviour:
   <InteractorTrigger>k__BackingField: {fileID: 903490805235740337}
   <InteractorSystem>k__BackingField: {fileID: 7848817237780654624}
   <InputHandler>k__BackingField: {fileID: 3125253531432767935}
-  <GroundCheck>k__BackingField: {fileID: 3125253531717848553}
-  <CeilingCheck>k__BackingField: {fileID: 3125253530865429025}
-  <WallCheck>k__BackingField: {fileID: 3125253531543866480}
-  <LedgeCheck>k__BackingField: {fileID: 3125253530585205663}
+  <GroundPoint>k__BackingField: {fileID: 3125253531717848553}
+  <MidPoint>k__BackingField: {fileID: 6363422421887558799}
+  <CeilingPoint>k__BackingField: {fileID: 3125253530865429025}
+  <WallPoint>k__BackingField: {fileID: 3125253531543866480}
+  <LedgePoint>k__BackingField: {fileID: 3125253530585205663}
   detectedPos: {x: 0, y: 0}
   cornerPos: {x: 0, y: 0}
   startPos: {x: 0, y: 0}
@@ -671,7 +722,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5666071910508457419}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3125253531717848554
 GameObject:
@@ -756,6 +807,37 @@ MonoBehaviour:
   <LerpSpeed>k__BackingField: 10
   <LerpDelay>k__BackingField: 0
   <ElapsedTime>k__BackingField: 0
+--- !u!1 &3599921204819908901
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6363422421887558799}
+  m_Layer: 0
+  m_Name: MidPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6363422421887558799
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3599921204819908901}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5666071910508457419}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7841665523423647805
 GameObject:
   m_ObjectHideFlags: 0
@@ -785,6 +867,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3125253531717848553}
+  - {fileID: 6363422421887558799}
   - {fileID: 3125253530865429025}
   - {fileID: 3125253531543866480}
   - {fileID: 3125253530585205663}

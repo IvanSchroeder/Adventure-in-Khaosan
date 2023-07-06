@@ -8,9 +8,16 @@ public class PlayerInputHandler : MonoBehaviour {
     public int LastXInput { get; private set; }
     public int NormInputX { get; private set; }
     public int NormInputY { get; private set; }
+    public bool InteractInput { get; private set; }
+    public bool InteractInputHold { get; private set; }
+    public bool InteractInputStop { get; private set; }
     public bool JumpInput { get; private set; }
     public bool JumpInputStop { get; private set; }
     public bool JumpInputHold { get; private set; }
+    public bool UnplatformInput { get; private set; }
+    public bool CrouchInput { get; private set; }
+    public bool CrouchInputHold { get; private set; }
+    public bool CrouchInputStop { get; private set; }
     public bool GrabInput { get; private set; }
     public bool AttackInput { get; private set; }
     public bool AttackInputHold { get; private set; }
@@ -62,14 +69,56 @@ public class PlayerInputHandler : MonoBehaviour {
 
         if (context.started) {
             JumpInput = true;
-            JumpInputStop = false;
             JumpInputHold = true;
+            JumpInputStop = false;
             jumpInputStartTime = Time.time;
         }
         
         if (context.canceled) {
-            JumpInputStop = true;
             JumpInputHold = false;
+            JumpInputStop = true;
+        }
+    }
+
+    public void OnInteractInput(InputAction.CallbackContext context) {
+        if (LockInputs) return;
+
+        if (context.started) {
+            InteractInput = true;
+            InteractInputHold = true;
+            InteractInputStop = false;
+        }
+        
+        if (context.canceled) {
+            InteractInputHold = false;
+            InteractInputStop = true;
+        }
+    }
+
+    public void OnUnplatformInput(InputAction.CallbackContext context) {
+        if (LockInputs) return;
+
+        if (context.started) {
+            UnplatformInput = true;
+        }
+        
+        if (context.canceled) {
+            UnplatformInput = false;
+        }
+    }
+
+    public void OnCrouchInput(InputAction.CallbackContext context) {
+        if (LockInputs) return;
+
+        if (context.started) {
+            CrouchInput = true;
+            CrouchInputHold = true;
+            CrouchInputStop = false;
+        }
+        
+        if (context.canceled) {
+            CrouchInputHold = false;
+            CrouchInputStop = true;
         }
     }
 
@@ -97,6 +146,10 @@ public class PlayerInputHandler : MonoBehaviour {
         }
     }
 
+    public void UseInteractInput() => InteractInput = false;
+    public void UseInteractStopInput() => InteractInputStop = false;
+    public void UseCrouchInput() => CrouchInput = false;
+    public void UseCrouchStopInput() => CrouchInputStop = false;
     public void UseJumpInput() => JumpInput = false;
     public void UseJumpStopInput() => JumpInputStop = false;
     public void UseAttackInput() => AttackInput = false;

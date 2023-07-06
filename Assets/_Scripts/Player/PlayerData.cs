@@ -21,9 +21,7 @@ public class PlayerData : EntityData {
     // public float slopeDownAngle;
     // public float slopeSideAngle;
     // public float cumulatedKnockbackTime;
-
-    [Space(20)]
-
+    
     [Header("--- Inputs Info ---")]
     [Space(5)]
     public int xInput;
@@ -32,22 +30,17 @@ public class PlayerData : EntityData {
     public bool jumpInput;
     public bool jumpInputStop;
     public bool jumpInputHold;
+    public bool interactInput;
+    public bool interactInputHold;
+    public bool interactInputStop;
+    public bool crouchInput;
+    public bool crouchInputHold;
+    public bool crouchInputStop;
+    public bool unplatformInput;
+    public bool attackInput;
+    public bool attackInputHold;
+    public bool attackInputStop;
     public bool grabInput;
-
-    [Space(20)]
-
-    [Header("--- States Locks ---")]
-    [Space(5)]
-    public bool canMove = true;
-    public bool canSprint = true;
-    public bool canCrouch = true;
-    public bool canGroundSlide = true;
-    public bool canJump = true;
-    public bool canWallSlide = true;
-    public bool canWallClimb = true;
-    public bool canLedgeClimb = true;
-    public bool canWallJump = true;
-    public bool canAttack = true;
 
     [Space(20)]
 
@@ -58,6 +51,7 @@ public class PlayerData : EntityData {
     public bool isOnPlatform;
     public bool isIgnoringPlatforms;
     public bool isOnSlope;
+    public bool isIdle;
     public bool isMoving;
     public bool isRunning;
     public bool isRunningAtMaxSpeed;
@@ -66,6 +60,7 @@ public class PlayerData : EntityData {
     public bool isSprintingAtMaxSpeed;
     public bool isCrouching;
     public bool isGroundSliding;
+    public bool stopSlide;
     public bool isAirborne;
     public bool isJumping;
     public bool isAscending;
@@ -92,6 +87,22 @@ public class PlayerData : EntityData {
     public bool isExitingState;
     public bool hasCoyoteTime;
     public bool hasWallJumpCoyoteTime;
+    public bool hasGroundSlideTime;
+
+    [Space(20)]
+
+    [Header("--- States Locks ---")]
+    [Space(5)]
+    public bool canMove = true;
+    public bool canSprint = true;
+    public bool canCrouch = true;
+    public bool canGroundSlide = true;
+    public bool canJump = true;
+    public bool canWallSlide = true;
+    public bool canWallClimb = true;
+    public bool canLedgeClimb = true;
+    public bool canWallJump = true;
+    public bool canAttack = true;
 
     // [Space(20)]
 
@@ -117,36 +128,54 @@ public class PlayerData : EntityData {
 
     [Header("--- Movement Parameters ---")]
     [Space(5)]
-    [Header("Ground")]
+    [Header("=== Ground ===")]
     [Space(5)]
+    [Header("General")]
+    [Space(3)]
     // public bool enableFriction = true;
     public bool stickToGround;
     public bool lerpVelocity = false;
     public bool conserveMomentum = false;
-    [Range(0f, 10f)] public float runSpeed;
-    [Range(0f, 1f)] public float maxRunSpeedThreshold;
-    [Range(0f, 5f)] public float crouchWalkSpeed;
-    [Range(0f, 30f)] public float sprintSpeed;
-    [Range(0f, 1f)] public float maxSprintSpeedThreshold;
-    [Range(0f, 2f)] public float sprintStopDelay;
     [Range(0f, 30f)] public float maxHorizontalSpeed;
+    [Space(3)]
+    [Header("Run")]
+    [Space(3)]
+    [Range(0f, 10f)] public float runSpeed;
+    [Range(0f, 1f)] public float maxRunSpeedThresholdMult;
+    public float maxRunSpeedThreshold;
     [Range(0, 100)] public int runAcceleration;
     [Range(0, 100)] public int runDecceleration;
     [Range(0, 100)] public int runDirectionChangeAcceleration;
+    [Space(3)]
+    [Header("Sprint")]
+    [Space(3)]
+    [Range(0f, 30f)] public float sprintSpeed;
+    [Range(0f, 1f)] public float maxSprintSpeedThresholdMult;
+    public float maxSprintSpeedThreshold;
+    [Range(0f, 2f)] public float sprintStopDelay;
     [Range(0, 100)] public int sprintAcceleration;
     [Range(0, 100)] public int sprintDecceleration;
     [Range(0, 100)] public int sprintDirectionChangeAcceleration;
+    [Space(3)]
+    [Header("Crouch")]
+    [Space(3)]
+    [Range(0f, 5f)] public float crouchWalkSpeed;
     [Range(0, 100)] public int crouchAcceleration;
     [Range(0, 100)] public int crouchDecceleration;
+    [Space(3)]
+    [Header("Ground Slide")]
+    [Space(3)]
     [Range(0.2f, 5f)] public float groundSlideDuration;
+    [Range(0.2f, 10f)] public float groundSlideMaxDuration;
+    [Range(0, 2f)] public float groundSlideDelay;
     [Range(0f, 15f)] public float groundSlideSpeed;
     [Range(0, 100)] public int groundSlideAcceleration;
     [Range(0, 100)] public int groundSlideDecceleration;
     [Range(0, 100)] public int deathSlideDecceleration;
 
     [Space(5)]
-    [Header("Air")]
-    [Space(5)]
+    [Header("=== Air ===")]
+    [Space(3)]
     public bool lerpVelocityInAir = false;
     [Range(0, 100)] public int airAcceleration;
     [Range(0, 100)] public int airDecceleration;
@@ -154,7 +183,7 @@ public class PlayerData : EntityData {
 
     [Space(5)]
     [Header("Colliders")]
-    [Space(5)]
+    [Space(3)]
     public ColliderConfiguration standingColliderConfig;
     public ColliderConfiguration crouchColliderConfig;
     public ColliderConfiguration walledColliderConfig;
@@ -167,12 +196,11 @@ public class PlayerData : EntityData {
     [Header("--- Airborne Parameters ---")]
     [Space(5)]
     [Header("Jump")]
-    [Space(5)]
+    [Space(3)]
     public int amountOfJumps = 1;
     public float jumpHeight;
     [Range(0f, 1f)] public float variableJumpHeightMultiplier = 0.5f;
     public float cornerCorrectionRepositionOffset = 0.015f;
-    // [Range(0f, 1f)] public float platformIgnoreVerticalVelocityThreshold = 0.5f;
     public float maxAscendantSpeed;
     public int maxBouncesOffGround = 3;
     [Range(0f, 1f)] public float wallBounceFalloff = 0.5f;
@@ -180,7 +208,9 @@ public class PlayerData : EntityData {
     [Range(0f, 1f)] public float groundBounceYFalloff = 0.5f;
     [Range(0f, 1f)] public float groundBounceThreshold = 0.5f;
 
+    [Space(5)]
     [Header("Fall")]
+    [Space(3)]
     public float defaultFallSpeed = 7f;
     public float fastFallSpeed = 10f;
     public float defaultGravityScale = 4f;
@@ -191,10 +221,10 @@ public class PlayerData : EntityData {
 
     [Space(5)]
     [Header("Buffer Timers")]
+    [Space(3)]
     [Range(0f, 0.5f)] public float coyoteTime = 0.2f;
     [Range(0f, 0.5f)] public float wallJumpCoyoteTime = 0.15f;
     [Range(0f, 0.5f)] public float jumpBufferTime = 0.2f;
-    public float cumulatedWallJumpCoyoteTime;
 
     [Space(20)]
 
@@ -222,7 +252,7 @@ public class PlayerData : EntityData {
     [Header("--- Ledge Climb Parameters ---")]
     [Space(5)]
     [Header("Offsets")]
-    [Space(5)]
+    [Space(3)]
     public Vector2 startOffset;
     public Vector2 stopOffset;
 
@@ -231,22 +261,24 @@ public class PlayerData : EntityData {
     [Header("--- Check Parameters ---")]
     [Space(5)]
     [Header("Ground")]
-    [Space(5)]
+    [Space(3)]
     // public Vector2 groundCheckSize;
     public Vector2 groundCheckOffset;
     public float groundCheckDistance;
     public float slopeCheckDistance;
+
     [Space(5)]
     [Header("Walls")]
-    [Space(5)]
+    [Space(3)]
     // public Vector2 wallCheckSize;
     public Vector2 wallCheckOffset;
     public float wallCheckDistance;
     public Vector2 ledgeCheckOffset;
     public float ledgeCheckDistance;
+
     [Space(5)]
     [Header("Ceiling")]
-    [Space(5)]
+    [Space(3)]
     // public Vector2 ceilingCheckSize;
     public Vector2 ceilingCheckOffset;
     public float ceilingCheckDistance;
@@ -257,6 +289,7 @@ public class PlayerData : EntityData {
 
     [Space(5)]
     [Header("Layers")]
+    [Space(3)]
     public LayerMask groundLayer;
     public LayerMask solidsLayer;
     public LayerMask wallLayer;
@@ -276,7 +309,13 @@ public class PlayerData : EntityData {
         currentLayer = "Player";
         currentFallSpeed = defaultFallSpeed;
         currentGravityScale = defaultGravityScale;
+        cumulatedGroundSlideTime = 0f;
+        cumulatedGroundSlideCooldown = groundSlideDelay;
+        cumulatedKnockbackTime = 0f;
+        cumulatedWallJumpCoyoteTime = 0f;
         amountOfJumpsLeft = amountOfJumps;
+        maxRunSpeedThreshold = Mathf.Lerp(0f, runSpeed, maxRunSpeedThresholdMult);
+        maxSprintSpeedThreshold = Mathf.Lerp(runSpeed, sprintSpeed, maxSprintSpeedThresholdMult);
 
         xInput = 0;
         lastXInput = 0;
@@ -284,6 +323,16 @@ public class PlayerData : EntityData {
         jumpInput = false;
         jumpInputStop = false;
         jumpInputHold = false;
+        attackInput = false;
+        attackInputHold = false;
+        attackInputStop = false;
+        interactInput = false;
+        interactInputHold = false;
+        interactInputStop = false;
+        crouchInput = false;
+        crouchInputHold = false;
+        crouchInputStop = false;
+        unplatformInput = false;
         grabInput = false;
 
         isGrounded = false;
@@ -291,6 +340,7 @@ public class PlayerData : EntityData {
         isOnPlatform = false;
         isIgnoringPlatforms = false;
         isOnSlope = false;
+        isIdle = true;
         isMoving = false;
         isRunning = false;
         isRunningAtMaxSpeed = false;
@@ -299,6 +349,7 @@ public class PlayerData : EntityData {
         isSprintingAtMaxSpeed = false;
         isCrouching = false;
         isGroundSliding = false;
+        stopSlide = false;
         isAirborne = false;
         isJumping = false;
         isAscending = false;
@@ -313,6 +364,7 @@ public class PlayerData : EntityData {
         isWallSliding = false;
         isWallGrabing = false;
         isWallClimbing = false;
+        isWallJumping = false;
         isHanging = false;
         isClimbing = false;
         isDamaged = false;
@@ -320,10 +372,11 @@ public class PlayerData : EntityData {
         isDeadOnGround = false;
         isInvulnerable = false;
         isAnimationFinished = false;
-        isExitingState = false;
         isAbilityDone = false;
+        isExitingState = false;
         hasCoyoteTime = false;
         hasWallJumpCoyoteTime = false;
+        hasGroundSlideTime = false;
 
         wallJumpDirectionOffAngle = wallJumpAngle.AngleFloatToVector2();
         wallHopDirectionOffAngle = wallHopAngle.AngleFloatToVector2();

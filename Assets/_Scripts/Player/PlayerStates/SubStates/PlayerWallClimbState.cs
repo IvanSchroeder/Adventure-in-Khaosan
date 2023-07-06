@@ -25,32 +25,32 @@ public class PlayerWallClimbState : PlayerTouchingWallState {
 
         if (isExitingState) return;
 
-        if (playerData.canLedgeClimb && isTouchingWall & !isTouchingLedge && yInput == 1) {
+        if (playerData.canLedgeClimb && isTouchingWall & !isTouchingLedge) {
             player.LedgeClimbState.SetDetectedPosition(player.transform.position);
             stateMachine.ChangeState(player.LedgeClimbState);
         }
-        else if (xInput == -player.FacingDirection) {
+        else if (xInput == -player.FacingDirection && !isWallJumping) {
             WallHop(playerData.wallHopSpeed, playerData.wallHopDirectionOffAngle, player.FacingDirection);
         }
         else if (playerData.canWallSlide && !playerData.autoWallGrab) {
             if (grabInput)
                 if (yInput != 0)
                     return;
-                else
+                else if (player.CurrentVelocity.y <= 0f)
                     stateMachine.ChangeState(player.WallGrabState);
             else {
-                if (playerData.autoWallSlide && isTouchingWall && xInput != -player.FacingDirection)
+                if (playerData.autoWallSlide && isTouchingWall && xInput != -player.FacingDirection && player.CurrentVelocity.y <= 0f)
                     stateMachine.ChangeState(player.WallSlideState);
-                else if (!playerData.autoWallSlide && isTouchingWall && xInput == player.FacingDirection)
+                else if (!playerData.autoWallSlide && isTouchingWall && xInput == player.FacingDirection && player.CurrentVelocity.y <= 0f)
                     stateMachine.ChangeState(player.WallSlideState);
-                else if (!playerData.autoWallSlide && xInput != player.FacingDirection)
+                else if (!playerData.autoWallSlide && xInput != player.FacingDirection && player.CurrentVelocity.y <= 0f)
                     stateMachine.ChangeState(player.AirborneState);
             }
         }
         else if (playerData.canWallSlide && playerData.autoWallGrab) {
-            if (xInput == player.FacingDirection && yInput == 0)
+            if (xInput == player.FacingDirection && yInput == 0 && player.CurrentVelocity.y <= 0f)
                 stateMachine.ChangeState(player.WallGrabState);
-            else if (xInput != player.FacingDirection && yInput == 0)
+            else if (xInput != player.FacingDirection && yInput == 0 && player.CurrentVelocity.y <= 0f)
                 stateMachine.ChangeState(player.WallSlideState);
         }
     }
@@ -58,7 +58,16 @@ public class PlayerWallClimbState : PlayerTouchingWallState {
     public override void PhysicsUpdate() {
         base.PhysicsUpdate();
 
-        player.SetVelocityY(yInput * playerData.wallClimbSpeed, playerData.wallClimbAcceleration, playerData.lerpWallVelocity);
+        wallHit = player.GetWallHit();
+        if (wallHit) player.wallHitPos = wallHit.point;
+
+        if (yInput != 0) {
+            player.SetVelocityY(yInput * playerData.wallClimbSpeed, playerData.wallClimbAcceleration, playerData.lerpWallVelocity);
+        }
+        else {
+            player.SetVelocityY(0f, playerData.wallClimbAcceleration, playerData.lerpWallVelocity);
+        }
+
         player.SetVelocityX(0f);
     }
 }

@@ -9,12 +9,20 @@ public class InteractableSystem : MonoBehaviour {
     
     [field: SerializeField] public SpriteFlashConfiguration InteractedFlash { get; set; }
     [field: SerializeField] public bool RequiresInput { get; set; }
+    [field: SerializeField] public bool FlashesOnInteract { get; set; }
+    [field: SerializeField] public bool FlashesOnInteractStop { get; set; }
     [field: SerializeField] public bool OneTimeIntectarion { get; set; }
     [field: SerializeField] public bool IsInteractable { get; set; }
     [field: SerializeField] public bool WasInteracted { get; set; }
+    [field: SerializeField] public bool IsToggable { get; set; }
+    [field: SerializeField] public bool HasDelay { get; set; }
+    [field: SerializeField] public float InteractionStopDelay { get; set; }
 
     public EventHandler<OnEntityInteractedEventArgs> OnInteracted;
-    public EventHandler<bool> OnInteractionState;
+    public EventHandler<OnEntityInteractedEventArgs> OnInteractionStop;
+    public EventHandler<OnEntityInteractedEventArgs> OnInteractionState;
+
+    private Coroutine interactionStopCoroutine;
 
     private void Awake() {
         if (Interactable == null) Interactable = this.GetComponentInHierarchy<IInteractable>();
@@ -30,14 +38,39 @@ public class InteractableSystem : MonoBehaviour {
 
         OnEntityInteractedEventArgs entityInteracted = new OnEntityInteractedEventArgs();
         entityInteracted.IsInteracted = IsInteractable;
+        entityInteracted.ShouldFlash = FlashesOnInteract;
         entityInteracted.CurrentFlash = InteractedFlash;
 
         SetInteractionState(IsInteractable);
 
-        OnInteracted?.Invoke(this, new OnEntityInteractedEventArgs());
+        OnInteracted?.Invoke(this, entityInteracted);
+    }
+
+    public void InteractionStop() {
+        if (!IsInteractable) return;
+
+        interactionStopCoroutine = StartCoroutine(InteractionStopRoutine());
+    }
+
+    public IEnumerator InteractionStopRoutine() {
+        if (HasDelay) yield return new WaitForSeconds(InteractionStopDelay);
+
+        if (WasInteracted) WasInteracted = false;
+
+        OnEntityInteractedEventArgs entityInteracted = new OnEntityInteractedEventArgs();
+        entityInteracted.IsInteracted = IsInteractable;
+        entityInteracted.ShouldFlash = FlashesOnInteractStop;
+        entityInteracted.CurrentFlash = InteractedFlash;
+
+        OnInteractionStop?.Invoke(this, entityInteracted);
+
+        yield return null;
     }
 
     public void SetInteractionState(bool enable) {
-        OnInteractionState?.Invoke(this, enable);
+        OnEntityInteractedEventArgs entityInteracted = new OnEntityInteractedEventArgs();
+        entityInteracted.ActiveOutline = enable;
+
+        OnInteractionState?.Invoke(this, entityInteracted);
     }
 }

@@ -9,16 +9,14 @@ public class PlayerMoveState : PlayerGroundedState {
     public PlayerMoveState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
     }
 
-    public override void DoChecks() {
-        base.DoChecks();
-    }
-
     public override void Enter() {
         base.Enter();
 
         isMoving = true;
         isRunning = true;
         isSprinting = false;
+        isRunningAtMaxSpeed = false;
+        isSprintingAtMaxSpeed = false;
 
         player.SetColliderParameters(player.MovementCollider, playerData.standingColliderConfig);
     }
@@ -28,7 +26,8 @@ public class PlayerMoveState : PlayerGroundedState {
 
         isMoving = false;
         isRunning = false;
-        isSprinting = false;
+        isRunningAtMaxSpeed = false;
+        isSprintingAtMaxSpeed = false;
     }
 
     public override void LogicUpdate() {
@@ -38,79 +37,12 @@ public class PlayerMoveState : PlayerGroundedState {
 
         if (isExitingState) return;
 
-        if (isRunning && !isSprinting && player.CurrentVelocity.x.AbsoluteValue() >= playerData.runSpeed * playerData.maxRunSpeedThreshold)
-            isRunningAtMaxSpeed = true;
-        else
-            isRunningAtMaxSpeed = false;
-
-        if (isSprinting && player.CurrentVelocity.x.AbsoluteValue() >= playerData.sprintSpeed * playerData.maxSprintSpeedThreshold) {
-            isSprintingAtMaxSpeed = true;
-        }
-        else {
-            isSprintingAtMaxSpeed = false;
-        }
-
-        if (playerData.canSprint) {
-            if (attackInputHold) {
-                isRunning = false;
-                isSprinting = true;
-                sprintStopTimer = 0f;
-            }
-            else if (isSprinting && !attackInputHold && sprintStopTimer < playerData.sprintStopDelay) {
-                sprintStopTimer += Time.deltaTime;
-
-                if (sprintStopTimer >= playerData.sprintStopDelay) {
-                    isSprinting = false;
-                    isSprintingAtMaxSpeed = false;
-                    isRunning = true;
-                    isRunningAtMaxSpeed = true;
-                }
-            }
-        }
-
-        // if (playerData.canSprint) {
-        //     if (attackInputHold) {
-        //         if (isRunningAtMaxSpeed && player.CurrentVelocity.x.AbsoluteValue() >= (playerData.runSpeed + playerData.sprintSpeed) * 0.5f) {
-        //             isRunning = false;
-        //             isRunningAtMaxSpeed = false;
-
-        //             isSprinting = true;
-
-        //             sprintStopTimer = 0f;
-
-        //             Debug.Log($"Started sprinting");
-        //         }
-                
-        //         if (isSprinting && player.CurrentVelocity.x.AbsoluteValue() >= playerData.sprintSpeed * playerData.maxSprintSpeedThreshold)
-        //             isSprintingAtMaxSpeed = true;
-        //         else
-        //             isSprintingAtMaxSpeed = false;
-        //     }
-
-        //     if (isRunningAtMaxSpeed && attackInputHold && player.CurrentVelocity.x.AbsoluteValue() > 0f) {
-        //         isRunning = false;
-        //         isRunningAtMaxSpeed = false;
-
-        //         isSprinting = true;
-
-        //         Debug.Log($"Started sprinting");
-        //     }
-        //     else if (isSprinting && xInput == 0 && !isChangingDirections && player.CurrentVelocity.x.AbsoluteValue() < playerData.sprintSpeed) {
-        //         isSprinting = false;
-        //         isSprintingAtMaxSpeed = false;
-
-        //         isRunning = true;
-
-        //         Debug.Log($"Stopped sprinting");
-        //     }
-        // }
-
-        if ((xInput == 0 && player.CurrentVelocity.x == 0f) || (xInput != 0 && (isTouchingWall || isTouchingLedge))) {
-            player.SetVelocityX(0f);
+        if ((xInput == 0) || (xInput != 0 && (isTouchingWall || isTouchingLedge))) {
+            isSprinting = false;
             stateMachine.ChangeState(player.IdleState);
         }
-        else if (playerData.canCrouch && playerData.canMove && yInput == -1) {
-            if (playerData.canGroundSlide && !isChangingDirections && (isRunningAtMaxSpeed || isSprinting)) {
+        else if (playerData.canCrouch && playerData.canMove && crouchInputHold) {
+            if (player.GroundSlideState.CanGroundSlide() && !isChangingDirections && (isRunningAtMaxSpeed || isSprintingAtMaxSpeed)) {
                 stateMachine.ChangeState(player.GroundSlideState);
             }
             else {
@@ -118,9 +50,40 @@ public class PlayerMoveState : PlayerGroundedState {
             }
         }
 
-        // player.Anim.SetBool("changingDirections", isChangingDirections);
-        // player.Anim.SetBool("running", isRunning);
-        // player.Anim.SetBool("sprinting", isSprintingAtMaxSpeed);
+        if (isRunning && !isSprinting && player.CurrentVelocity.x.AbsoluteValue() >= playerData.maxRunSpeedThreshold) {
+            isRunningAtMaxSpeed = true;
+        }
+        else {
+            isRunningAtMaxSpeed = false;
+        }
+
+        if (playerData.canSprint) {
+            if (isRunningAtMaxSpeed && attackInputHold) {
+                isRunning = false;
+                isRunningAtMaxSpeed = false;
+                isSprinting = true;
+                sprintStopTimer = 0f;
+            }
+            else if (isSprinting && !attackInputHold) {
+                if (sprintStopTimer < playerData.sprintStopDelay) sprintStopTimer += Time.deltaTime;
+
+                if (sprintStopTimer >= playerData.sprintStopDelay || playerData.sprintStopDelay == 0) {
+                    player.InputHandler.UseAttackStopInput();
+                    isSprinting = false;
+                    isSprintingAtMaxSpeed = false;
+                    isRunning = true;
+                    isRunningAtMaxSpeed = true;
+                }
+            }
+
+            if (isSprinting && player.CurrentVelocity.x.AbsoluteValue() >= playerData.maxSprintSpeedThreshold) {
+                isSprintingAtMaxSpeed = true;
+            }
+            else if (isSprinting && player.CurrentVelocity.x.AbsoluteValue() < playerData.maxSprintSpeedThreshold) {
+                isSprintingAtMaxSpeed = false;
+                if (xInput != 0 && !isTouchingWall && !isTouchingLedge) isRunningAtMaxSpeed = true;
+            }
+        }
     }
 
     public override void PhysicsUpdate() {
@@ -129,12 +92,12 @@ public class PlayerMoveState : PlayerGroundedState {
         if (isExitingState) return;
 
         if (isRunning) {
-            if (isChangingDirections)
+            if (isChangingDirections && xInput != 0)
                 player.SetVelocityX(xInput * playerData.runSpeed, playerData.runDirectionChangeAcceleration, playerData.lerpVelocity);
-            else if (xInput == 0) {
+            else if (isChangingDirections && xInput == 0) {
                 player.SetVelocityX(0f, playerData.runDecceleration, playerData.lerpVelocity);
             }
-            else {
+            else if (!isChangingDirections && xInput != 0) {
                 if (player.CurrentVelocity.x.AbsoluteValue() > playerData.runSpeed) {
                     player.SetVelocityX(xInput * playerData.runSpeed, playerData.sprintDecceleration, playerData.lerpVelocity);
                 }
@@ -142,14 +105,19 @@ public class PlayerMoveState : PlayerGroundedState {
                     player.SetVelocityX(xInput * playerData.runSpeed, playerData.runAcceleration, playerData.lerpVelocity);
                 }
             }
+            else if (!isChangingDirections && xInput == 0) {
+                player.SetVelocityX(0f, playerData.runDecceleration, playerData.lerpVelocity);
+            }
         }
         else if (isSprinting) {
-            if (isChangingDirections)
+            if (isChangingDirections && xInput != 0)
                 player.SetVelocityX(xInput * playerData.sprintSpeed, playerData.sprintDirectionChangeAcceleration, playerData.lerpVelocity);
-            else if (xInput == 0)
+            else if (isChangingDirections && xInput == 0)
                 player.SetVelocityX(0f, playerData.sprintDecceleration, playerData.lerpVelocity);
-            else
+            else if (!isChangingDirections && xInput != 0)
                 player.SetVelocityX(xInput * playerData.sprintSpeed, playerData.sprintAcceleration, playerData.lerpVelocity);
+            else if (!isChangingDirections && xInput == 0)
+                player.SetVelocityX(0f, playerData.sprintDecceleration, playerData.lerpVelocity);
         }
 
         player.SetVelocityY(player.CurrentVelocity.y);
