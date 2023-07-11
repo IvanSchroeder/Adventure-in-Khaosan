@@ -11,6 +11,9 @@ public class LevelManager : MonoBehaviour {
     public WorldMapManager WorldMapManagerInstance { get; private set; }
     public LevelStructure LevelStructure { get; private set; }
 
+    public List<BoolSO> EnabledAbilitiesList;
+    public List<BoolSO> DisabledAbilitiesList;
+
     [field: SerializeField] public GameObject PlayerPrefab { get; private set; }
     public List<World> WorldsList;
     public World selectedWorld;
@@ -63,6 +66,15 @@ public class LevelManager : MonoBehaviour {
         startingCheckpoint = null;
         currentCheckpoint = null;
         lastCheckpoint = null;
+
+        // List<BoolSO> abilities = new List<BoolSO>(EnabledAbilitiesList.UnifyLists([DisableAbilities]));
+        List<BoolSO> abilities = new List<BoolSO>();
+        List<BoolSO>[] abilitiesToUnify = { EnabledAbilitiesList , DisabledAbilitiesList };
+        abilities = new List<BoolSO>(abilities.UnifyLists(abilitiesToUnify));
+
+        foreach (BoolSO ability in abilities) {
+            ability.OnValueChange -= ChangeAbilityInList;
+        }
     }
 
     private void Awake() {
@@ -97,6 +109,9 @@ public class LevelManager : MonoBehaviour {
     public void LoadLevelData() {
         currentLevel = selectedLevel;
         selectedLevel = null;
+
+        EnableAbilities();
+        DisableAbilities();
 
         LoadLevel();
     }
@@ -136,7 +151,6 @@ public class LevelManager : MonoBehaviour {
         for (int i = 0; i < checkpointArray.Count(); i++) {
             checkpointArray[i].checkpointOrderID = i;
             CheckpointsList.Add(checkpointArray[i]);
-            Debug.Log($"Checkpoint {checkpointArray[i]} added");
         }
 
         CheckpointsList.OrderBy(ch => ch.checkpointOrderID);
@@ -159,7 +173,8 @@ public class LevelManager : MonoBehaviour {
         }
 
         PlayerInstance.transform.SetParent(null);
-        PlayerInstance.transform.position = startingCheckpoint.SpawnpointTransform.position;
+        PlayerInstance.transform.position = startingCheckpoint.BasepointTransform.position;
+        // PlayerInstance.transform.position = startingCheckpoint.SpawnpointTransform.position;
 
         PlayerInstance.OnPlayerDeathEnd += RespawnPlayer;
         PlayerInstance.OnLivesDepleted += GameOver;
@@ -186,6 +201,37 @@ public class LevelManager : MonoBehaviour {
         startingCheckpoint.InteractableSystem.Interact();
     }
 
+    public void EnableAbilities() {
+        EnabledAbilitiesList = new List<BoolSO>();
+
+        foreach (BoolSO ability in currentLevel.AbilitiesToEnableList) {
+            ability.OnValueChange += ChangeAbilityInList;
+            ability.Value = true;
+            // EnabledAbilitiesList.Add(ability);
+        }
+    }
+
+    public void DisableAbilities() {
+        DisabledAbilitiesList = new List<BoolSO>();
+
+        foreach (BoolSO ability in currentLevel.AbilitiesToDisableList) {
+            ability.OnValueChange += ChangeAbilityInList;
+            ability.Value = false;
+            // DisabledAbilitiesList.Add(ability);
+        }
+    }
+
+    public void ChangeAbilityInList(ValueSO<bool> ability) {
+        if (ability.Value) {
+            if (DisabledAbilitiesList.Find(ability => ability)) DisabledAbilitiesList.Remove(ability as BoolSO);
+            EnabledAbilitiesList.Add(ability as BoolSO);
+        }
+        else {
+            if (EnabledAbilitiesList.Find(ability => ability)) EnabledAbilitiesList.Remove(ability as BoolSO);
+            DisabledAbilitiesList.Add(ability as BoolSO);
+        }
+    }
+
     public IEnumerator LoadLevelRoutine() {
         SpawnLevelStructure();
         if (!currentLevel.isFinished) currentLevel.currentRecordTime = currentLevel.baseRecordTime;
@@ -209,11 +255,11 @@ public class LevelManager : MonoBehaviour {
     }
 
     public IEnumerator RespawnPlayerRoutine() {
-        PlayerInstance.gameObject.SetActive(false);
+        PlayerInstance.PlayerSprite.enabled = false;
         yield return new WaitForSeconds(playerRespawnTimer);
-        PlayerInstance.gameObject.SetActive(true);
-        PlayerInstance.transform.position = currentCheckpoint.SpawnpointTransform.position;
-        PlayerInstance.Init();
+        PlayerInstance.PlayerSprite.enabled = true;
+        PlayerInstance.transform.position = currentCheckpoint.BasepointTransform.position;
+        // PlayerInstance.transform.position = currentCheckpoint.SpawnpointTransform.position;
         PlayerInstance.HealthSystem.InitializeHealth();
 
         OnPlayerSpawn?.Invoke();

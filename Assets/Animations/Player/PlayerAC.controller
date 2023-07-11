@@ -284,9 +284,6 @@ AnimatorStateMachine:
   - {fileID: -5798797198193617863}
   - {fileID: 1991453848881934791}
   m_StateMachineTransitions:
-  - first: {fileID: 9076992928891044585}
-    second:
-    - {fileID: -8674028497603844145}
   - first: {fileID: 2876713343545978189}
     second:
     - {fileID: 2908006328937899833}
@@ -296,6 +293,9 @@ AnimatorStateMachine:
   - first: {fileID: -3169246241942662810}
     second:
     - {fileID: 5940249158650921217}
+  - first: {fileID: 9076992928891044585}
+    second:
+    - {fileID: -8674028497603844145}
   m_StateMachineBehaviours: []
   m_AnyStatePosition: {x: 50, y: 20, z: 0}
   m_EntryPosition: {x: -160, y: 250, z: 0}
@@ -1487,7 +1487,7 @@ AnimatorController:
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
-    m_DefaultBool: 1
+    m_DefaultBool: 0
     m_Controller: {fileID: 0}
   - m_Name: land
     m_Type: 4
@@ -2784,7 +2784,7 @@ AnimatorStateTransition:
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 0.25
+  m_TransitionDuration: 0
   m_TransitionOffset: 0
   m_ExitTime: 0.24999994
   m_HasExitTime: 0

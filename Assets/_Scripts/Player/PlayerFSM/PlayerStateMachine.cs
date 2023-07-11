@@ -13,6 +13,7 @@ public class PlayerStateMachine {
         CurrentState = startingState;
         PreviousState = null;
         CurrentState.Enter();
+        OnStateChange?.Invoke(CurrentState, PreviousState);
     }
 
     public void ChangeState(PlayerState newState) {

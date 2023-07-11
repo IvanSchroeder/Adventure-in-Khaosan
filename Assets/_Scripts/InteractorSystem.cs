@@ -49,5 +49,6 @@ public class InteractorSystem : MonoBehaviour {
         Interactor.CurrentInteractable.InteractableSystem.SetInteractionState(false);
         Interactor.CurrentInteractable = null;
         interactableEntity.CurrentInteractor = null;
+        Interactor.InputHandler.UseInteractInput();
     }
 }

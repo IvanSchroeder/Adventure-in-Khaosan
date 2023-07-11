@@ -4,6 +4,7 @@ using UnityEngine;
 using ExtensionMethods;
 using System;
 using TMPro;
+using UnityEngine.UI;
 using UnityEngine.InputSystem;
 
 public class Sign : MonoBehaviour, IInteractable {
@@ -15,9 +16,13 @@ public class Sign : MonoBehaviour, IInteractable {
     [field: SerializeField] public Canvas SignCanvas { get; set; }
     [field: SerializeField] public Transform TextOrigin { get; set; }
     [field: SerializeField] public Transform TextTarget { get; set; }
+    [field: SerializeField] public TypewriterEffect TypewriterSystem { get; set; }
+    [field: SerializeField] public RawImage SignPanel { get; set; }
     [field: SerializeField] public TextMeshProUGUI SignText { get; set; }
     [field: SerializeField] public float TextTransitionTime { get; set; }
-    public AnimationCurve TextEnablingCurve;
+    [field: SerializeField] public AnimationCurve TextEnablingCurve { get; set; }
+    [field: SerializeField] public bool UnlocksAbility { get; set; }
+    [field: SerializeField] public BoolSO AbilityToUnlock { get; set; }
 
     public SpriteRenderer SpriteRenderer { get; private set; }
 
@@ -40,13 +45,19 @@ public class Sign : MonoBehaviour, IInteractable {
     }
 
     private void Awake() {
-        if (InteractTrigger == null) InteractTrigger = GetComponentInChildren<BoxCollider2D>();
-        if (SpriteRenderer == null) SpriteRenderer = GetComponentInChildren<SpriteRenderer>();
-        if (SpriteManager == null) SpriteManager = SpriteRenderer.GetComponent<SpriteManager>();
+        if (InteractTrigger.IsNull()) InteractTrigger = GetComponentInChildren<BoxCollider2D>();
+        if (SpriteRenderer.IsNull()) SpriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        if (SpriteManager.IsNull()) SpriteManager = SpriteRenderer.GetComponent<SpriteManager>();
+        if (TypewriterSystem.IsNull()) TypewriterSystem = SignText.GetComponent<TypewriterEffect>();
 
-        SignText.transform.position = TextOrigin.position;
+        SignPanel.transform.position = TextOrigin.position;
+        SignPanel.color = SignPanel.color.SetA(0f);
+        // SignPanel.enabled = false;
+
+        // SignText.transform.position = TextOrigin.position;
         SignText.color = SignText.color.SetA(0f);
-        SignText.enabled = false;
+        // SignText.enabled = false;
+
         isActive = false;
 
         // index = 0;
@@ -66,8 +77,10 @@ public class Sign : MonoBehaviour, IInteractable {
 
         isActive = true;
 
+        if (UnlocksAbility) EnableAbility();
+
+        TypewriterSystem.StartTypewrite();
         textEnablingCoroutine = StartCoroutine(TextEnablingRoutine(isActive));
-        Debug.Log($"Interacted with {this.transform.name}");
     }
 
     public void DisableSign(object sender, OnEntityInteractedEventArgs entityInteracted) {
@@ -78,15 +91,22 @@ public class Sign : MonoBehaviour, IInteractable {
 
         isActive = false;
 
+        TypewriterSystem.StopTypewrite();
         textEnablingCoroutine = StartCoroutine(TextEnablingRoutine(isActive));
     }
 
+    public void EnableAbility() {
+        if (AbilityToUnlock.IsNotNull() && !AbilityToUnlock.Value) AbilityToUnlock.Value = true;
+    }
+
     public IEnumerator TextEnablingRoutine(bool enable) {
-        SignText.enabled = true;
+        // SignText.enabled = true;
+        // SignPanel.enabled = true;
 
         float elapsedTime = 0f;
         float percentage = elapsedTime / TextTransitionTime;
-        float alpha = SignText.color.a;
+        float textAlpha = SignText.color.a;
+        float panelAlpha = SignPanel.color.a;
         float targetAlpha = 0f;
         Vector2 targetPosition = Vector2.zero;
 
@@ -101,9 +121,13 @@ public class Sign : MonoBehaviour, IInteractable {
 
 
         while (elapsedTime < TextTransitionTime) {
-            SignText.transform.position = Vector2.Lerp(SignText.transform.position, targetPosition, TextEnablingCurve.Evaluate(percentage));
-            alpha = Mathf.Lerp(alpha, targetAlpha, TextEnablingCurve.Evaluate(percentage));
-            SignText.color = SignText.color.SetA(alpha);
+            // SignText.transform.position = Vector2.Lerp(SignText.transform.position, targetPosition, TextEnablingCurve.Evaluate(percentage));
+            textAlpha = Mathf.Lerp(textAlpha, targetAlpha, TextEnablingCurve.Evaluate(percentage));
+            SignText.color = SignText.color.SetA(textAlpha);
+            
+            SignPanel.transform.position = Vector2.Lerp(SignPanel.transform.position, targetPosition, TextEnablingCurve.Evaluate(percentage));
+            panelAlpha = Mathf.Lerp(panelAlpha, targetAlpha * 0.5f, TextEnablingCurve.Evaluate(percentage));
+            SignPanel.color = SignPanel.color.SetA(panelAlpha);
 
             elapsedTime += Time.deltaTime;
             percentage = elapsedTime / TextTransitionTime;
@@ -111,9 +135,15 @@ public class Sign : MonoBehaviour, IInteractable {
             yield return null;
         }
 
-        SignText.transform.position = targetPosition;
+        // SignText.transform.position = targetPosition;
         SignText.color = SignText.color.SetA(targetAlpha);
-        SignText.enabled = enable;
+        // SignText.enabled = enable;
+
+        SignPanel.transform.position = targetPosition;
+        SignPanel.color = SignPanel.color.SetA(targetAlpha * 0.5f);
+        // SignPanel.enabled = enable;
+
+        if (!enable) TypewriterSystem.ResetText();
 
         yield return null;
     }

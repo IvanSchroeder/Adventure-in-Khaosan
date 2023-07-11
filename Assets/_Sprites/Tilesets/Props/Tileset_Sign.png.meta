@@ -190,8 +190,8 @@ TextureImporter:
         y: 0
         width: 24
         height: 24
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
+      alignment: 5
+      pivot: {x: 1, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -199,6 +199,27 @@ TextureImporter:
       bones: []
       spriteID: 0f79bf6c883925d4abcfd67386cb0c39
       internalID: 1195041554
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tileset_Sign_3
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 0
+        width: 24
+        height: 24
+      alignment: 4
+      pivot: {x: 0, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 50a109751ccc2ba4ebe4f8b672ef68d3
+      internalID: 579110785
       vertices: []
       indices: 
       edges: []
@@ -217,6 +238,7 @@ TextureImporter:
       Tileset_Sign_0: 1119901717
       Tileset_Sign_1: 119143212
       Tileset_Sign_2: 1195041554
+      Tileset_Sign_3: 579110785
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

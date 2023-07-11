@@ -15,6 +15,8 @@ public class Level : ScriptableObject {
     public int levelNumber;
     public GameObject worldMap;
     public bool enableInfiniteLives = false;
+    public List<BoolSO> AbilitiesToEnableList;
+    public List<BoolSO> AbilitiesToDisableList;
     // public List<CoinItem> CoinItems;
     // public List<FoodItem> FoodItemsList;
     // public List<Enemy> EnemiesList;

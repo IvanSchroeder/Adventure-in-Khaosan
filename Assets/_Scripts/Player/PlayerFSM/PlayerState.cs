@@ -104,13 +104,6 @@ public class PlayerState {
         this.animBoolName = animBoolName;
     }
 
-    // public static T CreateInstance<T>(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) where T: PlayerState{
-    //     var state = ScriptableObject.CreateInstance<T>();
-    //     state.Init(player, stateMachine, playerData, animBoolName);
-    //     Debug.Log($"Created {state} state");
-    //     return state;
-    // }
-
     public virtual void Enter() {
         CheckInputs();
         CheckHorizontalMovement();
@@ -154,7 +147,7 @@ public class PlayerState {
             Physics2D.IgnoreLayerCollision(player.gameObject.layer, LayerMask.NameToLayer("Platform"), true);
             player.gameObject.layer = LayerMask.NameToLayer("IgnorePlatforms");
         }
-        else if ((!unplatformInput && !isAirborne && !isWallSliding) || isOnSolidGround || !isWallClimbing || !isWallGrabing) {
+        else if ((!unplatformInput && !isAirborne && !isWallSliding) || isOnSolidGround || !isWallClimbing || !isWallGrabing || !isDead) {
             isIgnoringPlatforms = false;
             player.gameObject.layer = LayerMask.NameToLayer("Player");
             Physics2D.IgnoreLayerCollision(player.gameObject.layer, LayerMask.NameToLayer("Platform"), false);
@@ -301,6 +294,7 @@ public class PlayerState {
 
         playerData.wallJumpDirectionOffAngle = playerData.wallJumpAngle.AngleFloatToVector2();
         playerData.wallHopDirectionOffAngle = playerData.wallHopAngle.AngleFloatToVector2();
+        playerData.deathJumpDirectionOffAngle = playerData.deathJumpAngle.AngleFloatToVector2();
     }
 
     protected float slopeDownAngle;

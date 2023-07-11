@@ -93,16 +93,18 @@ public class PlayerData : EntityData {
 
     [Header("--- States Locks ---")]
     [Space(5)]
-    public bool canMove = true;
-    public bool canSprint = true;
-    public bool canCrouch = true;
-    public bool canGroundSlide = true;
-    public bool canJump = true;
-    public bool canWallSlide = true;
-    public bool canWallClimb = true;
-    public bool canLedgeClimb = true;
-    public bool canWallJump = true;
-    public bool canAttack = true;
+    public BoolSO CanMove;
+    public BoolSO CanJump;
+    public BoolSO CanCrouch;
+    public BoolSO CanSprint;
+    public BoolSO CanGroundSlide;
+    public BoolSO CanWallSlide;
+    public BoolSO CanWallClimb;
+    public BoolSO CanWallJump;
+    public BoolSO CanLedgeGrab;
+    public BoolSO CanLedgeJump;
+    public BoolSO CanLedgeClimb;
+    public BoolSO CanAttack;
 
     // [Space(20)]
 
@@ -162,6 +164,7 @@ public class PlayerData : EntityData {
     [Range(0f, 5f)] public float crouchWalkSpeed;
     [Range(0, 100)] public int crouchAcceleration;
     [Range(0, 100)] public int crouchDecceleration;
+    [Range(0f, 0.5f)] public float standupDelay = 0.3f;
     [Space(3)]
     [Header("Ground Slide")]
     [Space(3)]
@@ -171,7 +174,18 @@ public class PlayerData : EntityData {
     [Range(0f, 15f)] public float groundSlideSpeed;
     [Range(0, 100)] public int groundSlideAcceleration;
     [Range(0, 100)] public int groundSlideDecceleration;
+    [Space(3)]
+    [Header("Death Sequence")]
+    [Space(3)]
     [Range(0, 100)] public int deathSlideDecceleration;
+    [Range(0f, 50f)] public float deathJumpSpeed;
+    [Range(-90f, 90f)] public float deathJumpAngle;
+    public Vector2 deathJumpDirectionOffAngle;
+    public int maxBouncesOffGround = 3;
+    [Range(0f, 1f)] public float wallBounceFalloff = 0.5f;
+    [Range(0f, 1f)] public float groundBounceXFalloff = 0.5f;
+    [Range(0f, 1f)] public float groundBounceYFalloff = 0.5f;
+    [Range(0f, 1f)] public float groundBounceThreshold = 0.5f;
 
     [Space(5)]
     [Header("=== Air ===")]
@@ -202,11 +216,6 @@ public class PlayerData : EntityData {
     [Range(0f, 1f)] public float variableJumpHeightMultiplier = 0.5f;
     public float cornerCorrectionRepositionOffset = 0.015f;
     public float maxAscendantSpeed;
-    public int maxBouncesOffGround = 3;
-    [Range(0f, 1f)] public float wallBounceFalloff = 0.5f;
-    [Range(0f, 1f)] public float groundBounceXFalloff = 0.5f;
-    [Range(0f, 1f)] public float groundBounceYFalloff = 0.5f;
-    [Range(0f, 1f)] public float groundBounceThreshold = 0.5f;
 
     [Space(5)]
     [Header("Fall")]
@@ -294,6 +303,7 @@ public class PlayerData : EntityData {
     public LayerMask solidsLayer;
     public LayerMask wallLayer;
     public LayerMask platformLayer;
+    public LayerMask hazardsLayer;
 
     public override void OnEnable() {
         Init();
@@ -380,5 +390,6 @@ public class PlayerData : EntityData {
 
         wallJumpDirectionOffAngle = wallJumpAngle.AngleFloatToVector2();
         wallHopDirectionOffAngle = wallHopAngle.AngleFloatToVector2();
+        deathJumpDirectionOffAngle = deathJumpAngle.AngleFloatToVector2();
     }
 }

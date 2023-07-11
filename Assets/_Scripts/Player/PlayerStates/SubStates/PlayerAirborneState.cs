@@ -21,6 +21,7 @@ public class PlayerAirborneState : PlayerState {
         isAirborne = true;
 
         player.SetColliderParameters(player.MovementCollider, playerData.standingColliderConfig);
+        player.SetColliderParameters(player.HitboxTrigger, playerData.standingColliderConfig);
     }
 
     public override void Exit() {
@@ -48,24 +49,27 @@ public class PlayerAirborneState : PlayerState {
 
         player.CheckFacingDirection(xInput);
 
-        if (isJumping || isAscending) {
-            bool hasChecked = false;
-            float velocityBeforeHit = player.CurrentVelocity.y;
+        // if (isJumping || isAscending) {
+        //     bool hasChecked = false;
+        //     float velocityBeforeHit = player.CurrentVelocity.y;
 
-            if (isTouchingCeiling && !hasChecked) {
-                hasChecked = true;
+        //     if (isTouchingCeiling && !hasChecked) {
+        //         hasChecked = true;
+        //         Debug.Log($"Speed before hit: {velocityBeforeHit}");
 
-                bool correctCorner = player.CheckCornerCorrection();
+        //         bool correctCorner = player.CheckCornerCorrection();
 
-                if (correctCorner) {
-                    correctCorner = false;
-                    player.CorrectCorner(velocityBeforeHit);
-                }
-                else {
-                    player.SetVelocityY(0f);
-                }
-            }
-        }
+        //         if (correctCorner) {
+        //             correctCorner = false;
+        //             player.CorrectCorner(velocityBeforeHit);
+        //         }
+        //         else {
+        //             player.SetVelocityY(0f);
+        //         }
+
+        //         Debug.Log($"Speed after check: {player.CurrentVelocity.y}");
+        //     }
+        // }
 
         if (isFalling) {
             if (yInput >= 0) {
@@ -90,27 +94,27 @@ public class PlayerAirborneState : PlayerState {
         //     else
         //         stateMachine.ChangeState(player.CrouchMoveState);
         // }
-        if (playerData.canWallJump && jumpInput && (isTouchingWall || isTouchingBackWall || wallJumpCoyoteTime || hasTouchedWall) && yInput != -1) {
+        if (playerData.CanWallJump.Value && jumpInput && (isTouchingWall || isTouchingBackWall || wallJumpCoyoteTime || hasTouchedWall) && yInput != -1) {
             stateMachine.ChangeState(player.WallJumpState);
         }
-        else if (playerData.canJump && jumpInput && player.JumpState.CanJump() && yInput != -1 && !isIgnoringPlatforms) {
+        else if (playerData.CanJump.Value && jumpInput && player.JumpState.CanJump() && yInput != -1 && !isIgnoringPlatforms) {
             stateMachine.ChangeState(player.JumpState);
         }
-        else if (playerData.canLedgeClimb && isTouchingWall && !isTouchingLedge && !isGrounded && !jumpInputHold && yInput != -1) {
+        else if (playerData.CanLedgeGrab.Value && isTouchingWall && !isTouchingLedge && !isGrounded && !jumpInputHold && yInput != -1) {
             player.LedgeClimbState.SetDetectedPosition(player.transform.position);
             stateMachine.ChangeState(player.LedgeClimbState);
         }
         else if (isOnSolidGround && !isJumping) {
             RaycastHit2D detectedGround = player.GetGroundHit();
             if (detectedGround) {
-                Vector2 position = new Vector2(player.transform.position.x, (detectedGround.point + (Vector2.up * 0.05f)).y);
+                Vector2 position = new Vector2(player.transform.position.x, detectedGround.point.y + 0.05f);
                 player.transform.position = position;
             }
 
             if (xInput != 0 && !isTouchingWall) {
                 if (player.GroundSlideState.CanGroundSlide() && !isChangingDirections && yInput == -1 && player.CurrentVelocity.x.AbsoluteValue() >= playerData.maxRunSpeedThreshold)
                     stateMachine.ChangeState(player.GroundSlideState);
-                else if (playerData.canMove && !isTouchingLedge)
+                else if (playerData.CanMove.Value && !isTouchingLedge)
                     stateMachine.ChangeState(player.MoveState);
             }
             else
@@ -120,25 +124,25 @@ public class PlayerAirborneState : PlayerState {
             RaycastHit2D detectedPlatform = player.GetPlatformHit();
             
             if (detectedPlatform) {
-                Vector2 position = new Vector2(player.transform.position.x, (detectedPlatform.point + (Vector2.up * 0.05f)).y);
+                Vector2 position = new Vector2(player.transform.position.x, detectedPlatform.point.y + 0.05f);
                 player.transform.position = position;
             }
 
             if (xInput != 0 && !isTouchingWall) {
-                if (playerData.canMove)
-                    stateMachine.ChangeState(player.MoveState);
-                else if (player.GroundSlideState.CanGroundSlide() && !isChangingDirections && yInput == -1 && player.CurrentVelocity.x.AbsoluteValue() >= playerData.maxRunSpeedThreshold)
+                if (player.GroundSlideState.CanGroundSlide() && !isChangingDirections && yInput == -1 && player.CurrentVelocity.x.AbsoluteValue() >= playerData.maxRunSpeedThreshold)
                     stateMachine.ChangeState(player.GroundSlideState);
+                else if (playerData.CanMove.Value && !isTouchingLedge)
+                    stateMachine.ChangeState(player.MoveState);
             }
             else
                 stateMachine.ChangeState(player.LandState);
         }
-        else if (playerData.canWallSlide && !playerData.autoWallGrab && isTouchingWall && isTouchingLedge && !isJumping) {
-            if (playerData.canWallClimb && grabInput) stateMachine.ChangeState(player.WallGrabState);
+        else if (playerData.CanWallSlide.Value && !playerData.autoWallGrab && isTouchingWall && isTouchingLedge && !isJumping) {
+            if (playerData.CanWallClimb.Value && grabInput) stateMachine.ChangeState(player.WallGrabState);
             else if (xInput == player.FacingDirection || playerData.autoWallSlide) stateMachine.ChangeState(player.WallSlideState);
         }
-        else if (playerData.canWallSlide && playerData.autoWallGrab && isTouchingWall && isTouchingLedge && !isJumping) {
-            if (playerData.canWallClimb && xInput == player.FacingDirection) stateMachine.ChangeState(player.WallGrabState);
+        else if (playerData.CanWallSlide.Value && playerData.autoWallGrab && isTouchingWall && isTouchingLedge && !isJumping) {
+            if (playerData.CanWallClimb.Value && xInput == player.FacingDirection) stateMachine.ChangeState(player.WallGrabState);
             else if (xInput == 0 || playerData.autoWallSlide) stateMachine.ChangeState(player.WallSlideState);
         }
     }

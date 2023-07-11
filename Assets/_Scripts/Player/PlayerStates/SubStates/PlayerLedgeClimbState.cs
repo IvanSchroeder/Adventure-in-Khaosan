@@ -59,6 +59,7 @@ public class PlayerLedgeClimbState : PlayerState {
             player.transform.position = stopPos + (Vector2.up * 0.05f);
             isClimbing = false;
             player.SetVelocityX(0f);
+            player.SetVelocityY(0f);
         }
     }
 
@@ -75,10 +76,12 @@ public class PlayerLedgeClimbState : PlayerState {
         if (isAnimationFinished) {
             if (hasSpace) {
                 player.SetColliderParameters(player.MovementCollider, playerData.standingColliderConfig);
+                player.SetColliderParameters(player.HitboxTrigger, playerData.standingColliderConfig);
                 stateMachine.ChangeState(player.IdleState);
             }
             else {
                 player.SetColliderParameters(player.MovementCollider, playerData.crouchColliderConfig);
+                player.SetColliderParameters(player.HitboxTrigger, playerData.crouchColliderConfig);
                 stateMachine.ChangeState(player.CrouchIdleState);
             }
         }
@@ -100,16 +103,15 @@ public class PlayerLedgeClimbState : PlayerState {
 
             }
 
-            if (isHanging && !isClimbing && xInput == player.FacingDirection && (hasSpace || (!hasSpace && playerData.canCrouch))) {
+            if (isHanging && playerData.CanLedgeClimb.Value && !isClimbing && xInput == player.FacingDirection && (hasSpace || (!hasSpace && playerData.CanCrouch.Value))) {
                 isClimbing = true;
                 player.Anim.SetBool("climbLedge", true);
                 player.CameraTarget.SetTargetPosition(stopPos + (Vector2.up * 2f));
             }
-            else if (playerData.canWallJump && isHanging && !isClimbing && jumpInput && xInput == -player.FacingDirection) {
-                // player.WallJumpState.GetWallJumpDirection(isTouchingWall);
+            else if (playerData.CanLedgeJump.Value && isHanging && !isClimbing && jumpInput && xInput == -player.FacingDirection) {
                 stateMachine.ChangeState(player.WallJumpState);
             }
-            else if (playerData.canJump && isHanging && !isClimbing && jumpInput && xInput == 0) {
+            else if (playerData.CanJump.Value && isHanging && !isClimbing && jumpInput && xInput == 0) {
                 coyoteTime = false;
                 player.transform.position += Vector3.up * 0.2f;
                 stateMachine.ChangeState(player.JumpState);
@@ -118,12 +120,18 @@ public class PlayerLedgeClimbState : PlayerState {
                 player.transform.position += Vector3.down * 0.2f;
                 stateMachine.ChangeState(player.AirborneState);
             }
-            else if (playerData.canWallClimb && isHanging && !isClimbing && grabInput && yInput == -1) {
+            else if (playerData.CanWallClimb.Value && isHanging && !isClimbing && grabInput && yInput == -1) {
                 player.transform.position += Vector3.down * 0.2f;
                 stateMachine.ChangeState(player.WallClimbState);
             }
         }
+    }
 
+    public override void PhysicsUpdate() {
+        base.PhysicsUpdate();
+
+        player.SetVelocityX(0f);
+        player.SetVelocityY(0f);
     }
 
     public void SetDetectedPosition(Vector2 pos) => detectedPos = pos;

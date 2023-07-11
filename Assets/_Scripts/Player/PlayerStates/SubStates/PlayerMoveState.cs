@@ -33,6 +33,14 @@ public class PlayerMoveState : PlayerGroundedState {
     public override void LogicUpdate() {
         base.LogicUpdate();
 
+        if (elapsedTimeSinceStandup < playerData.standupDelay) {
+            elapsedTimeSinceStandup += Time.deltaTime;
+
+            if (elapsedTimeSinceStandup >= playerData.standupDelay) {
+                player.SetColliderParameters(player.HitboxTrigger, playerData.standingColliderConfig);
+            }
+        }
+
         player.CheckFacingDirection(xInput);
 
         if (isExitingState) return;
@@ -41,7 +49,7 @@ public class PlayerMoveState : PlayerGroundedState {
             isSprinting = false;
             stateMachine.ChangeState(player.IdleState);
         }
-        else if (playerData.canCrouch && playerData.canMove && crouchInputHold) {
+        else if (playerData.CanCrouch.Value && playerData.CanMove.Value && crouchInputHold) {
             if (player.GroundSlideState.CanGroundSlide() && !isChangingDirections && (isRunningAtMaxSpeed || isSprintingAtMaxSpeed)) {
                 stateMachine.ChangeState(player.GroundSlideState);
             }
@@ -57,7 +65,7 @@ public class PlayerMoveState : PlayerGroundedState {
             isRunningAtMaxSpeed = false;
         }
 
-        if (playerData.canSprint) {
+        if (playerData.CanSprint.Value) {
             if (isRunningAtMaxSpeed && attackInputHold) {
                 isRunning = false;
                 isRunningAtMaxSpeed = false;

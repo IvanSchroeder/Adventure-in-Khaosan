@@ -23,10 +23,10 @@ public class PlayerLandState : PlayerGroundedState {
     public override void LogicUpdate() {
         base.LogicUpdate();
 
-        if (playerData.canMove && xInput != 0)
+        if (playerData.CanMove.Value && xInput != 0)
             stateMachine.ChangeState(player.MoveState);
         else if (isAnimationFinished) {
-            if (playerData.canCrouch && yInput == -1)
+            if (playerData.CanCrouch.Value && yInput == -1)
                 stateMachine.ChangeState(player.CrouchIdleState);
             else
                 stateMachine.ChangeState(player.IdleState);

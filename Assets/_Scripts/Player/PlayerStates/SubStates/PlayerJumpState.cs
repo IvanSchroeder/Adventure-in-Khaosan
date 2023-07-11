@@ -30,7 +30,7 @@ public class PlayerJumpState : PlayerAbilityState {
     }
 
     public bool CanJump() {
-        if (!playerData.canJump) return false;
+        if (!playerData.CanJump.Value) return false;
 
         if (amountOfJumpsLeft > 0) return true;
         

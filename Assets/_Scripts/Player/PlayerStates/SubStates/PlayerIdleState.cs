@@ -25,6 +25,14 @@ public class PlayerIdleState : PlayerGroundedState {
     public override void LogicUpdate() {
         base.LogicUpdate();
 
+        if (elapsedTimeSinceStandup < playerData.standupDelay) {
+            elapsedTimeSinceStandup += Time.deltaTime;
+
+            if (elapsedTimeSinceStandup >= playerData.standupDelay) {
+                player.SetColliderParameters(player.HitboxTrigger, playerData.standingColliderConfig);
+            }
+        }
+
         player.CheckFacingDirection(xInput);
 
         if (isExitingState) return;
@@ -34,16 +42,16 @@ public class PlayerIdleState : PlayerGroundedState {
         //     coyoteTime = false;
         //     stateMachine.ChangeState(player.JumpState);
         // }
-        if (playerData.canCrouch && yInput == -1 && (!isTouchingLedge || !isTouchingWall))
+        if (playerData.CanCrouch.Value && yInput == -1 && (!isTouchingLedge || !isTouchingWall))
             if (xInput == 0)
                 stateMachine.ChangeState(player.CrouchIdleState);
             else
                 stateMachine.ChangeState(player.CrouchMoveState);
-        else if (playerData.canMove && xInput != 0) {
-            if (playerData.canWallClimb && isTouchingWall && isTouchingLedge) {
+        else if (playerData.CanMove.Value && xInput != 0) {
+            if (playerData.CanWallClimb.Value && isTouchingWall && isTouchingLedge) {
                 if (((playerData.autoWallGrab && xInput == player.FacingDirection) || (!playerData.autoWallGrab && grabInput)) && yInput == 0) 
                     stateMachine.ChangeState(player.WallGrabState);
-                else if ((playerData.autoWallGrab || (!playerData.autoWallGrab && grabInput)) && ((isOnPlatform && yInput != 0) || (isOnSolidGround && yInput == 1)))
+                else if ((playerData.autoWallGrab || (!playerData.autoWallGrab && grabInput)) && (/*(isOnPlatform && yInput != 0) ||*/ (isGrounded && yInput == 1)))
                     stateMachine.ChangeState(player.WallClimbState);
             }
             else if ((isTouchingWall && !isTouchingLedge) || (!isTouchingWall && isTouchingLedge))
@@ -52,10 +60,10 @@ public class PlayerIdleState : PlayerGroundedState {
                 stateMachine.ChangeState(player.MoveState);
         }
         else if (xInput == 0) {
-            if (playerData.canWallClimb && isTouchingWall && isTouchingLedge) {
+            if (playerData.CanWallClimb.Value && isTouchingWall && isTouchingLedge) {
                 if (((playerData.autoWallGrab && xInput == player.FacingDirection) || (!playerData.autoWallGrab && grabInput)) && yInput == 0) 
                     stateMachine.ChangeState(player.WallGrabState);
-                else if ((playerData.autoWallGrab || (!playerData.autoWallGrab && grabInput)) && ((isOnPlatform && yInput != 0) || (isOnSolidGround && yInput == 1)))
+                else if ((playerData.autoWallGrab || (!playerData.autoWallGrab && grabInput)) && (/*(isOnPlatform && yInput != 0) ||*/ (isGrounded && yInput == 1)))
                     stateMachine.ChangeState(player.WallClimbState);
             }
         }

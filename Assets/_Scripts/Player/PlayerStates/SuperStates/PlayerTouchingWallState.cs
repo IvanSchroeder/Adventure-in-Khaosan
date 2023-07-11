@@ -52,7 +52,27 @@ public class PlayerTouchingWallState : PlayerState {
 
         if (isExitingState) return;
         
-        if (playerData.canWallJump && jumpInput && (isTouchingWall || isTouchingBackWall || wallJumpCoyoteTime || hasTouchedWall) && yInput != -1) {
+        if (playerData.CanWallJump.Value && jumpInput && (isTouchingWall || isTouchingBackWall || wallJumpCoyoteTime || hasTouchedWall)) {
+            // if (yInput == -1) {
+            //     player.WallJumpState.SetNextWallJumpDirection(playerData.wallJumpDirectionOffAngle * new Vector2(1f, -1f));
+            //     stateMachine.ChangeState(player.WallJumpState);
+            // }
+            // else if (xInput == 0 && yInput == 0) {
+            //     player.WallJumpState.SetNextWallJumpDirection(playerData.wallJumpDirectionOffAngle * Vector2.right);
+            //     stateMachine.ChangeState(player.WallJumpState);
+            // }
+            // else {
+            //     player.WallJumpState.SetNextWallJumpDirection(playerData.wallJumpDirectionOffAngle);
+            //     stateMachine.ChangeState(player.WallJumpState);
+            // }
+
+            if ((isWallSliding && yInput == 0) || (isWallGrabing) || (isWallClimbing && yInput != 1)) {
+                player.WallJumpState.SetNextWallJumpDirection(playerData.wallJumpDirectionOffAngle * Vector2.right);
+            }
+            else {
+                player.WallJumpState.SetNextWallJumpDirection(playerData.wallJumpDirectionOffAngle);
+            }
+
             stateMachine.ChangeState(player.WallJumpState);
         }
         else if (!isTouchingWall) {

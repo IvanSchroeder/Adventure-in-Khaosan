@@ -15,6 +15,7 @@ public class PlayerCrouchIdleState : PlayerGroundedState {
         isCrouching = true;
         isIdle = true;
         player.SetColliderParameters(player.MovementCollider, playerData.crouchColliderConfig);
+        player.SetColliderParameters(player.HitboxTrigger, playerData.crouchColliderConfig);
 
         player.CameraTarget.SetTargetPosition(Vector3.down, 3f, true);
     }
@@ -32,17 +33,19 @@ public class PlayerCrouchIdleState : PlayerGroundedState {
         base.LogicUpdate();
 
         player.SetColliderParameters(player.MovementCollider, playerData.crouchColliderConfig);
+        player.SetColliderParameters(player.HitboxTrigger, playerData.crouchColliderConfig);
 
         if (isExitingState) return;
 
         if (xInput != 0) {
             player.CheckFacingDirection(xInput);
             
-            if(playerData.canMove && !isTouchingWall)
+            if(playerData.CanMove.Value && !isTouchingWall)
                 stateMachine.ChangeState(player.CrouchMoveState);
         }
         else if (yInput != -1 && !isTouchingCeiling) {
             player.SetColliderParameters(player.MovementCollider, playerData.standingColliderConfig);
+            player.SetColliderParameters(player.HitboxTrigger, playerData.standingColliderConfig);
             stateMachine.ChangeState(player.IdleState);
         }
         else if (isTouchingCeiling) {

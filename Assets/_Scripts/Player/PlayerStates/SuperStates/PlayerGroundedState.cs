@@ -5,6 +5,7 @@ using ExtensionMethods;
 
 public class PlayerGroundedState : PlayerState {
     protected RaycastHit2D groundHit;
+    protected float elapsedTimeSinceStandup;
 
     public PlayerGroundedState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
     }
@@ -14,6 +15,9 @@ public class PlayerGroundedState : PlayerState {
 
         player.JumpState.ResetAmountOfJumpsLeft();
         player.InputHandler.UseJumpStopInput();
+        player.Anim.SetBool("airborne", false);
+
+        elapsedTimeSinceStandup = 0f;
     }
 
     public override void Exit() {
@@ -25,7 +29,7 @@ public class PlayerGroundedState : PlayerState {
 
         if (isExitingState) return;
 
-        if (playerData.canJump && jumpInput && player.JumpState.CanJump() && !isTouchingCeiling && !isIgnoringPlatforms) {
+        if (playerData.CanJump.Value && jumpInput && player.JumpState.CanJump() && !isTouchingCeiling && !isIgnoringPlatforms) {
             // bullet jump maybe? for a longer horizontal jump
             coyoteTime = false;
             stateMachine.ChangeState(player.JumpState);
@@ -34,9 +38,6 @@ public class PlayerGroundedState : PlayerState {
             player.AirborneState.StartCoyoteTime();
             stateMachine.ChangeState(player.AirborneState);
         }
-        // else if (playerData.canWallSlide && playerData.canWallClimb && isTouchingWall && isTouchingLedge && ((playerData.autoWallGrab && xInput == player.FacingDirection) || (!playerData.autoWallGrab && grabInput))) {
-        //     stateMachine.ChangeState(player.WallGrabState);
-        // }
     }
 
     public override void PhysicsUpdate() {

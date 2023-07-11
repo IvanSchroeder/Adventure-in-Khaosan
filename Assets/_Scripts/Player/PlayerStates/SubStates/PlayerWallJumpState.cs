@@ -5,7 +5,7 @@ using ExtensionMethods;
 
 public class PlayerWallJumpState : PlayerAbilityState {
     protected int wallJumpDirection;
-    protected Vector2 wallJumpDirectionVec;
+    protected Vector2 nextWallJumpDirectionVec;
 
     public PlayerWallJumpState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
     }
@@ -14,21 +14,26 @@ public class PlayerWallJumpState : PlayerAbilityState {
         base.Enter();
 
         isWallJumping = true;
+        player.Rb.gravityScale = 0f;
 
         player.InputHandler.UseJumpInput();
-        // player.SetVelocity(playerData.wallJumpSpeed, playerData.wallJumpDirectionOffAngle, wallJumpDirection);
         wallJumpDirection = -player.FacingDirection;
-        player.SetVelocity(playerData.wallJumpSpeed, playerData.wallJumpDirectionOffAngle, wallJumpDirection);
+        // player.SetVelocity(playerData.wallJumpSpeed, playerData.wallJumpDirectionOffAngle, wallJumpDirection);
+        player.SetVelocity(playerData.wallJumpSpeed, nextWallJumpDirectionVec, wallJumpDirection);
         player.CheckFacingDirection(wallJumpDirection);
         player.JumpState.ResetAmountOfJumpsLeft();
         player.JumpState.DecreaseAmountOfJumpsLeft();
         player.AirborneState.StopWallJumpCoyoteTime();
+
+        // default angle
+        nextWallJumpDirectionVec = playerData.wallJumpDirectionOffAngle;
     }
 
     public override void Exit() {
         base.Exit();
 
         isWallJumping = false;
+        player.Rb.gravityScale = playerData.defaultGravityScale;
         
         // player.CheckFacingDirection(xInput);
 
@@ -54,6 +59,10 @@ public class PlayerWallJumpState : PlayerAbilityState {
             isAbilityDone = true;
     }
 
+    // public override void PhysicsUpdate() {
+    //     base.PhysicsUpdate();
+    // }
+
     private void CheckWallJumpMultiplier() {
         if (!isWallJumping) return;
 
@@ -70,9 +79,9 @@ public class PlayerWallJumpState : PlayerAbilityState {
         }
     }
 
-    // public void SetNextWallJumpDirection(float x, float y) {
-    //     wallJumpDirectionVec = wallJumpDirectionVec
-    // }
+    public void SetNextWallJumpDirection(Vector2 vector) {
+        nextWallJumpDirectionVec = vector;
+    }
 
     public void GetWallJumpDirection(bool isTouchingWall) {
         if (isTouchingWall)

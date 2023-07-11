@@ -14,7 +14,7 @@ public abstract class ValueSO<T> : ScriptableObject {
         get => _value;
         set {
             _value = value;
-            OnValueChange?.Invoke(_value);
+            OnValueChange?.Invoke(this);
         }
     }
 
@@ -22,11 +22,11 @@ public abstract class ValueSO<T> : ScriptableObject {
         get => _defaultValue;
         set {
             _defaultValue = value;
-            OnValueChange?.Invoke(_defaultValue);
+            OnValueChange?.Invoke(this);
         }
     }
 
-    public event Action<T> OnValueChange;
+    public event Action<ValueSO<T>> OnValueChange;
 
     public abstract void OnEnable();
 

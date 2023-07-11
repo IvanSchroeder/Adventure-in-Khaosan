@@ -8,17 +8,17 @@ public class PlayerInputHandler : MonoBehaviour {
     public int LastXInput { get; private set; }
     public int NormInputX { get; private set; }
     public int NormInputY { get; private set; }
-    public bool InteractInput { get; private set; }
-    public bool InteractInputHold { get; private set; }
-    public bool InteractInputStop { get; private set; }
+    public bool GrabInput { get; private set; }
     public bool JumpInput { get; private set; }
     public bool JumpInputStop { get; private set; }
     public bool JumpInputHold { get; private set; }
-    public bool UnplatformInput { get; private set; }
     public bool CrouchInput { get; private set; }
     public bool CrouchInputHold { get; private set; }
     public bool CrouchInputStop { get; private set; }
-    public bool GrabInput { get; private set; }
+    public bool UnplatformInput { get; private set; }
+    public bool InteractInput { get; private set; }
+    public bool InteractInputHold { get; private set; }
+    public bool InteractInputStop { get; private set; }
     public bool AttackInput { get; private set; }
     public bool AttackInputHold { get; private set; }
     public bool AttackInputStop { get; private set; }
@@ -29,18 +29,25 @@ public class PlayerInputHandler : MonoBehaviour {
 
     private void OnEnable() {
         LevelManager.OnLevelStarted += UnlockGameplayInputs;
+        LevelManager.OnLevelStarted += ResetInputs;
         LevelManager.OnLevelFinished += LockGameplayInputs;
+        LevelManager.OnLevelFinished += ResetInputs;
         LevelManager.OnPlayerSpawn += UnlockGameplayInputs;
+        LevelManager.OnPlayerSpawn += ResetInputs;
     }
 
     private void OnDisable() {
         LevelManager.OnLevelStarted -= UnlockGameplayInputs;
+        LevelManager.OnLevelStarted -= ResetInputs;
         LevelManager.OnLevelFinished -= LockGameplayInputs;
+        LevelManager.OnLevelFinished -= ResetInputs;
         LevelManager.OnPlayerSpawn -= UnlockGameplayInputs;
+        LevelManager.OnPlayerSpawn -= ResetInputs;
     }
 
     private void Start() {
         UnlockGameplayInputs();
+        ResetInputs();
     }
 
     private void Update() {
@@ -90,6 +97,7 @@ public class PlayerInputHandler : MonoBehaviour {
         }
         
         if (context.canceled) {
+            InteractInput = false;
             InteractInputHold = false;
             InteractInputStop = true;
         }
@@ -117,6 +125,7 @@ public class PlayerInputHandler : MonoBehaviour {
         }
         
         if (context.canceled) {
+            CrouchInput = false;
             CrouchInputHold = false;
             CrouchInputStop = true;
         }
@@ -163,12 +172,10 @@ public class PlayerInputHandler : MonoBehaviour {
 
     public void UnlockGameplayInputs() {
         LockInputs = false;
-        ResetInputs();
     }
 
     public void LockGameplayInputs() {
         LockInputs = true;
-        ResetInputs();
     }
 
     private void ResetInputs() {
@@ -180,6 +187,13 @@ public class PlayerInputHandler : MonoBehaviour {
         JumpInputHold = false;
         JumpInputStop = false;
         GrabInput = false;
+        UnplatformInput = false;
+        InteractInput = false;
+        InteractInputHold = false;
+        InteractInputStop = false;
+        CrouchInput = false;
+        CrouchInputHold = false;
+        CrouchInputStop = false;
         AttackInput = false;
         AttackInputStop = false;
         AttackInputHold = false;

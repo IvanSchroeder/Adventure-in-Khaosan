@@ -13,6 +13,7 @@ public class PlayerCrouchMoveState : PlayerGroundedState {
         isCrouching = true;
         isMoving = true;
         player.SetColliderParameters(player.MovementCollider, playerData.crouchColliderConfig);
+        player.SetColliderParameters(player.HitboxTrigger, playerData.crouchColliderConfig);
     }
 
     public override void Exit() {
@@ -28,6 +29,7 @@ public class PlayerCrouchMoveState : PlayerGroundedState {
         player.CheckFacingDirection(xInput);
 
         player.SetColliderParameters(player.MovementCollider, playerData.crouchColliderConfig);
+        player.SetColliderParameters(player.HitboxTrigger, playerData.crouchColliderConfig);
 
         if (isExitingState) return;
 
@@ -36,6 +38,7 @@ public class PlayerCrouchMoveState : PlayerGroundedState {
         }
         else if (yInput != -1 && !isTouchingCeiling) {
             player.SetColliderParameters(player.MovementCollider, playerData.standingColliderConfig);
+            player.SetColliderParameters(player.HitboxTrigger, playerData.standingColliderConfig);
             stateMachine.ChangeState(player.MoveState);
         }
     }

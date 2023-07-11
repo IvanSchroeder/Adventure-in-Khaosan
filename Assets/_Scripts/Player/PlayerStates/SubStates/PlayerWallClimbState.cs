@@ -25,14 +25,14 @@ public class PlayerWallClimbState : PlayerTouchingWallState {
 
         if (isExitingState) return;
 
-        if (playerData.canLedgeClimb && isTouchingWall & !isTouchingLedge) {
+        if (playerData.CanLedgeGrab.Value && isTouchingWall & !isTouchingLedge) {
             player.LedgeClimbState.SetDetectedPosition(player.transform.position);
             stateMachine.ChangeState(player.LedgeClimbState);
         }
         else if (xInput == -player.FacingDirection && !isWallJumping) {
             WallHop(playerData.wallHopSpeed, playerData.wallHopDirectionOffAngle, player.FacingDirection);
         }
-        else if (playerData.canWallSlide && !playerData.autoWallGrab) {
+        else if (playerData.CanWallSlide.Value && !playerData.autoWallGrab) {
             if (grabInput)
                 if (yInput != 0)
                     return;
@@ -47,7 +47,7 @@ public class PlayerWallClimbState : PlayerTouchingWallState {
                     stateMachine.ChangeState(player.AirborneState);
             }
         }
-        else if (playerData.canWallSlide && playerData.autoWallGrab) {
+        else if (playerData.CanWallSlide.Value && playerData.autoWallGrab) {
             if (xInput == player.FacingDirection && yInput == 0 && player.CurrentVelocity.y <= 0f)
                 stateMachine.ChangeState(player.WallGrabState);
             else if (xInput != player.FacingDirection && yInput == 0 && player.CurrentVelocity.y <= 0f)

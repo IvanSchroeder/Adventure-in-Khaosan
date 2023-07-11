@@ -41,12 +41,12 @@ public class Player : Entity, IDamageable, IInteractor {
     public string PreviousStateName;
 
     [Space(10f), Header("General"), Space(5f)]
+    public List<BoolSO> PlayerAbilitiesList;
     public PlayerData playerData;
     [field: SerializeField] public Rigidbody2D Rb { get; private set; }
     [field: SerializeField] public BoxCollider2D MovementCollider { get; private set; }
     [field: SerializeField] public Animator Anim { get; private set; }
     [field: SerializeField] public SpriteRenderer PlayerSprite { get; private set; }
-    [field: SerializeField] public BoxCollider2D InteractTrigger { get; private set; }
     [field: SerializeField] public CameraTarget CameraTarget { get; private set; }
 
     [field: SerializeField, Space(10f), Header("Damageable"), Space(5f)] public BoxCollider2D HitboxTrigger { get; set; }
@@ -94,11 +94,14 @@ public class Player : Entity, IDamageable, IInteractor {
         PreviousState = previous;
 
         CurrentStateName = $"{CurrentState.ToString()}";
-        PreviousStateName = $"{PreviousState.ToString()}";
+        if (PreviousState.IsNull()) PreviousStateName = "";
+        else PreviousStateName = $"{PreviousState.ToString()}";
     }
 
     private void OnEnable() {
         LevelManager.OnPlayerSpawn += StartInvulnerable;
+        LevelManager.OnPlayerSpawn += RespawnPlayer;
+        LevelManager.OnPlayerSpawn += HealthSystem.InitializeHealth;
         LevelManager.OnLevelFinished += StandOnCheckpoint;
 
         HealthSystem.OnEntityDamaged += KnockbackStart;
@@ -113,6 +116,8 @@ public class Player : Entity, IDamageable, IInteractor {
 
     private void OnDisable() {
         LevelManager.OnPlayerSpawn -= StartInvulnerable;
+        LevelManager.OnPlayerSpawn -= RespawnPlayer;
+        LevelManager.OnPlayerSpawn -= HealthSystem.InitializeHealth;
         LevelManager.OnLevelFinished -= StandOnCheckpoint;
         
         HealthSystem.OnEntityDamaged -= KnockbackStart;
@@ -172,15 +177,34 @@ public class Player : Entity, IDamageable, IInteractor {
         if (SpriteManager == null) SpriteManager = PlayerSprite.GetComponent<SpriteManager>();
 
         if (InteractorSystem == null) InteractorSystem = this.GetComponentInHierarchy<InteractorSystem>();
-        if (InteractTrigger == null) InteractTrigger = InteractorSystem.GetComponent<BoxCollider2D>();
+        if (InteractorTrigger == null) InteractorTrigger = InteractorSystem.GetComponent<BoxCollider2D>();
+
+        CurrentState = null;
+        PreviousState = null;
     }
 
-    private void Start() {
-        Init();
-    }
+    // private void Start() {
+    //     Init();
+    // }
 
-    public void Init() {
-        StateMachine.Initialize(IdleState);
+    // public void Init() {
+    //     StateMachine.Initialize(IdleState);
+
+    //     FacingDirection = 1;
+    //     Rb.gravityScale = playerData.defaultGravityScale;
+    //     CheckFacingDirection(FacingDirection);
+    //     PlayerSprite.flipX = false;
+    //     CameraTarget.transform.SetParent(CameraTarget.CameraCenter);
+    //     CameraTarget.transform.localPosition = Vector3.zero;
+
+    //     SetColliderParameters(MovementCollider, playerData.standingColliderConfig);
+
+    //     OnPlayerSpawned?.Invoke(this);
+    // }
+
+    public void RespawnPlayer() {
+        if (CurrentState == null) StateMachine.Initialize(IdleState);
+        else StateMachine.ChangeState(IdleState);
 
         FacingDirection = 1;
         Rb.gravityScale = playerData.defaultGravityScale;
@@ -190,6 +214,7 @@ public class Player : Entity, IDamageable, IInteractor {
         CameraTarget.transform.localPosition = Vector3.zero;
 
         SetColliderParameters(MovementCollider, playerData.standingColliderConfig);
+        SetColliderParameters(HitboxTrigger, playerData.standingColliderConfig);
 
         OnPlayerSpawned?.Invoke(this);
     }
@@ -277,7 +302,7 @@ public class Player : Entity, IDamageable, IInteractor {
 
     public void SetVelocity(float velocity, Vector2 angle, int direction) {
         angle.Normalize();
-        velocityXY.Set((angle.x * velocity * direction).Clamp(-playerData.maxHorizontalSpeed, playerData.maxHorizontalSpeed), (angle.y * velocity).Clamp(-playerData.currentFallSpeed, playerData.maxAscendantSpeed));
+        velocityXY.Set((angle.x * velocity * direction).Clamp(-playerData.maxHorizontalSpeed, playerData.maxHorizontalSpeed), (angle.y * velocity).Clamp(-playerData.defaultFallSpeed, playerData.maxAscendantSpeed));
         CurrentVelocity = velocityXY;
         Rb.velocity = CurrentVelocity;
     }
@@ -345,6 +370,15 @@ public class Player : Entity, IDamageable, IInteractor {
         return space;
     }
 
+    public bool CheckHazards(Vector2 originPoint) {
+        bool hazard = Physics2D.Raycast(originPoint, Vector2.up, 1f, playerData.hazardsLayer);
+
+        if (hazard) Debug.DrawRay(originPoint, Vector2.up * 1f, Color.red, 1f);
+        else Debug.DrawRay(originPoint, Vector2.up * 1f, Color.green, 1f);
+
+        return hazard;
+    }
+
     public bool CheckCornerCorrection() {
         RaycastHit2D edgeLeftHit = GetCeilingHit(-playerData.cornerEdgeCheckOffset);
         RaycastHit2D innerLeftHit = GetCeilingHit(-playerData.cornerInnerCheckOffset);
@@ -370,7 +404,7 @@ public class Player : Entity, IDamageable, IInteractor {
         collider.size = colliderConfig.Size;
         playerData.currentColliderConfiguration = colliderConfig;
 
-        CeilingPoint.position = new Vector2(CeilingPoint.position.x, MovementCollider.bounds.max.y);
+        CeilingPoint.position = new Vector2(CeilingPoint.position.x, collider.bounds.max.y);
     }
 
     public void StandOnCheckpoint() {
@@ -406,6 +440,8 @@ public class Player : Entity, IDamageable, IInteractor {
             transform.position = new Vector2(transform.position.x - newPos - playerData.cornerCorrectionRepositionOffset, transform.position.y);
             Rb.velocity = new Vector2(Rb.velocity.x, currentYVelocity);
         }
+
+        SetVelocityY(playerData.jumpHeight);
     }
     
     public Vector2 GetCornerPosition() {

@@ -23,6 +23,7 @@ public class PlayerGroundSlideState : PlayerGroundedState {
         }
 
         player.SetColliderParameters(player.MovementCollider, playerData.crouchColliderConfig);
+        player.SetColliderParameters(player.HitboxTrigger, playerData.crouchColliderConfig);
     }
 
     public override void Exit() {
@@ -47,23 +48,49 @@ public class PlayerGroundSlideState : PlayerGroundedState {
         }
 
         if (stopSlide) {
-            if (player.CurrentVelocity.x.AbsoluteValue() == 0f || isTouchingWall || player.FacingDirection == -player.CurrentVelocity.x.Sign()) {
-                if (isTouchingCeiling || yInput == -1) {
-                    player.SetColliderParameters(player.MovementCollider, playerData.crouchColliderConfig);
+            if (isTouchingCeiling || yInput == -1 || !player.CheckForSpace(player.MidPoint.position) || player.CheckHazards(player.MidPoint.position)) {
+                player.SetColliderParameters(player.MovementCollider, playerData.crouchColliderConfig);
+                player.SetColliderParameters(player.HitboxTrigger, playerData.crouchColliderConfig);
+
+                if ((player.CurrentVelocity.x.AbsoluteValue() == 0f || isTouchingWall) && xInput == 0f /*|| player.FacingDirection == -player.CurrentVelocity.x.Sign()*/) {
                     stateMachine.ChangeState(player.CrouchIdleState);
                 }
-                else {
-                    player.SetColliderParameters(player.MovementCollider, playerData.standingColliderConfig);
+                else if (player.CurrentVelocity.x.AbsoluteValue() == playerData.crouchWalkSpeed && xInput == player.FacingDirection) {
+                    stateMachine.ChangeState(player.CrouchMoveState);
+                }
+            }
+            else {
+                player.SetColliderParameters(player.MovementCollider, playerData.standingColliderConfig);
+                // player.SetColliderParameters(player.HitboxTrigger, playerData.standingColliderConfig);
+
+                if (xInput == player.FacingDirection && player.CurrentVelocity.x.AbsoluteValue() >= playerData.runSpeed) {
+                    stateMachine.ChangeState(player.MoveState);
+                }
+                else if (player.CurrentVelocity.x.AbsoluteValue() == 0f && xInput == 0) {
                     stateMachine.ChangeState(player.IdleState);
                 }
             }
-            else if (xInput == player.FacingDirection && (yInput == -1 || isTouchingCeiling) && player.CurrentVelocity.x.AbsoluteValue() == playerData.crouchWalkSpeed) {
-                stateMachine.ChangeState(player.CrouchMoveState);
-            }
-            else if (xInput == player.FacingDirection && player.CurrentVelocity.x.AbsoluteValue() >= playerData.runSpeed) {
-                player.SetColliderParameters(player.MovementCollider, playerData.standingColliderConfig);
-                stateMachine.ChangeState(player.MoveState);
-            }
+
+            // if (player.CurrentVelocity.x.AbsoluteValue() == 0f || isTouchingWall || player.FacingDirection == -player.CurrentVelocity.x.Sign()) {
+            //     if (isTouchingCeiling || yInput == -1 || !player.CheckForSpace(player.MidPoint.position) || player.CheckHazards(player.MidPoint.position)) {
+            //         player.SetColliderParameters(player.MovementCollider, playerData.crouchColliderConfig);
+            //         player.SetColliderParameters(player.HitboxTrigger, playerData.crouchColliderConfig);
+            //         stateMachine.ChangeState(player.CrouchIdleState);
+            //     }
+            //     else {
+            //         player.SetColliderParameters(player.MovementCollider, playerData.standingColliderConfig);
+            //         // player.SetColliderParameters(player.HitboxTrigger, playerData.standingColliderConfig);
+            //         stateMachine.ChangeState(player.IdleState);
+            //     }
+            // }
+            // else if (xInput == player.FacingDirection && (yInput == -1 || isTouchingCeiling) && player.CurrentVelocity.x.AbsoluteValue() == playerData.crouchWalkSpeed) {
+            //     stateMachine.ChangeState(player.CrouchMoveState);
+            // }
+            // else if (xInput == player.FacingDirection && player.CurrentVelocity.x.AbsoluteValue() >= playerData.runSpeed) {
+            //     player.SetColliderParameters(player.MovementCollider, playerData.standingColliderConfig);
+            //     // player.SetColliderParameters(player.HitboxTrigger, playerData.standingColliderConfig);
+            //     stateMachine.ChangeState(player.MoveState);
+            // }
         }
     }
 
@@ -100,7 +127,7 @@ public class PlayerGroundSlideState : PlayerGroundedState {
     }
 
     public bool CanGroundSlide() {
-        if (playerData.canGroundSlide && playerData.canCrouch && playerData.canMove && groundSlideTime) return true;
+        if (playerData.CanGroundSlide.Value && playerData.CanCrouch.Value && playerData.CanMove.Value && groundSlideTime) return true;
         
         return false;
     }
