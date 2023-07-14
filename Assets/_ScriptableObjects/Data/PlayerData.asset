@@ -75,9 +75,9 @@ MonoBehaviour:
   isDamaged: 0
   isDead: 0
   isDeadOnGround: 0
-  isInvulnerable: 0
+  isInvulnerable: 1
   isAnimationFinished: 0
-  isAbilityDone: 0
+  isAbilityDone: 1
   isExitingState: 0
   hasCoyoteTime: 0
   hasWallJumpCoyoteTime: 0

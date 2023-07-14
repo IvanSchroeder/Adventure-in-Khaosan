@@ -41,7 +41,7 @@ public class InteractableSystem : MonoBehaviour {
         entityInteracted.ShouldFlash = FlashesOnInteract;
         entityInteracted.CurrentFlash = InteractedFlash;
 
-        SetInteractionState(IsInteractable);
+        SetInteractionState(entityInteracted, IsInteractable);
 
         OnInteracted?.Invoke(this, entityInteracted);
     }
@@ -67,8 +67,7 @@ public class InteractableSystem : MonoBehaviour {
         yield return null;
     }
 
-    public void SetInteractionState(bool enable) {
-        OnEntityInteractedEventArgs entityInteracted = new OnEntityInteractedEventArgs();
+    public void SetInteractionState(OnEntityInteractedEventArgs entityInteracted, bool enable) {
         entityInteracted.ActiveOutline = enable;
 
         OnInteractionState?.Invoke(this, entityInteracted);

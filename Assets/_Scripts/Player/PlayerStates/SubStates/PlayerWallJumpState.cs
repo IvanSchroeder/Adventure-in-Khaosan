@@ -69,7 +69,6 @@ public class PlayerWallJumpState : PlayerAbilityState {
 
         if (jumpInputStop) {
             player.InputHandler.UseJumpStopInput();
-            player.SetVelocityX(player.CurrentVelocity.x * playerData.variableJumpHeightMultiplier);
             player.SetVelocityY(player.CurrentVelocity.y * playerData.variableJumpHeightMultiplier);
             isWallJumping = false;
             isAbilityDone = true;

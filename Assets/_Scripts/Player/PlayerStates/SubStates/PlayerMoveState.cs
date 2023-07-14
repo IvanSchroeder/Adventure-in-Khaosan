@@ -17,8 +17,9 @@ public class PlayerMoveState : PlayerGroundedState {
         isSprinting = false;
         isRunningAtMaxSpeed = false;
         isSprintingAtMaxSpeed = false;
+        elapsedTimeSinceStandup = 0f;
 
-        player.SetColliderParameters(player.MovementCollider, playerData.standingColliderConfig);
+        player.SetColliderParameters(player.MovementCollider, playerData.standingColliderConfig, true);
     }
 
     public override void Exit() {
@@ -45,7 +46,7 @@ public class PlayerMoveState : PlayerGroundedState {
 
         if (isExitingState) return;
 
-        if (xInput == 0 && player.CurrentVelocity.x.AbsoluteValue() == 0f) {
+        if (xInput == 0 && player.CurrentVelocity.x < player.CurrentVelocity.x.Sign()) {
             isSprinting = false;
             stateMachine.ChangeState(player.IdleState);
         }

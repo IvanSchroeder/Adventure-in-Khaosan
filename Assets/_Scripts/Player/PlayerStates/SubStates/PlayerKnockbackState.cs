@@ -15,6 +15,8 @@ public class PlayerKnockbackState : PlayerState {
         lastKnockbackFacingDirection = player.FacingDirection;
 
         cumulatedKnockbackTime = 0f;
+        hasBouncedOffWall = false;
+        hasBouncedOffCeiling = false;
         // player.CanMove = false;
     }
 
@@ -31,16 +33,18 @@ public class PlayerKnockbackState : PlayerState {
 
         if (isExitingState) return;
 
-        if (isTouchingBackWall) {
+        if (isTouchingBackWall && !hasBouncedOffWall) {
             BounceOffWall();
         }
 
-        if (isTouchingCeiling) {
+        if (isTouchingCeiling && player.CurrentVelocity.y >= 0f && !hasBouncedOffCeiling) {
             BounceOffCeiling();
         }
 
+        if (hasBouncedOffWall) hasBouncedOffWall = false;
+        if (hasBouncedOffCeiling) hasBouncedOffCeiling = false;
+
         if (cumulatedKnockbackTime < playerData.maxKnockbackTime) cumulatedKnockbackTime += Time.deltaTime;
-        
 
         if (cumulatedKnockbackTime < playerData.minKnockbackTime) return;
         else if (cumulatedKnockbackTime >= playerData.maxKnockbackTime) {
@@ -58,11 +62,13 @@ public class PlayerKnockbackState : PlayerState {
         if (bounceOffWall) {
             player.SetVelocityX(-player.CurrentVelocity.x * playerData.wallBounceFalloff);
             bounceOffWall = false;
+            hasBouncedOffWall = true;
         }
 
         if (bounceOffCeiling) {
             player.SetVelocityY(player.CurrentVelocity.y * -1);
             bounceOffCeiling = false;
+            hasBouncedOffCeiling = true;
         }
 
         if (isFalling) {

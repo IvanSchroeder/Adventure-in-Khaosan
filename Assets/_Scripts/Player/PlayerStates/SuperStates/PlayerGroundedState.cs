@@ -6,6 +6,7 @@ using ExtensionMethods;
 public class PlayerGroundedState : PlayerState {
     protected RaycastHit2D groundHit;
     protected float elapsedTimeSinceStandup;
+    protected bool standUp;
 
     public PlayerGroundedState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
     }

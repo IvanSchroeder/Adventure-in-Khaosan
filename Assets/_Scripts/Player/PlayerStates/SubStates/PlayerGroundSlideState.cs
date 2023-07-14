@@ -22,7 +22,7 @@ public class PlayerGroundSlideState : PlayerGroundedState {
             player.SetVelocityX(playerData.groundSlideSpeed * player.FacingDirection);
         }
 
-        player.SetColliderParameters(player.MovementCollider, playerData.crouchColliderConfig);
+        player.SetColliderParameters(player.MovementCollider, playerData.crouchColliderConfig, true);
         player.SetColliderParameters(player.HitboxTrigger, playerData.crouchColliderConfig);
     }
 
@@ -49,7 +49,7 @@ public class PlayerGroundSlideState : PlayerGroundedState {
 
         if (stopSlide) {
             if (isTouchingCeiling || crouchInputHold || !player.CheckForSpace(player.GroundPoint.position.ToVector2() + Vector2.up * 0.015f, Vector2.up) || player.CheckHazards(player.MidPoint.position)) {
-                player.SetColliderParameters(player.MovementCollider, playerData.crouchColliderConfig);
+                player.SetColliderParameters(player.MovementCollider, playerData.crouchColliderConfig, true);
                 player.SetColliderParameters(player.HitboxTrigger, playerData.crouchColliderConfig);
 
                 if ((player.CurrentVelocity.x.AbsoluteValue() == 0f || isTouchingWall) && xInput == 0f || player.FacingDirection == -player.CurrentVelocity.x.Sign()) {

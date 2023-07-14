@@ -14,7 +14,8 @@ public class PlayerCrouchIdleState : PlayerGroundedState {
 
         isCrouching = true;
         isIdle = true;
-        player.SetColliderParameters(player.MovementCollider, playerData.crouchColliderConfig);
+        standUp = false;
+        player.SetColliderParameters(player.MovementCollider, playerData.crouchColliderConfig, true);
         player.SetColliderParameters(player.HitboxTrigger, playerData.crouchColliderConfig);
 
         player.CameraTarget.SetTargetPosition(Vector3.down, 3f, true);
@@ -25,15 +26,13 @@ public class PlayerCrouchIdleState : PlayerGroundedState {
 
         isCrouching = false;
         isIdle = false;
+        standUp = false;
 
         player.CameraTarget.SetTargetPosition(Vector3.zero, 0f, true);
     }
 
     public override void LogicUpdate() {
         base.LogicUpdate();
-
-        player.SetColliderParameters(player.MovementCollider, playerData.crouchColliderConfig);
-        player.SetColliderParameters(player.HitboxTrigger, playerData.crouchColliderConfig);
 
         if (isExitingState) return;
 
@@ -43,9 +42,8 @@ public class PlayerCrouchIdleState : PlayerGroundedState {
             if(playerData.CanMove.Value)
                 stateMachine.ChangeState(player.CrouchMoveState);
         }
-        else if (!crouchInputHold && !isTouchingCeiling) {
-            player.SetColliderParameters(player.MovementCollider, playerData.standingColliderConfig);
-            player.SetColliderParameters(player.HitboxTrigger, playerData.standingColliderConfig);
+        else if (standUp) {
+            player.SetColliderParameters(player.MovementCollider, playerData.standingColliderConfig, true);
             stateMachine.ChangeState(player.IdleState);
         }
         // else if (isTouchingCeiling) {
@@ -60,6 +58,10 @@ public class PlayerCrouchIdleState : PlayerGroundedState {
 
     public override void PhysicsUpdate() {
         base.PhysicsUpdate();
+
+        if (!crouchInputHold && player.CheckForSpace(player.GroundPoint.position.ToVector2() + Vector2.up * 0.015f, Vector2.up) /*|| !isTouchingCeiling*/) {
+            standUp = true;
+        }
 
         player.SetVelocityX(0f, playerData.crouchDecceleration, playerData.lerpVelocity);
         player.SetVelocityY(player.CurrentVelocity.y);

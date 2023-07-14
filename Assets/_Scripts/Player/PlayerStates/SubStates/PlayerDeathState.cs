@@ -82,7 +82,7 @@ public class PlayerDeathState : PlayerState {
                     groundLock = true;
                     player.Anim.SetBool("deadOnGround", true);
                     player.Anim.SetBool("deadOnSlide", false);
-                    player.SetColliderParameters(player.MovementCollider, playerData.crouchColliderConfig);
+                    player.SetColliderParameters(player.MovementCollider, playerData.crouchColliderConfig, true);
                     player.SetColliderParameters(player.HitboxTrigger, playerData.crouchColliderConfig);
                     // player.KnockbackEnd(null, null);
                 }

@@ -10,16 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6b5b160b42cd77545b85f6b96d9d58fc, type: 3}
-  m_Name: W0-L0
+  m_Name: W0-L1
   m_EditorClassIdentifier: 
   levelName: Tutorial
   levelID: 0
   levelNumber: 1
-  worldMap: {fileID: 2282873368466760177, guid: 42b5a36a20eaca74d97b06ddb364d565, type: 3}
+  worldMap: {fileID: 7912036136065168777, guid: 2b959bcdb39ec704da212c0982832fe9, type: 3}
   enableInfiniteLives: 1
   AbilitiesToEnableList:
   - {fileID: 11400000, guid: 9d07fb32c4a7fa94b8988ef3f3d8cb02, type: 2}
-  AbilitiesToDisableList:
   - {fileID: 11400000, guid: cb9a5bcc8c2680b4598db308d8495103, type: 2}
   - {fileID: 11400000, guid: 960913a60fb85fc47bde7285a4816a84, type: 2}
   - {fileID: 11400000, guid: 28b3fb9cda5cb1949a0562099e411ecb, type: 2}
@@ -31,6 +30,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 23c36e8ca242fd94c86dd67dad05beb0, type: 2}
   - {fileID: 11400000, guid: fe90c649b2c0252438e67dbbec7f4861, type: 2}
   - {fileID: 11400000, guid: bb1c808d7efb5e442bee5079cb65936f, type: 2}
+  AbilitiesToDisableList: []
   isUnlocked: 1
   collectedAllCoins: 0
   collectedAllDishes: 0

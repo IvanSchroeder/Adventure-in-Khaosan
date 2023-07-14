@@ -28,7 +28,10 @@ public class InteractorSystem : MonoBehaviour {
         if (!interactableSystem.RequiresInput) {
             interactableSystem.Interact();
         }
-        else interactableSystem.SetInteractionState(true);
+        else {
+            OnEntityInteractedEventArgs entityInteracted = new OnEntityInteractedEventArgs();
+            interactableSystem.SetInteractionState(entityInteracted, true);
+        }
     }
 
     public void OnTriggerStay2D(Collider2D collision) {
@@ -63,7 +66,8 @@ public class InteractorSystem : MonoBehaviour {
 
         if (interactableSystem.WasInteracted) interactableSystem.InteractionStop();
         
-        interactableSystem.SetInteractionState(false);
+        OnEntityInteractedEventArgs entityInteracted = new OnEntityInteractedEventArgs();
+        interactableSystem.SetInteractionState(entityInteracted, false);
         interactableEntity.CurrentInteractor = null;
         Interactor.InputHandler.UseInteractInput();
     }

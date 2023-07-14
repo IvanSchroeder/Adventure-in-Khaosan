@@ -108,7 +108,6 @@ public class Player : Entity, IDamageable, IInteractor {
         HealthSystem.OnLivesDepleted += SetLivesDepleted;
 
         OnEntityDamaged += HealthSystem.ReduceHealth;
-        // OnInvulnerable += HealthSystem.SetInvulnerability;
         OnInvulnerability += HealthSystem.SetInvulnerability;
 
         StateMachine.OnStateChange += UpdateCurrentState;
@@ -123,7 +122,6 @@ public class Player : Entity, IDamageable, IInteractor {
         HealthSystem.OnLivesDepleted -= SetLivesDepleted;
 
         OnEntityDamaged -= HealthSystem.ReduceHealth;
-        // OnInvulnerable -= HealthSystem.SetInvulnerability;
         OnInvulnerability -= HealthSystem.SetInvulnerability;
 
         StateMachine.OnStateChange -= UpdateCurrentState;
@@ -164,6 +162,13 @@ public class Player : Entity, IDamageable, IInteractor {
         KnockbackState = new PlayerKnockbackState(this, StateMachine, playerData, "damaged");
         DeathState = new PlayerDeathState(this, StateMachine, playerData, "dead");
 
+        InitComponents();
+
+        CurrentState = null;
+        PreviousState = null;
+    }
+
+    private void InitComponents() {
         if (Anim == null) Anim = GetComponentInChildren<Animator>();
         if (PlayerSprite == null) PlayerSprite = GetComponentInChildren<SpriteRenderer>();
         if (InputHandler == null) InputHandler = GetComponent<PlayerInputHandler>();
@@ -177,9 +182,6 @@ public class Player : Entity, IDamageable, IInteractor {
 
         if (InteractorSystem == null) InteractorSystem = this.GetComponentInHierarchy<InteractorSystem>();
         if (InteractorTrigger == null) InteractorTrigger = InteractorSystem.GetComponent<BoxCollider2D>();
-
-        CurrentState = null;
-        PreviousState = null;
     }
 
     public void RespawnPlayer() {
@@ -197,11 +199,11 @@ public class Player : Entity, IDamageable, IInteractor {
         CameraTarget.transform.SetParent(CameraTarget.CameraCenter);
         CameraTarget.transform.localPosition = Vector3.zero;
 
-        SetColliderParameters(MovementCollider, playerData.standingColliderConfig);
+        SetColliderParameters(MovementCollider, playerData.standingColliderConfig, true);
         SetColliderParameters(HitboxTrigger, playerData.standingColliderConfig);
 
-        OnInvulnerability?.Invoke();
         OnPlayerSpawned?.Invoke(this);
+        OnInvulnerability?.Invoke();
     }
 
     private void Update() {
@@ -291,28 +293,6 @@ public class Player : Entity, IDamageable, IInteractor {
         CurrentVelocity = velocityXY;
         Rb.velocity = CurrentVelocity;
     }
-
-    // public void LaunchInDirection(float velocity, Vector2 angle, bool clamp, bool resetCurrentVelocity = true) {
-    //     if (resetCurrentVelocity) {
-    //         CurrentVelocity = new Vector2(0f, 0f);
-    //         Rb.velocity = new Vector2(0f, 0f);
-    //     }
-
-    //     angle.Normalize();
-    //     Vector2 forceDirection = new Vector2((angle.x * velocity).Clamp(-playerData.maxHorizontalSpeed, playerData.maxHorizontalSpeed),
-    //     (angle.y * velocity).Clamp(-playerData.currentFallSpeed, playerData.maxAscendantSpeed));
-        
-    //     if (clamp) 
-    //         Rb.AddForce(forceDirection.Clamp(new Vector2 (-playerData.maxHorizontalSpeed, playerData.maxHorizontalSpeed), new Vector2 (-playerData.currentFallSpeed, playerData.maxAscendantSpeed)), ForceMode2D.Impulse);
-    //     else
-    //         Rb.AddForce(forceDirection, ForceMode2D.Impulse);
-
-    //     Debug.DrawRay(MidPoint.position, forceDirection, Color.red, 3f);
-
-    //     CurrentVelocity = Rb.velocity;
-
-    //     CheckFacingDirection(FacingDirection);
-    // }
 
     public void CheckFacingDirection(int direction) {
         if (direction != 0 && direction != FacingDirection) {
@@ -410,12 +390,13 @@ public class Player : Entity, IDamageable, IInteractor {
         else if (FacingDirection == -1) PlayerSprite.flipX = true;
     }
 
-    public void SetColliderParameters(BoxCollider2D collider, ColliderConfiguration colliderConfig) {
+    public void SetColliderParameters(BoxCollider2D collider, ColliderConfiguration colliderConfig, bool changeCeilingPoint = false) {
         collider.offset = colliderConfig.Offset;
         collider.size = colliderConfig.Size;
         playerData.currentColliderConfiguration = colliderConfig;
 
-        CeilingPoint.position = new Vector2(CeilingPoint.position.x, collider.bounds.max.y);
+        if (changeCeilingPoint)
+            CeilingPoint.position = new Vector2(CeilingPoint.position.x, collider.bounds.max.y);
     }
 
     public void StandOnCheckpoint() {

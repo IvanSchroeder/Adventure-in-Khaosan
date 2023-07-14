@@ -19,7 +19,7 @@ public class PlayerAirborneState : PlayerState {
 
         player.Rb.gravityScale = playerData.defaultGravityScale;
 
-        player.SetColliderParameters(player.MovementCollider, playerData.standingColliderConfig);
+        player.SetColliderParameters(player.MovementCollider, playerData.standingColliderConfig, true);
         player.SetColliderParameters(player.HitboxTrigger, playerData.standingColliderConfig);
     }
 

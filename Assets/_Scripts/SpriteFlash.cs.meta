@@ -8,7 +8,7 @@ MonoImporter:
   - <InvulnerabilityFlash>k__BackingField: {fileID: 11400000, guid: 4d82b7bcf41c0e646937f0d0d6aca977, type: 2}
   - <InteractedFlash>k__BackingField: {fileID: 11400000, guid: fc38e4012282de94bae91f56827ca71a, type: 2}
   - <CurrentFlashConfiguration>k__BackingField: {instanceID: 0}
-  executionOrder: 5
+  executionOrder: -20
   icon: {instanceID: 0}
   userData: 
   assetBundleName: 

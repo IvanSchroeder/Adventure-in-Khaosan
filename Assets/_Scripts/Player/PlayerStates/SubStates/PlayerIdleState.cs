@@ -11,9 +11,10 @@ public class PlayerIdleState : PlayerGroundedState {
     public override void Enter() {
         base.Enter();
 
-        player.SetColliderParameters(player.MovementCollider, playerData.standingColliderConfig);
-
+        elapsedTimeSinceStandup = 0f;
         isIdle = true;
+
+        player.SetColliderParameters(player.MovementCollider, playerData.standingColliderConfig, true);
     }
 
     public override void Exit() {

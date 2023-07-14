@@ -35,6 +35,15 @@ public class HealthSystem : MonoBehaviour {
 
     private Coroutine invulnerabilityCoroutine;
     private WaitForSeconds invulnerabilityDelay;
+    private WaitForSeconds invulnerabilityStartDelay;
+
+    // private void OnEnable() {
+    //     OnInvulnerabilityStart += SpriteManager.SetCurrentInvulnerabilityFlash;
+    // }
+
+    // private void OnDisable() {
+    //     OnInvulnerabilityStart -= SpriteManager.SetCurrentInvulnerabilityFlash;
+    // }
 
     private void Awake() {
         if (Entity == null) Entity = this.GetComponentInHierarchy<Entity>();
@@ -54,6 +63,7 @@ public class HealthSystem : MonoBehaviour {
 
         InvulnerabilitySeconds = EntityData.invulnerabilitySeconds;
         invulnerabilityDelay = new WaitForSeconds(InvulnerabilitySeconds);
+        invulnerabilityStartDelay = new WaitForSeconds(0.1f);
 
         InitializeHealth();
     }
@@ -151,9 +161,12 @@ public class HealthSystem : MonoBehaviour {
     }
 
     private IEnumerator InvulnerabilityFramesRoutine() {
-        // IsInvulnerable = true;
-        // HitboxTrigger.enabled = false;
-        OnInvulnerabilityStart?.Invoke(null, null);
+        IsInvulnerable = true;
+        HitboxTrigger.enabled = false;
+        OnEntityDamagedEventArgs args = new OnEntityDamagedEventArgs();
+        args.CurrentFlash = InvulnerabilityFlash;
+        yield return invulnerabilityStartDelay;
+        OnInvulnerabilityStart?.Invoke(null, args);
         yield return invulnerabilityDelay;
         IsInvulnerable = false;
         HitboxTrigger.enabled = true;

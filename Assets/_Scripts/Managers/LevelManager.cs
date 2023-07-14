@@ -200,7 +200,9 @@ public class LevelManager : MonoBehaviour {
         startingCheckpoint.isStartingCheckpoint = true;
         lastCheckpoint.isFinalCheckpoint = true;
 
-        startingCheckpoint.InteractableSystem.Interact();
+        startingCheckpoint.InteractableSystem.RequiresInput = false;
+
+        Debug.Log("Enabled Checkpoints");
     }
 
     public void EnableAbilities() {
@@ -236,6 +238,7 @@ public class LevelManager : MonoBehaviour {
 
     public IEnumerator LoadLevelRoutine() {
         SpawnLevelStructure();
+        Debug.Log("Spawned Level structure");
         if (!currentLevel.isFinished) currentLevel.currentRecordTime = currentLevel.baseRecordTime;
         // send event to scene manager to enable scene transition
         yield return new WaitForSecondsRealtime(3f);
