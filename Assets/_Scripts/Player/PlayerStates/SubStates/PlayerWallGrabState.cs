@@ -39,9 +39,10 @@ public class PlayerWallGrabState : PlayerTouchingWallState {
             player.LedgeClimbState.SetDetectedPosition(player.transform.position);
             stateMachine.ChangeState(player.LedgeClimbState);
         }
-        else if (xInput == -player.FacingDirection && !isWallJumping) {
-            WallHop(playerData.wallHopSpeed, playerData.wallHopDirectionOffAngle, player.FacingDirection);
-        }
+        // else if (xInput == -player.FacingDirection && !isWallJumping) {
+        //     player.WallJumpState.WallJumpConfiguration(playerData.wallHopSpeed, playerData.wallHopDirectionOffAngle, player.FacingDirection, playerData.wallHopTime);
+        //     stateMachine.ChangeState(player.WallJumpState);
+        // }
         else if (player.CheckGround(playerData.platformLayer) && xInput == 0) {
             stateMachine.ChangeState(player.LandState);
         }
@@ -77,6 +78,5 @@ public class PlayerWallGrabState : PlayerTouchingWallState {
         base.PhysicsUpdate();
 
         player.SetVelocityY(0f, playerData.wallGrabAcceleration, playerData.lerpWallVelocity);
-        player.SetVelocityX(0f);
     }
 }

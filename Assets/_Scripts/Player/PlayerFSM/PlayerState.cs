@@ -7,15 +7,16 @@ using System;
 
 [Serializable]
 public class PlayerState {
-    protected Player player;
-    protected PlayerStateMachine stateMachine;
-    protected PlayerData playerData;
+    protected static Player player;
+    protected static PlayerStateMachine stateMachine;
+    protected static PlayerData playerData;
 
     protected static bool isGrounded;
     protected static bool isOnSolidGround;
+    protected static bool isOnSlope;
     protected static bool isOnPlatform;
     protected static bool isIgnoringPlatforms;
-    protected static bool isOnSlope;
+    protected static bool isAirborne;
     protected static bool isIdle;
     protected static bool isMoving;
     protected static bool isRunning;
@@ -26,7 +27,6 @@ public class PlayerState {
     protected static bool isCrouching;
     protected static bool isGroundSliding;
     protected static bool stopSlide;
-    protected static bool isAirborne;
     protected static bool isJumping;
     protected static bool isAscending;
     protected static bool isFalling;
@@ -37,6 +37,7 @@ public class PlayerState {
     protected static bool hasTouchedWall;
     protected static bool hasTouchedWallBack;
     protected static bool isTouchingLedge;
+    protected static bool isTouchingLedgeWithFoot;
     protected static bool isWallSliding;
     protected static bool isWallGrabing;
     protected static bool isWallClimbing;
@@ -95,12 +96,14 @@ public class PlayerState {
 
     public PlayerState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) {
         Init(player, stateMachine, playerData, animBoolName);
+        isDead = false;
+        isDeadOnGround = false;
     }
 
-    public void Init(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) {
-        this.player = player;
-        this.stateMachine = stateMachine;
-        this.playerData = playerData;
+    public void Init(Player pl, PlayerStateMachine sM, PlayerData pD, string animBoolName) {
+        player = pl;
+        stateMachine = sM;
+        playerData = pD;
         this.animBoolName = animBoolName;
     }
 
@@ -118,10 +121,10 @@ public class PlayerState {
 
     public virtual void Exit() {
         CheckInputs();
+        CheckRaycasts();
         CheckHorizontalMovement();
         CheckVerticalMovement();
         UpdatePlayerStates();
-        CheckRaycasts();
         UpdateAnimator();
         player.Anim.SetBool(animBoolName, false);
         isExitingState = true;
@@ -134,14 +137,7 @@ public class PlayerState {
         UpdatePlayerStates();
         UpdateAnimator();
 
-        if (!isGroundSliding && cumulatedGroundSlideCooldown < playerData.groundSlideDelay) cumulatedGroundSlideCooldown += Time.deltaTime;
-        
-        if (!groundSlideTime && cumulatedGroundSlideCooldown >= playerData.groundSlideDelay) {
-            groundSlideTime = true;
-            cumulatedGroundSlideCooldown = playerData.groundSlideDelay;
-        }
-
-        if ((unplatformInput && ((isOnPlatform && jumpInputHold) || isWallSliding || isFalling || isAirborne)) || isWallClimbing || isWallGrabing || isDead) {
+        if ((unplatformInput && ((isOnPlatform && jumpInputHold) || isWallSliding || isFalling)) || isWallClimbing || isWallGrabing || isDead) {
             player.InputHandler.UseJumpInput();
             isIgnoringPlatforms = true;
             Physics2D.IgnoreLayerCollision(player.gameObject.layer, LayerMask.NameToLayer("Platform"), true);
@@ -163,23 +159,32 @@ public class PlayerState {
     public virtual void AnimationFinishTrigger() => isAnimationFinished = true;
 
     public void CheckHorizontalMovement() {
+        if (!isGroundSliding && cumulatedGroundSlideCooldown < playerData.groundSlideDelay) cumulatedGroundSlideCooldown += Time.deltaTime;
+        
+        if (!groundSlideTime && cumulatedGroundSlideCooldown >= playerData.groundSlideDelay) {
+            groundSlideTime = true;
+            cumulatedGroundSlideCooldown = playerData.groundSlideDelay;
+        }
+
         isChangingDirections = player.CheckChangingDirections();
     }
 
     public void CheckVerticalMovement() {
-        isAscending = player.CheckAscending();
-        isFalling = player.CheckFalling();
+        isAscending = player.CheckAscending() && !isGrounded;
+        isFalling = player.CheckFalling() && !isGrounded;
     }
 
     public void CheckRaycasts() {
         if (!isIgnoringPlatforms) isGrounded = player.CheckGround(playerData.groundLayer);
         else if (isIgnoringPlatforms) isGrounded = player.CheckGround(playerData.solidsLayer);
         isOnSolidGround = player.CheckGround(playerData.solidsLayer);
+        isAirborne = !player.CheckGround(playerData.groundLayer);
         if (!isIgnoringPlatforms) isOnPlatform = player.CheckGround(playerData.platformLayer);
         isTouchingCeiling = player.CheckCeiling();
         isTouchingWall = player.CheckWall();
         isTouchingBackWall = player.CheckBackWall();
         isTouchingLedge = player.CheckLedge();
+        isTouchingLedgeWithFoot = player.CheckLedgeFoot();
 
         // if (isOnSolidGround) SlopeCheck();
     }
@@ -188,19 +193,24 @@ public class PlayerState {
         xInput = player.InputHandler.NormInputX;
         lastXInput = player.InputHandler.LastXInput;
         yInput = player.InputHandler.NormInputY;
-        interactInput = player.InputHandler.InteractInput;
-        interactInputHold = player.InputHandler.InteractInputHold;
-        interactInputStop = player.InputHandler.InteractInputStop;
+
+        jumpInput = player.InputHandler.JumpInput;
+        jumpInputStop = player.InputHandler.JumpInputStop;
+        jumpInputHold = player.InputHandler.JumpInputHold;
+
         unplatformInput = player.InputHandler.UnplatformInput;
         crouchInput = player.InputHandler.CrouchInput;
         crouchInputHold = player.InputHandler.CrouchInputHold;
         crouchInputStop = player.InputHandler.CrouchInputStop;
-        jumpInput = player.InputHandler.JumpInput;
-        jumpInputStop = player.InputHandler.JumpInputStop;
-        jumpInputHold = player.InputHandler.JumpInputHold;
+
+        interactInput = player.InputHandler.InteractInput;
+        interactInputHold = player.InputHandler.InteractInputHold;
+        interactInputStop = player.InputHandler.InteractInputStop;
+
         attackInput = player.InputHandler.AttackInput;
         attackInputStop = player.InputHandler.AttackInputStop;
         attackInputHold = player.InputHandler.AttackInputHold;
+
         if (!playerData.autoWallGrab) grabInput = player.InputHandler.GrabInput;
     }
 
@@ -216,17 +226,35 @@ public class PlayerState {
     }
 
     public void UpdatePlayerStates() {
+        // playerData.xInput = xInput;
+        // playerData.lastXInput = lastXInput;
+        // playerData.yInput = yInput;
+        // playerData.jumpInput = jumpInput;
+        // playerData.jumpInputStop = jumpInputStop;
+        // playerData.jumpInputHold = jumpInputHold;
+        // playerData.attackInput = attackInput;
+        // playerData.attackInputHold = attackInputHold;
+        // playerData.attackInputStop = attackInputStop;
+        // playerData.grabInput = grabInput;
+        // playerData.crouchInput = crouchInput;
+        // playerData.crouchInputHold = crouchInputHold;
+        // playerData.crouchInputStop = crouchInputStop;
+        // playerData.interactInput = interactInput;
+        // playerData.interactInputHold = interactInputHold;
+        // playerData.interactInputStop = interactInputStop;
+        // playerData.unplatformInput = unplatformInput;
+
         playerData.currentVelocity = player.CurrentVelocity;
         playerData.facingDirection = player.FacingDirection == 1 ? Direction.Right : Direction.Left;
         playerData.currentGravityScale = player.Rb.gravityScale;
         playerData.currentLayer = LayerMask.LayerToName(player.gameObject.layer);
         playerData.amountOfJumpsLeft = amountOfJumpsLeft;
-        playerData.slopeDownAngle = slopeDownAngle;
-        playerData.slopeSideAngle = slopeSideAngle;
-        playerData.cumulatedKnockbackTime = cumulatedKnockbackTime;
-        playerData.cumulatedWallJumpCoyoteTime = cumulatedWallJumpCoyoteTime;
-        playerData.cumulatedGroundSlideTime = cumulatedGroundSlideTime;
-        playerData.cumulatedGroundSlideCooldown = cumulatedGroundSlideCooldown;
+        // playerData.slopeDownAngle = slopeDownAngle;
+        // playerData.slopeSideAngle = slopeSideAngle;
+        // playerData.cumulatedKnockbackTime = cumulatedKnockbackTime;
+        // playerData.cumulatedWallJumpCoyoteTime = cumulatedWallJumpCoyoteTime;
+        // playerData.cumulatedGroundSlideTime = cumulatedGroundSlideTime;
+        // playerData.cumulatedGroundSlideCooldown = cumulatedGroundSlideCooldown;
 
         playerData.maxRunSpeedThreshold = Mathf.Lerp(0f, playerData.runSpeed, playerData.maxRunSpeedThresholdMult);
         playerData.maxSprintSpeedThreshold = Mathf.Lerp(playerData.runSpeed, playerData.sprintSpeed, playerData.maxSprintSpeedThresholdMult);
@@ -257,6 +285,7 @@ public class PlayerState {
         playerData.hasTouchedWall = hasTouchedWall;
         playerData.hasTouchedWallBack = hasTouchedWallBack;
         playerData.isTouchingLedge = isTouchingLedge;
+        // playerData.isTouchingLedgeWithFoot = isTouchingLedgeWithFoot;
         playerData.isWallSliding = isWallSliding;
         playerData.isWallGrabing = isWallGrabing;
         playerData.isWallClimbing = isWallClimbing;
@@ -273,28 +302,6 @@ public class PlayerState {
         playerData.hasCoyoteTime = coyoteTime;
         playerData.hasWallJumpCoyoteTime = wallJumpCoyoteTime;
         playerData.hasGroundSlideTime = groundSlideTime;
-
-        playerData.xInput = xInput;
-        playerData.lastXInput = lastXInput;
-        playerData.yInput = yInput;
-        playerData.jumpInput = jumpInput;
-        playerData.jumpInputStop = jumpInputStop;
-        playerData.jumpInputHold = jumpInputHold;
-        playerData.attackInput = attackInput;
-        playerData.attackInputHold = attackInputHold;
-        playerData.attackInputStop = attackInputStop;
-        playerData.grabInput = grabInput;
-        playerData.crouchInput = crouchInput;
-        playerData.crouchInputHold = crouchInputHold;
-        playerData.crouchInputStop = crouchInputStop;
-        playerData.interactInput = interactInput;
-        playerData.interactInputHold = interactInputHold;
-        playerData.interactInputStop = interactInputStop;
-        playerData.unplatformInput = unplatformInput;
-
-        playerData.wallJumpDirectionOffAngle = playerData.wallJumpAngle.AngleFloatToVector2();
-        playerData.wallHopDirectionOffAngle = playerData.wallHopAngle.AngleFloatToVector2();
-        playerData.deathJumpDirectionOffAngle = playerData.deathJumpAngle.AngleFloatToVector2();
     }
 
     protected float slopeDownAngle;

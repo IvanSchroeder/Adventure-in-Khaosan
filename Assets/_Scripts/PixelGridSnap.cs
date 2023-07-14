@@ -9,7 +9,7 @@ public class PixelGridSnap : MonoBehaviour {
     [SerializeField] private IntSO pixelsPerUnit;
     [SerializeField] public Vector3 snappedCurrentPosition;
     
-    private void LateUpdate() {
+    private void Update() {
         if (!snapToPixelGrid) return;
 
         Vector3 snappedTargetPosition = transform.position;

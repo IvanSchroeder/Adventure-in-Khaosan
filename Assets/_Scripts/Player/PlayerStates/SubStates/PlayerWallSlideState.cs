@@ -29,9 +29,10 @@ public class PlayerWallSlideState : PlayerTouchingWallState {
             player.LedgeClimbState.SetDetectedPosition(player.transform.position);
             stateMachine.ChangeState(player.LedgeClimbState);
         }
-        else if (xInput == -player.FacingDirection && !isWallJumping) {
-            WallHop(playerData.wallHopSpeed, playerData.wallHopDirectionOffAngle, player.FacingDirection);
-        }
+        // else if (xInput == -player.FacingDirection && !isWallJumping) {
+        //     player.WallJumpState.WallJumpConfiguration(playerData.wallHopSpeed, playerData.wallHopDirectionOffAngle, player.FacingDirection, playerData.wallHopTime);
+        //     stateMachine.ChangeState(player.WallJumpState);
+        // }
         else if (isOnSolidGround || (isOnPlatform && yInput != -1)) {
             stateMachine.ChangeState(player.LandState);
         }
@@ -57,7 +58,5 @@ public class PlayerWallSlideState : PlayerTouchingWallState {
             player.SetVelocityY(-playerData.fastWallSlideSpeed, playerData.wallSlideAcceleration, playerData.lerpWallVelocity);
         else
             player.SetVelocityY(-playerData.wallSlideSpeed, playerData.wallSlideAcceleration, playerData.lerpWallVelocity);
-            
-        player.SetVelocityX(0f);
     }
 }

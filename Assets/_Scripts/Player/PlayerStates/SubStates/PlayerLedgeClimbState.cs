@@ -40,7 +40,7 @@ public class PlayerLedgeClimbState : PlayerState {
 
         player.transform.position = startPos;
 
-        hasSpace = player.CheckForSpace(stopPos + Vector2.up * 0.05f);
+        hasSpace = player.CheckForSpace(stopPos + Vector2.up * 0.015f, Vector2.up) && player.CheckForSpace(cornerPos + Vector2.up * 0.5f, Vector2.right * player.FacingDirection);
 
         player.CameraTarget.SetTargetPosition(Vector3.zero, 0f, true);
         //player.CameraTarget.OffsetTargetTowards(Vector3.zero, 0f, true);

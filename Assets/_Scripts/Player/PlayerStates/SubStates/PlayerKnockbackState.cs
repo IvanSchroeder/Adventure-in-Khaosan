@@ -15,8 +15,6 @@ public class PlayerKnockbackState : PlayerState {
         lastKnockbackFacingDirection = player.FacingDirection;
 
         cumulatedKnockbackTime = 0f;
-
-        player.SetVelocity(playerData.jumpHeight * 0.5f, (Vector2.up + Vector2.right).normalized, -player.FacingDirection);
         // player.CanMove = false;
     }
 
@@ -24,7 +22,7 @@ public class PlayerKnockbackState : PlayerState {
         base.Exit();
 
         isDamaged = false;
-        player.KnockbackEnd(null, null);
+        player.KnockbackEnd();
         // player.CanMove = true;
     }
 
@@ -37,16 +35,20 @@ public class PlayerKnockbackState : PlayerState {
             BounceOffWall();
         }
 
-        if (cumulatedKnockbackTime < playerData.maxKnockbackTime) cumulatedKnockbackTime += Time.deltaTime;
-        
-        if (isGrounded) {
-            stateMachine.ChangeState(player.LandState);
+        if (isTouchingCeiling) {
+            BounceOffCeiling();
         }
 
-        if (cumulatedKnockbackTime < playerData.minKnockbackTime) return;
+        if (cumulatedKnockbackTime < playerData.maxKnockbackTime) cumulatedKnockbackTime += Time.deltaTime;
+        
 
+        if (cumulatedKnockbackTime < playerData.minKnockbackTime) return;
         else if (cumulatedKnockbackTime >= playerData.maxKnockbackTime) {
             stateMachine.ChangeState(player.AirborneState);
+        }
+
+        if (isGrounded) {
+            stateMachine.ChangeState(player.LandState);
         }
     }
 
@@ -58,14 +60,15 @@ public class PlayerKnockbackState : PlayerState {
             bounceOffWall = false;
         }
 
+        if (bounceOffCeiling) {
+            player.SetVelocityY(player.CurrentVelocity.y * -1);
+            bounceOffCeiling = false;
+        }
+
         if (isFalling) {
             playerData.currentFallSpeed = playerData.defaultFallSpeed;
             player.SetVelocityY(player.CurrentVelocity.y, playerData.fallAcceleration, playerData.lerpVerticalVelocity);
         }
         else if (isAscending) player.SetVelocityY(player.CurrentVelocity.y);
-    }
-
-    public void SetLastContactPoint(Vector2 point) {
-        lastContactPoint = point;
     }
 }

@@ -56,7 +56,6 @@ public class Player : Entity, IDamageable, IInteractor {
     [field: SerializeField, Space(10f), Header("Interactor"), Space(5f)] public BoxCollider2D InteractorTrigger { get; set; }
     [field: SerializeField] public InteractorSystem InteractorSystem { get; set; }
     [field: SerializeField] public PlayerInputHandler InputHandler { get; set; }
-    [field: SerializeField] public IInteractable CurrentInteractable { get; set; }
 
     [field: SerializeField, Space(10f), Header("Checks"), Space(5f)] public Transform GroundPoint { get; private set; }
     [field: SerializeField] public Transform MidPoint { get; private set; }
@@ -79,13 +78,15 @@ public class Player : Entity, IDamageable, IInteractor {
     [HideInInspector] public Vector2 wallHitPos;
     [HideInInspector] public Vector2 ceilingHitPos;
     [HideInInspector] public Vector2 lastContactPoint;
+    [HideInInspector] public Vector2 damageDirection;
 
     [SerializeField] private bool drawGizmos;
 
     public static event Action<Player> OnPlayerSpawned;
     public static event Action<Player> OnPlayerDeath;
+    public static event Action OnPlayerDamaged;
     
-    public EventHandler<OnEntityDamagedEventArgs> OnInvulnerable;
+    public Action OnInvulnerability;
     public Action OnPlayerDeathEnd;
     public event Action OnLivesDepleted;
 
@@ -99,9 +100,7 @@ public class Player : Entity, IDamageable, IInteractor {
     }
 
     private void OnEnable() {
-        LevelManager.OnPlayerSpawn += StartInvulnerable;
         LevelManager.OnPlayerSpawn += RespawnPlayer;
-        LevelManager.OnPlayerSpawn += HealthSystem.InitializeHealth;
         LevelManager.OnLevelFinished += StandOnCheckpoint;
 
         HealthSystem.OnEntityDamaged += KnockbackStart;
@@ -109,15 +108,14 @@ public class Player : Entity, IDamageable, IInteractor {
         HealthSystem.OnLivesDepleted += SetLivesDepleted;
 
         OnEntityDamaged += HealthSystem.ReduceHealth;
-        OnInvulnerable += HealthSystem.SetInvulnerability;
+        // OnInvulnerable += HealthSystem.SetInvulnerability;
+        OnInvulnerability += HealthSystem.SetInvulnerability;
 
         StateMachine.OnStateChange += UpdateCurrentState;
     }
 
     private void OnDisable() {
-        LevelManager.OnPlayerSpawn -= StartInvulnerable;
         LevelManager.OnPlayerSpawn -= RespawnPlayer;
-        LevelManager.OnPlayerSpawn -= HealthSystem.InitializeHealth;
         LevelManager.OnLevelFinished -= StandOnCheckpoint;
         
         HealthSystem.OnEntityDamaged -= KnockbackStart;
@@ -125,7 +123,8 @@ public class Player : Entity, IDamageable, IInteractor {
         HealthSystem.OnLivesDepleted -= SetLivesDepleted;
 
         OnEntityDamaged -= HealthSystem.ReduceHealth;
-        OnInvulnerable -= HealthSystem.SetInvulnerability;
+        // OnInvulnerable -= HealthSystem.SetInvulnerability;
+        OnInvulnerability -= HealthSystem.SetInvulnerability;
 
         StateMachine.OnStateChange -= UpdateCurrentState;
     }
@@ -183,28 +182,13 @@ public class Player : Entity, IDamageable, IInteractor {
         PreviousState = null;
     }
 
-    // private void Start() {
-    //     Init();
-    // }
-
-    // public void Init() {
-    //     StateMachine.Initialize(IdleState);
-
-    //     FacingDirection = 1;
-    //     Rb.gravityScale = playerData.defaultGravityScale;
-    //     CheckFacingDirection(FacingDirection);
-    //     PlayerSprite.flipX = false;
-    //     CameraTarget.transform.SetParent(CameraTarget.CameraCenter);
-    //     CameraTarget.transform.localPosition = Vector3.zero;
-
-    //     SetColliderParameters(MovementCollider, playerData.standingColliderConfig);
-
-    //     OnPlayerSpawned?.Invoke(this);
-    // }
-
     public void RespawnPlayer() {
         if (CurrentState == null) StateMachine.Initialize(IdleState);
         else StateMachine.ChangeState(IdleState);
+
+        JumpState.ResetAmountOfJumpsLeft();
+        HealthSystem.InitializeHealth();
+        playerData.Init();
 
         FacingDirection = 1;
         Rb.gravityScale = playerData.defaultGravityScale;
@@ -216,6 +200,7 @@ public class Player : Entity, IDamageable, IInteractor {
         SetColliderParameters(MovementCollider, playerData.standingColliderConfig);
         SetColliderParameters(HitboxTrigger, playerData.standingColliderConfig);
 
+        OnInvulnerability?.Invoke();
         OnPlayerSpawned?.Invoke(this);
     }
 
@@ -226,31 +211,33 @@ public class Player : Entity, IDamageable, IInteractor {
     
     private void FixedUpdate() {
         StateMachine.CurrentState.PhysicsUpdate();
+
+        Debug.DrawRay(MidPoint.position, playerData.wallHopDirectionOffAngle * playerData.wallHopSpeed, Color.cyan);
+        Debug.DrawRay(MidPoint.position, playerData.wallJumpDirectionOffAngle * playerData.wallJumpSpeed, Color.magenta);
+        Debug.DrawRay(MidPoint.position, playerData.deathJumpDirectionOffAngle * playerData.deathJumpSpeed, Color.red);
     }
 
     public void Damage(object sender, OnEntityDamagedEventArgs entityDamagedArgs) {
-        OnEntityDamaged.Invoke(sender, entityDamagedArgs);
+        lastContactPoint = entityDamagedArgs.ContactPoint;
+        OnEntityDamaged?.Invoke(sender, entityDamagedArgs);
+        OnPlayerDamaged?.Invoke();
     }
 
-        public void StartInvulnerable() {
-        OnEntityDamagedEventArgs entityArgs = new OnEntityDamagedEventArgs();
-        entityArgs.CurrentFlash = entityData.invulnerabilityFlash;
-        OnInvulnerable?.Invoke(this, entityArgs);
-    }
-
-    public void KnockbackStart(object sender, OnEntityDamagedEventArgs entityArgs) {
-        lastContactPoint = entityArgs.ContactPoint;
-        KnockbackState.SetLastContactPoint(lastContactPoint);
+    public void KnockbackStart(object sender, OnEntityDamagedEventArgs entityDamagedArgs) {
+        lastContactPoint = entityDamagedArgs.ContactPoint;
+        damageDirection = (MidPoint.position.ToVector2() - lastContactPoint).normalized;
+        SetVelocity(playerData.jumpHeight * 0.5f, 45f.AngleFloatToVector2(), -FacingDirection, true);
         StateMachine.ChangeState(KnockbackState);
     }
 
-    public void KnockbackEnd(object sender, OnEntityDamagedEventArgs args) {
-        OnEntityDamagedEventArgs entityArgs = new OnEntityDamagedEventArgs();
-        entityArgs.CurrentFlash = entityData.invulnerabilityFlash;
-        OnInvulnerable?.Invoke(this, entityArgs);
+    public void KnockbackEnd() {
+        OnInvulnerability?.Invoke();
     }
 
-    public void PlayerDeathStart(object sender, OnEntityDamagedEventArgs entityArgs) {
+    public void PlayerDeathStart(object sender, OnEntityDamagedEventArgs args) {
+        damageDirection = (MidPoint.position.ToVector2() - lastContactPoint).normalized;
+        SetVelocity(playerData.deathJumpSpeed, playerData.deathJumpDirectionOffAngle, -FacingDirection, true);
+        CheckFacingDirection(FacingDirection);
         OnPlayerDeath?.Invoke(this);
         StateMachine.ChangeState(DeathState);
     }
@@ -260,14 +247,7 @@ public class Player : Entity, IDamageable, IInteractor {
     }
 
     public void PlayerDeathEnd() {
-        OnEntityDamagedEventArgs entityArgs = new OnEntityDamagedEventArgs();
         OnPlayerDeathEnd?.Invoke();
-    }
-
-    public void FreezeVelocity() {
-        velocityXY.Set(0f, 0f);
-        CurrentVelocity = velocityXY;
-        Rb.velocity = CurrentVelocity;
     }
 
     public void SetVelocityX(float velocity, float accelAmount = 30f, bool lerpVelocity = false) {
@@ -300,20 +280,39 @@ public class Player : Entity, IDamageable, IInteractor {
         Rb.velocity = CurrentVelocity;
     }
 
-    public void SetVelocity(float velocity, Vector2 angle, int direction) {
+    public void SetVelocity(float velocity, Vector2 angle, int direction, bool resetCurrentVelocity = true) {
+        if (resetCurrentVelocity) {
+            CurrentVelocity = new Vector2(0f, 0f);
+            Rb.velocity = new Vector2(0f, 0f);
+        }
+
         angle.Normalize();
-        velocityXY.Set((angle.x * velocity * direction).Clamp(-playerData.maxHorizontalSpeed, playerData.maxHorizontalSpeed), (angle.y * velocity).Clamp(-playerData.defaultFallSpeed, playerData.maxAscendantSpeed));
+        velocityXY.Set((angle.x.ToInt() * velocity * direction).Clamp(-playerData.maxHorizontalSpeed, playerData.maxHorizontalSpeed), (angle.y.ToInt() * velocity).Clamp(-playerData.defaultFallSpeed, playerData.maxAscendantSpeed));
         CurrentVelocity = velocityXY;
         Rb.velocity = CurrentVelocity;
     }
 
-    public void SetForce(float velocity, Vector2 angle, int xDirection) {
-        angle.Normalize();
-        Vector2 forceDirection = new Vector2((angle.x * xDirection * velocity), (angle.y * velocity));
-        Rb.AddForce(forceDirection, ForceMode2D.Impulse);
-        Rb.velocity = new Vector2(Rb.velocity.x.Clamp(-playerData.maxHorizontalSpeed, playerData.maxHorizontalSpeed), Rb.velocity.y.Clamp(-playerData.currentFallSpeed, playerData.maxAscendantSpeed));
-        CurrentVelocity = Rb.velocity;
-    }
+    // public void LaunchInDirection(float velocity, Vector2 angle, bool clamp, bool resetCurrentVelocity = true) {
+    //     if (resetCurrentVelocity) {
+    //         CurrentVelocity = new Vector2(0f, 0f);
+    //         Rb.velocity = new Vector2(0f, 0f);
+    //     }
+
+    //     angle.Normalize();
+    //     Vector2 forceDirection = new Vector2((angle.x * velocity).Clamp(-playerData.maxHorizontalSpeed, playerData.maxHorizontalSpeed),
+    //     (angle.y * velocity).Clamp(-playerData.currentFallSpeed, playerData.maxAscendantSpeed));
+        
+    //     if (clamp) 
+    //         Rb.AddForce(forceDirection.Clamp(new Vector2 (-playerData.maxHorizontalSpeed, playerData.maxHorizontalSpeed), new Vector2 (-playerData.currentFallSpeed, playerData.maxAscendantSpeed)), ForceMode2D.Impulse);
+    //     else
+    //         Rb.AddForce(forceDirection, ForceMode2D.Impulse);
+
+    //     Debug.DrawRay(MidPoint.position, forceDirection, Color.red, 3f);
+
+    //     CurrentVelocity = Rb.velocity;
+
+    //     CheckFacingDirection(FacingDirection);
+    // }
 
     public void CheckFacingDirection(int direction) {
         if (direction != 0 && direction != FacingDirection) {
@@ -348,6 +347,10 @@ public class Player : Entity, IDamageable, IInteractor {
         return Physics2D.Raycast(LedgePoint.position.ToVector2() + (Vector2.up * playerData.ledgeCheckOffset.y), Vector2.right * FacingDirection, playerData.ledgeCheckDistance, playerData.wallLayer);
     }
 
+    public bool CheckLedgeFoot() {
+        return Physics2D.Raycast(GroundPoint.position.ToVector2(), Vector2.right * FacingDirection, playerData.ledgeCheckDistance, playerData.wallLayer);
+    }
+
     public bool CheckChangingDirections() {
         return ((InputHandler.NormInputX != 0 && InputHandler.NormInputX.Sign() != CurrentVelocity.x.Sign())
             || (InputHandler.NormInputX == 0 && FacingDirection.Sign() != CurrentVelocity.x.Sign())) && CurrentVelocity.x != 0;
@@ -361,25 +364,25 @@ public class Player : Entity, IDamageable, IInteractor {
         return CurrentVelocity.y > 0.0f && !playerData.isGrounded;
     }
 
-    public bool CheckForSpace(Vector2 originPoint) {
-        bool space = !Physics2D.Raycast(originPoint, Vector2.up, 1f, playerData.wallLayer);
+    public bool CheckForSpace(Vector2 originPoint, Vector2 direction) {
+        bool space = !Physics2D.Raycast(originPoint, direction, 1.25f, playerData.wallLayer);
 
-        if (space) Debug.DrawRay(originPoint, Vector2.up * 1f, Color.green, 1f);
-        else Debug.DrawRay(originPoint, Vector2.up * 1f, Color.red, 1f);
+        if (space) Debug.DrawRay(originPoint, direction * 1.25f, Color.green, 1f);
+        else Debug.DrawRay(originPoint, direction * 1.25f, Color.red, 1f);
 
         return space;
     }
 
     public bool CheckHazards(Vector2 originPoint) {
-        bool hazard = Physics2D.Raycast(originPoint, Vector2.up, 1f, playerData.hazardsLayer);
+        bool hazard = Physics2D.Raycast(originPoint, Vector2.up, 1.25f, playerData.hazardsLayer);
 
-        if (hazard) Debug.DrawRay(originPoint, Vector2.up * 1f, Color.red, 1f);
-        else Debug.DrawRay(originPoint, Vector2.up * 1f, Color.green, 1f);
+        if (hazard) Debug.DrawRay(originPoint, Vector2.up * 1.25f, Color.red, 1f);
+        else Debug.DrawRay(originPoint, Vector2.up * 1.25f, Color.green, 1f);
 
         return hazard;
     }
 
-    public bool CheckCornerCorrection() {
+    public bool CheckCeilingCornerCorrection() {
         RaycastHit2D edgeLeftHit = GetCeilingHit(-playerData.cornerEdgeCheckOffset);
         RaycastHit2D innerLeftHit = GetCeilingHit(-playerData.cornerInnerCheckOffset);
         RaycastHit2D edgeRightHit = GetCeilingHit(playerData.cornerEdgeCheckOffset);
@@ -387,6 +390,14 @@ public class Player : Entity, IDamageable, IInteractor {
 
         bool correctCorner = (edgeLeftHit && !innerLeftHit) || (edgeRightHit && !innerRightHit);
         return correctCorner;
+    }
+
+    public bool CheckFootLedgeCorrection() {
+        RaycastHit2D innerFootHit = GetFootLedgeHit(playerData.ledgeInnerCheckOffset);
+        RaycastHit2D edgeFootHit = GetFootLedgeHit(playerData.ledgeEdgeCheckOffset);
+
+        bool correctLedge = (!innerFootHit && edgeFootHit);
+        return correctLedge;
     }
 
     private void AnimationTrigger() => StateMachine.CurrentState.AnimationTrigger();
@@ -419,11 +430,12 @@ public class Player : Entity, IDamageable, IInteractor {
         }
     }
 
-    public void CorrectCorner(float currentYVelocity) {
+    public void CorrectHeadCorner(float currentYVelocity) {
         float newPos = 0f;
 
         // Push player to the right using left inner check
         RaycastHit2D innerLeftHit = Physics2D.Raycast(CeilingPoint.position.ToVector2() - playerData.cornerInnerCheckOffset + Vector2.up * playerData.cornerCheckDistance, Vector2.left, playerData.topCheckDistance, playerData.solidsLayer);
+        
         if (innerLeftHit) {
             newPos = Vector2.Distance(new Vector2(innerLeftHit.point.x, transform.position.y) + Vector2.up * playerData.cornerCheckDistance,
                 transform.position.ToVector2() - playerData.cornerEdgeCheckOffset + Vector2.up * playerData.cornerCheckDistance);
@@ -434,6 +446,7 @@ public class Player : Entity, IDamageable, IInteractor {
 
         // Push player to the left using right inner check
         RaycastHit2D innerRightHit = Physics2D.Raycast(CeilingPoint.position.ToVector2() + playerData.cornerInnerCheckOffset + Vector2.up * playerData.cornerCheckDistance, Vector2.right, playerData.topCheckDistance, playerData.solidsLayer);;
+        
         if (innerRightHit) {
             newPos = Vector2.Distance(new Vector2(innerRightHit.point.x, transform.position.y) + Vector2.up * playerData.cornerCheckDistance,
                 transform.position.ToVector2() + playerData.cornerEdgeCheckOffset + Vector2.up * playerData.cornerCheckDistance);
@@ -442,6 +455,22 @@ public class Player : Entity, IDamageable, IInteractor {
         }
 
         SetVelocityY(playerData.jumpHeight);
+    }
+
+    public void CorrectFootLedge(float currentXVelocity) {
+        float newPos = 0f;
+
+        RaycastHit2D innerFootHit = Physics2D.Raycast(GroundPoint.position.ToVector2() + playerData.ledgeInnerCheckOffset + Vector2.right * FacingDirection * playerData.ledgeFootCheckDistance, Vector2.down, playerData.groundUpCheckDistance, playerData.solidsLayer);
+        
+        if (innerFootHit && CheckForSpace(innerFootHit.point + Vector2.up * 0.015f, Vector2.up)) {
+            newPos = Vector2.Distance(new Vector2(transform.position.x, innerFootHit.point.y) + Vector2.down * playerData.groundUpCheckDistance,
+                transform.position.ToVector2() - playerData.ledgeEdgeCheckOffset + Vector2.right * FacingDirection * playerData.ledgeFootCheckDistance);
+            
+            transform.position = new Vector2(transform.position.x, innerFootHit.point.y + playerData.ledgeCorrectionRepositionOffset);
+            // transform.position = new Vector2(transform.position.x, transform.position.y - newPos + playerData.ledgeCorrectionRepositionOffset);
+            Rb.velocity = new Vector2(currentXVelocity, Rb.velocity.y);
+            return;
+        }
     }
     
     public Vector2 GetCornerPosition() {
@@ -475,9 +504,17 @@ public class Player : Entity, IDamageable, IInteractor {
         return headHit;
     }
 
-    public RaycastHit2D GetWallHit() {
-        RaycastHit2D wallHit = Physics2D.Raycast(WallPoint.position.ToVector2(), Vector2.right * FacingDirection, playerData.wallCheckDistance, playerData.wallLayer);
-        Debug.DrawRay(WallPoint.position.ToVector2(), Vector2.right * -FacingDirection * playerData.wallCheckDistance, Color.cyan, 3f);
+    public RaycastHit2D GetFootLedgeHit(Vector2 offset) {
+        RaycastHit2D footHit = Physics2D.Raycast(GroundPoint.position.ToVector2() + offset, Vector2.right * FacingDirection, playerData.cornerCheckDistance, playerData.solidsLayer);
+        return footHit;
+    }
+
+    public RaycastHit2D GetWallHit(int direction) {
+        RaycastHit2D wallHit = Physics2D.Raycast(MidPoint.position.ToVector2(), Vector2.right * direction, 1f, playerData.wallLayer);
+        if (wallHit)
+            Debug.DrawRay(WallPoint.position.ToVector2(), Vector2.right * direction * playerData.wallCheckDistance, Color.cyan, 3f);
+        else
+            Debug.DrawRay(WallPoint.position.ToVector2(), Vector2.right * direction * playerData.wallCheckDistance, Color.red, 3f);
         return wallHit;
     }
 
@@ -485,28 +522,41 @@ public class Player : Entity, IDamageable, IInteractor {
         if (!drawGizmos) return;
         Gizmos.color = Color.green;
         // Ground Check Raycasts
-        Gizmos.DrawRay(GroundPoint.position.ToVector2() + (Vector2.right * playerData.groundCheckOffset.x) + (Vector2.up * playerData.groundCheckOffset.y), Vector3.down * playerData.groundCheckDistance);
-        Gizmos.DrawRay(GroundPoint.position.ToVector2() + (Vector2.left * playerData.groundCheckOffset.x) + (Vector2.up * playerData.groundCheckOffset.y), Vector3.down * playerData.groundCheckDistance);
-        Gizmos.DrawRay(GroundPoint.position.ToVector2() + (Vector2.up * playerData.groundCheckOffset.y), Vector3.down * playerData.groundCheckDistance);
+        Gizmos.DrawRay(GroundPoint.position.ToVector2() + (Vector2.right * playerData.groundCheckOffset.x) + (Vector2.up * playerData.groundCheckOffset.y), Vector2.down * playerData.groundCheckDistance);
+        Gizmos.DrawRay(GroundPoint.position.ToVector2() + (Vector2.left * playerData.groundCheckOffset.x) + (Vector2.up * playerData.groundCheckOffset.y), Vector2.down * playerData.groundCheckDistance);
+        Gizmos.DrawRay(GroundPoint.position.ToVector2() + (Vector2.up * playerData.groundCheckOffset.y), Vector2.down * playerData.groundCheckDistance);
         
         // Ceiling Check Raycasts
-        Gizmos.DrawRay(CeilingPoint.position.ToVector2() + (playerData.ceilingCheckOffset * Vector2.right) + (Vector2.down * playerData.ceilingCheckOffset.y), Vector3.up * playerData.ceilingCheckDistance);
-        Gizmos.DrawRay(CeilingPoint.position.ToVector2() + (playerData.ceilingCheckOffset * Vector2.left) + (Vector2.down * playerData.ceilingCheckOffset.y), Vector3.up * playerData.ceilingCheckDistance);
-        Gizmos.DrawRay(CeilingPoint.position.ToVector2() + (Vector2.down * playerData.ceilingCheckOffset.y), Vector3.up * playerData.ceilingCheckDistance);
+        Gizmos.DrawRay(CeilingPoint.position.ToVector2() + (playerData.ceilingCheckOffset * Vector2.right) + (Vector2.down * playerData.ceilingCheckOffset.y), Vector2.up * playerData.ceilingCheckDistance);
+        Gizmos.DrawRay(CeilingPoint.position.ToVector2() + (playerData.ceilingCheckOffset * Vector2.left) + (Vector2.down * playerData.ceilingCheckOffset.y), Vector2.up * playerData.ceilingCheckDistance);
+        Gizmos.DrawRay(CeilingPoint.position.ToVector2() + (Vector2.down * playerData.ceilingCheckOffset.y), Vector2.up * playerData.ceilingCheckDistance);
 
-        // Corner Check Raycasts
+        // Corners Check Raycasts
+        // Head Corner
         // Edge
-        Gizmos.DrawRay(CeilingPoint.position.ToVector2() + playerData.cornerEdgeCheckOffset, Vector3.up * playerData.cornerCheckDistance);
-        Gizmos.DrawRay(CeilingPoint.position.ToVector2() - playerData.cornerEdgeCheckOffset, Vector3.up * playerData.cornerCheckDistance);
+        Gizmos.DrawRay(CeilingPoint.position.ToVector2() + playerData.cornerEdgeCheckOffset, Vector2.up * playerData.cornerCheckDistance);
+        Gizmos.DrawRay(CeilingPoint.position.ToVector2() - playerData.cornerEdgeCheckOffset, Vector2.up * playerData.cornerCheckDistance);
         // Inner
         Gizmos.color = Color.red;
-        Gizmos.DrawRay(CeilingPoint.position.ToVector2() + playerData.cornerInnerCheckOffset, Vector3.up * playerData.cornerCheckDistance);
-        Gizmos.DrawRay(CeilingPoint.position.ToVector2() - playerData.cornerInnerCheckOffset, Vector3.up * playerData.cornerCheckDistance);
+        Gizmos.DrawRay(CeilingPoint.position.ToVector2() + playerData.cornerInnerCheckOffset, Vector2.up * playerData.cornerCheckDistance);
+        Gizmos.DrawRay(CeilingPoint.position.ToVector2() - playerData.cornerInnerCheckOffset, Vector2.up * playerData.cornerCheckDistance);
         // Sides
         Gizmos.color = Color.cyan;
-        Gizmos.DrawRay(CeilingPoint.position.ToVector2() - playerData.cornerInnerCheckOffset + Vector2.up * playerData.cornerCheckDistance, Vector3.left * playerData.topCheckDistance);
-        Gizmos.DrawRay(CeilingPoint.position.ToVector2() + playerData.cornerInnerCheckOffset + Vector2.up * playerData.cornerCheckDistance, Vector3.right * playerData.topCheckDistance);
+        Gizmos.DrawRay(CeilingPoint.position.ToVector2() - playerData.cornerInnerCheckOffset + Vector2.up * playerData.cornerCheckDistance, Vector2.left * playerData.topCheckDistance);
+        Gizmos.DrawRay(CeilingPoint.position.ToVector2() + playerData.cornerInnerCheckOffset + Vector2.up * playerData.cornerCheckDistance, Vector2.right * playerData.topCheckDistance);
         
+        // Foor Ledge
+        // Edge
+        Gizmos.color = Color.green;
+        Gizmos.DrawRay(GroundPoint.position.ToVector2() + playerData.ledgeEdgeCheckOffset, Vector2.right * FacingDirection * playerData.ledgeFootCheckDistance);
+        // Inner
+        Gizmos.color = Color.red;
+        Gizmos.DrawRay(GroundPoint.position.ToVector2() + playerData.ledgeInnerCheckOffset, Vector2.right * FacingDirection * playerData.ledgeFootCheckDistance);
+        // Upward
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawRay(GroundPoint.position.ToVector2() + playerData.ledgeInnerCheckOffset + Vector2.right * FacingDirection * playerData.ledgeFootCheckDistance, Vector2.down * playerData.groundUpCheckDistance);
+
+
         // Wall Check Raycasts
         Gizmos.color = Color.cyan;
         Gizmos.DrawRay(WallPoint.position.ToVector2() + (Vector2.up * playerData.wallCheckOffset.y), Vector2.right * FacingDirection * playerData.wallCheckDistance);
@@ -515,7 +565,7 @@ public class Player : Entity, IDamageable, IInteractor {
 
         // Ledge Check Raycasts
         Gizmos.color = Color.yellow;
-        Gizmos.DrawRay(LedgePoint.position.ToVector2() + (Vector2.up * playerData.ledgeCheckOffset.y), Vector3.right * FacingDirection * playerData.ledgeCheckDistance);
+        Gizmos.DrawRay(LedgePoint.position.ToVector2() + (Vector2.up * playerData.ledgeCheckOffset.y), Vector2.right * FacingDirection * playerData.ledgeCheckDistance);
     
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(groundHitPos, 0.5f);

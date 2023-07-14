@@ -97,7 +97,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54cd327a20f58594c885d38f90e2939f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Entity>k__BackingField: {fileID: 3125253531432767928}
+  <RelatedEntity>k__BackingField: {fileID: 3125253531432767928}
   <HealthSystem>k__BackingField: {fileID: 5509863583808375652}
   <InteractableSystem>k__BackingField: {fileID: 0}
   <CurrentFlashConfiguration>k__BackingField: {fileID: 11400000, guid: 4d82b7bcf41c0e646937f0d0d6aca977, type: 2}
@@ -598,12 +598,12 @@ MonoBehaviour:
   entityData: {fileID: 11400000, guid: 82651798b0a1f594e9210ad3f643c9b0, type: 2}
   CurrentStateName: 
   PreviousStateName: 
+  PlayerAbilitiesList: []
   playerData: {fileID: 11400000, guid: 82651798b0a1f594e9210ad3f643c9b0, type: 2}
   <Rb>k__BackingField: {fileID: 3125253531432767930}
   <MovementCollider>k__BackingField: {fileID: 3125253531432767931}
   <Anim>k__BackingField: {fileID: 3643447841544891557}
   <PlayerSprite>k__BackingField: {fileID: 7174821088211015114}
-  <InteractTrigger>k__BackingField: {fileID: 903490805235740337}
   <CameraTarget>k__BackingField: {fileID: 5762768655862755544}
   <HitboxTrigger>k__BackingField: {fileID: 5362580700939068921}
   <HealthSystem>k__BackingField: {fileID: 5509863583808375652}
@@ -624,6 +624,7 @@ MonoBehaviour:
   wallHitPos: {x: 0, y: 0}
   ceilingHitPos: {x: 0, y: 0}
   lastContactPoint: {x: 0, y: 0}
+  damageDirection: {x: 0, y: 0}
   drawGizmos: 1
 --- !u!95 &3643447841544891557
 Animator:
@@ -928,7 +929,7 @@ MonoBehaviour:
     m_Bits: 4352
   <HealthType>k__BackingField: 1
   <DamagedFlash>k__BackingField: {fileID: 11400000, guid: 0514c15ea549b1f40b1d147ef537951e, type: 2}
-  <InvulnerableFlash>k__BackingField: {fileID: 11400000, guid: 4d82b7bcf41c0e646937f0d0d6aca977, type: 2}
+  <InvulnerabilityFlash>k__BackingField: {fileID: 11400000, guid: 4d82b7bcf41c0e646937f0d0d6aca977, type: 2}
   <IsRespawneable>k__BackingField: 1
   <CanRespawn>k__BackingField: 0
   <HasInfiniteLives>k__BackingField: 0
@@ -1039,3 +1040,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <CanInteract>k__BackingField: 1
+  InteractablesList: []

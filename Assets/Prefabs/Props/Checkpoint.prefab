@@ -47,9 +47,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <InteractedFlash>k__BackingField: {fileID: 11400000, guid: 5e6d9f4b629caba4293723bcc964e8b8, type: 2}
   <RequiresInput>k__BackingField: 1
+  <FlashesOnInteract>k__BackingField: 1
+  <FlashesOnInteractStop>k__BackingField: 0
   <OneTimeIntectarion>k__BackingField: 1
   <IsInteractable>k__BackingField: 1
   <WasInteracted>k__BackingField: 0
+  <IsToggable>k__BackingField: 0
+  <HasDelay>k__BackingField: 0
+  <InteractionStopDelay>k__BackingField: 0
 --- !u!61 &4964172299964983953
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -314,7 +319,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54cd327a20f58594c885d38f90e2939f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Entity>k__BackingField: {fileID: 0}
+  <RelatedEntity>k__BackingField: {fileID: 0}
   <HealthSystem>k__BackingField: {fileID: 0}
   <InteractableSystem>k__BackingField: {fileID: 5593726000987461281}
   <CurrentFlashConfiguration>k__BackingField: {fileID: 11400000, guid: fc38e4012282de94bae91f56827ca71a, type: 2}

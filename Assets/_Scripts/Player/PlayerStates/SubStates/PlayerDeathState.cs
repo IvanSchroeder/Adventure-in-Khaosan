@@ -25,11 +25,6 @@ public class PlayerDeathState : PlayerState {
     public override void Enter() {
         base.Enter();
 
-        player.SetVelocity(playerData.deathJumpSpeed, playerData.deathJumpDirectionOffAngle, -player.FacingDirection);
-        player.CheckFacingDirection(player.FacingDirection);
-
-        Debug.Log($"Entered Death State");
-
         isDead = true;
         isDeadOnGround = false;
         deathLock = false;
@@ -50,13 +45,13 @@ public class PlayerDeathState : PlayerState {
         lastBounceXSpeed = currentBounceXSpeed;
         lastBounceYSpeed = currentBounceYSpeed;
 
-        player.InteractorTrigger.enabled = false;
+        player.InteractorSystem.CanInteract = false;
 
-        // player.Anim.SetBool("deadSpin", true);
+        player.Anim.SetBool("deadSpin", true);
         player.Anim.SetBool("deadOnGround", false);
         player.Anim.SetBool("deadOnSlide", false);
         // player.Anim.SetBool("deadOnFall", false);
-        player.Anim.SetBool("deadOnFall", true);
+        player.Anim.SetBool("deadOnFall", false);
     }
 
     public override void Exit() {
@@ -65,7 +60,7 @@ public class PlayerDeathState : PlayerState {
         isDead = false;
         isDeadOnGround = false;
 
-        player.InteractorTrigger.enabled = true;
+        player.InteractorSystem.CanInteract = true;
 
         player.Anim.SetBool("deadSpin", false);
         player.Anim.SetBool("deadOnGround", false);
@@ -79,13 +74,14 @@ public class PlayerDeathState : PlayerState {
         if (isExitingState) return;
 
         if (isOnSolidGround) {
-            player.Anim.SetBool("deadOnFall", false);
+            player.Anim.SetBool("deadSpin", false);
             player.Anim.SetBool("deadOnSlide", true);
 
             if (player.CurrentVelocity.x == 0f) {
                 if (!groundLock) {
                     groundLock = true;
                     player.Anim.SetBool("deadOnGround", true);
+                    player.Anim.SetBool("deadOnSlide", false);
                     player.SetColliderParameters(player.MovementCollider, playerData.crouchColliderConfig);
                     player.SetColliderParameters(player.HitboxTrigger, playerData.crouchColliderConfig);
                     // player.KnockbackEnd(null, null);
@@ -93,15 +89,20 @@ public class PlayerDeathState : PlayerState {
             }
         }
         else {
-            player.Anim.SetBool("deadOnFall", true);
+            player.Anim.SetBool("deadSpin", true);
             player.Anim.SetBool("deadOnSlide", false);
 
             if (isTouchingWall && !hasBouncedOffWall) {
                 BounceOffWall();
             }
+
+            if (isTouchingCeiling && !hasBouncedOffCeiling) {
+                BounceOffCeiling();
+            }
         }
 
         if (hasBouncedOffWall) hasBouncedOffWall = false;
+        if (hasBouncedOffCeiling) hasBouncedOffCeiling = false;
 
         if (isDeadOnGround) {
             cumulatedDeathTime += Time.deltaTime;
@@ -174,6 +175,8 @@ public class PlayerDeathState : PlayerState {
 
     public override void PhysicsUpdate() {
         base.PhysicsUpdate();
+
+        Debug.DrawRay(player.MidPoint.position, player.Rb.velocity.normalized * 3f, Color.green);
 
         // if (isOnSolidGround && isOutOfBounces) {
         //     if (isTouchingWall) {
@@ -253,10 +256,19 @@ public class PlayerDeathState : PlayerState {
             if (bounceOffWall) {
                 Debug.Log("Bounced off Wall");
 
-                player.SetVelocityX(currentBounceXSpeed * player.FacingDirection * playerData.wallBounceFalloff);
+                player.SetVelocityX(player.CurrentVelocity.x * player.FacingDirection * playerData.wallBounceFalloff);
 
                 hasBouncedOffWall = true;
                 bounceOffWall = false;
+            }
+
+            if (bounceOffCeiling) {
+                Debug.Log("Bounced off Ceiling");
+
+                player.SetVelocityY(player.CurrentVelocity.y * -1);
+
+                hasBouncedOffCeiling = true;
+                bounceOffCeiling = false;
             }
             
             player.SetVelocityX(player.CurrentVelocity.x, playerData.airAcceleration, playerData.lerpVelocityInAir);

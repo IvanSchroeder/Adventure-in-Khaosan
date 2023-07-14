@@ -42,7 +42,7 @@ public class PlayerIdleState : PlayerGroundedState {
         //     coyoteTime = false;
         //     stateMachine.ChangeState(player.JumpState);
         // }
-        if (playerData.CanCrouch.Value && yInput == -1 && (!isTouchingLedge || !isTouchingWall))
+        if (playerData.CanCrouch.Value && yInput == -1)
             if (xInput == 0)
                 stateMachine.ChangeState(player.CrouchIdleState);
             else
@@ -54,8 +54,6 @@ public class PlayerIdleState : PlayerGroundedState {
                 else if ((playerData.autoWallGrab || (!playerData.autoWallGrab && grabInput)) && (/*(isOnPlatform && yInput != 0) ||*/ (isGrounded && yInput == 1)))
                     stateMachine.ChangeState(player.WallClimbState);
             }
-            else if ((isTouchingWall && !isTouchingLedge) || (!isTouchingWall && isTouchingLedge))
-                return;
             else
                 stateMachine.ChangeState(player.MoveState);
         }
@@ -72,7 +70,16 @@ public class PlayerIdleState : PlayerGroundedState {
     public override void PhysicsUpdate() {
         base.PhysicsUpdate();
 
-        player.SetVelocityX(0f, playerData.runDecceleration, playerData.lerpVelocity);
+        if (isTouchingWall || isTouchingLedge) {
+            player.SetVelocityX(0f);
+        }
+
+        if (playerData.enableFriction) {
+            player.SetVelocityX(0f, playerData.runDecceleration * playerData.frictionAmount, playerData.lerpVelocity);
+        }
+        else {
+            player.SetVelocityX(0f, playerData.runDecceleration, playerData.lerpVelocity);
+        }
         player.SetVelocityY(player.CurrentVelocity.y);
     }
 }

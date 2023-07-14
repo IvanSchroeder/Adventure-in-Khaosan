@@ -33,10 +33,10 @@ public class PlayerCrouchMoveState : PlayerGroundedState {
 
         if (isExitingState) return;
 
-        if ((xInput == 0 && player.CurrentVelocity.x == 0f) || (player.CurrentVelocity.x != 0f && isTouchingWall)) {
+        if (xInput == 0 && player.CurrentVelocity.x == 0f) {
             stateMachine.ChangeState(player.CrouchIdleState);
         }
-        else if (yInput != -1 && !isTouchingCeiling) {
+        else if (!crouchInputHold && !isTouchingCeiling) {
             player.SetColliderParameters(player.MovementCollider, playerData.standingColliderConfig);
             player.SetColliderParameters(player.HitboxTrigger, playerData.standingColliderConfig);
             stateMachine.ChangeState(player.MoveState);

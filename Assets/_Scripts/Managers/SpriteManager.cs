@@ -6,12 +6,15 @@ using System;
 using System.Linq;
 
 public class SpriteManager : MonoBehaviour {
-    [field: SerializeField] public Entity Entity { get; private set; }
+    [field: SerializeField] public Entity RelatedEntity { get; private set; }
     [field: SerializeField] public HealthSystem HealthSystem { get; private set; }
     [field: SerializeField] public IDamageable Damageable { get; private set; }
     [field: SerializeField] public IInteractable Interactable { get; private set; }
     [field: SerializeField] public InteractableSystem InteractableSystem { get; private set; }
     [field: SerializeField] public SpriteFlashConfiguration CurrentFlashConfiguration { get; private set; }
+    // [field: SerializeField] public SpriteFlashConfiguration DamageFlash { get; private set; }
+    // [field: SerializeField] public SpriteFlashConfiguration InvulnerabilityFlash { get; private set; }
+    // [field: SerializeField] public SpriteFlashConfiguration InteractedFlash { get; private set; }
 
     [field: SerializeField, ColorUsage(true, true)] public Color DefaultFlashColor { get; private set; } = Color.white;
     [field: SerializeField, ColorUsage(true, true)] public Color CurrentFlashColor { get; private set; } = Color.white;
@@ -43,7 +46,7 @@ public class SpriteManager : MonoBehaviour {
         if (HealthSystem.IsNotNull()) {
             this.HealthSystem.OnEntityDamaged += SetCurrentDamageableFlash;
             this.HealthSystem.OnEntityDeath += SetCurrentDamageableFlash;
-            this.HealthSystem.OnInvulnerabilityStart += SetCurrentDamageableFlash;
+            this.HealthSystem.OnInvulnerabilityStart += SetCurrentInvulnerabilityFlash;
             this.HealthSystem.OnInvulnerabilityEnd += DisableIsFlashing;
         }
 
@@ -58,7 +61,7 @@ public class SpriteManager : MonoBehaviour {
         if (HealthSystem.IsNotNull()) {
             this.HealthSystem.OnEntityDamaged -= SetCurrentDamageableFlash;
             this.HealthSystem.OnEntityDeath -= SetCurrentDamageableFlash;
-            this.HealthSystem.OnInvulnerabilityStart -= SetCurrentDamageableFlash;
+            this.HealthSystem.OnInvulnerabilityStart -= SetCurrentInvulnerabilityFlash;
             this.HealthSystem.OnInvulnerabilityEnd -= DisableIsFlashing;
         }
 
@@ -70,7 +73,7 @@ public class SpriteManager : MonoBehaviour {
     }
 
     private void Awake() {
-        if (Entity.IsNull() && this.HasComponentInHierarchy<Entity>()) Entity = this.GetComponentInHierarchy<Entity>();
+        if (RelatedEntity.IsNull() && this.HasComponentInHierarchy<Entity>()) RelatedEntity = this.GetComponentInHierarchy<Entity>();
         if (Damageable.IsNull()) Damageable = this.GetComponentInHierarchy<IDamageable>();
         if (Interactable.IsNull()) Interactable = this.GetComponentInHierarchy<IInteractable>();
 
@@ -84,11 +87,6 @@ public class SpriteManager : MonoBehaviour {
         if (spriteRenderer == null) spriteRenderer = this.GetComponentInHierarchy<SpriteRenderer>();
         _materials = new Material[1];
         _materials[0] = spriteRenderer.material;
-
-
-        // for (int i = 0; i < _spriteRenderers.Length; i++) {
-        //     _materials[i] = _spriteRenderers[i].material;
-        // }
     }
 
     private void Start() {
@@ -114,26 +112,30 @@ public class SpriteManager : MonoBehaviour {
         SetFlashColor(DefaultFlashColor);
         SetFlashAmount(0f);
         SetAlphaAmount(DefaultAlphaAmount);
-        // CurrentFlashConfiguration = null;
     }
 
     private void DisableIsFlashing(object sender, EventArgs args) {
         IsFlashing = false;
     }
 
-    public void SetCurrentDamageableFlash(object sender, OnEntityDamagedEventArgs eventArgs) {
-        if (eventArgs.CurrentFlash.IsNull()) return;
-
-        CurrentFlashConfiguration = eventArgs.CurrentFlash;
+    public void SetCurrentDamageableFlash(object sender, OnEntityDamagedEventArgs args) {
+        CurrentFlashConfiguration = HealthSystem.DamagedFlash;
         InitializeFlashConfiguration(CurrentFlashConfiguration);
 
         StartFlash(CurrentFlashConfiguration);
     }
 
-    public void SetCurrentInteractableFlash(object sender, OnEntityInteractedEventArgs eventArgs) {
-        if (eventArgs.CurrentFlash.IsNull() || !eventArgs.ShouldFlash) return;
+    public void SetCurrentInvulnerabilityFlash(object sender, OnEntityDamagedEventArgs args) {
+        CurrentFlashConfiguration = HealthSystem.InvulnerabilityFlash;
+        InitializeFlashConfiguration(CurrentFlashConfiguration);
 
-        CurrentFlashConfiguration = eventArgs.CurrentFlash;
+        StartFlash(CurrentFlashConfiguration);
+    }
+
+    public void SetCurrentInteractableFlash(object sender, OnEntityInteractedEventArgs args) {
+        if (!args.ShouldFlash) return;
+
+        CurrentFlashConfiguration = InteractableSystem.InteractedFlash;
         InitializeFlashConfiguration(CurrentFlashConfiguration);
 
         StartFlash(CurrentFlashConfiguration);

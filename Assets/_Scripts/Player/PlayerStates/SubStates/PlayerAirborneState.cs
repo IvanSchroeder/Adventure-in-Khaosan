@@ -18,7 +18,6 @@ public class PlayerAirborneState : PlayerState {
         }
 
         player.Rb.gravityScale = playerData.defaultGravityScale;
-        isAirborne = true;
 
         player.SetColliderParameters(player.MovementCollider, playerData.standingColliderConfig);
         player.SetColliderParameters(player.HitboxTrigger, playerData.standingColliderConfig);
@@ -31,7 +30,6 @@ public class PlayerAirborneState : PlayerState {
         hasTouchedWallBack = false;
         isTouchingWall = false;
         isTouchingBackWall = false;
-        isAirborne = false;
 
         player.Anim.SetBool("fastFall", false);
     }
@@ -48,28 +46,6 @@ public class PlayerAirborneState : PlayerState {
         CheckJumpMultiplier();
 
         player.CheckFacingDirection(xInput);
-
-        // if (isJumping || isAscending) {
-        //     bool hasChecked = false;
-        //     float velocityBeforeHit = player.CurrentVelocity.y;
-
-        //     if (isTouchingCeiling && !hasChecked) {
-        //         hasChecked = true;
-        //         Debug.Log($"Speed before hit: {velocityBeforeHit}");
-
-        //         bool correctCorner = player.CheckCornerCorrection();
-
-        //         if (correctCorner) {
-        //             correctCorner = false;
-        //             player.CorrectCorner(velocityBeforeHit);
-        //         }
-        //         else {
-        //             player.SetVelocityY(0f);
-        //         }
-
-        //         Debug.Log($"Speed after check: {player.CurrentVelocity.y}");
-        //     }
-        // }
 
         if (isFalling) {
             if (yInput >= 0) {
@@ -94,7 +70,7 @@ public class PlayerAirborneState : PlayerState {
         //     else
         //         stateMachine.ChangeState(player.CrouchMoveState);
         // }
-        if (playerData.CanWallJump.Value && jumpInput && (isTouchingWall || isTouchingBackWall || wallJumpCoyoteTime || hasTouchedWall) && yInput != -1) {
+        if (playerData.CanWallJump.Value && jumpInput && (isTouchingWall || wallJumpCoyoteTime || hasTouchedWall) && yInput != -1) {
             stateMachine.ChangeState(player.WallJumpState);
         }
         else if (playerData.CanJump.Value && jumpInput && player.JumpState.CanJump() && yInput != -1 && !isIgnoringPlatforms) {
@@ -149,6 +125,49 @@ public class PlayerAirborneState : PlayerState {
 
     public override void PhysicsUpdate() {
         base.PhysicsUpdate();
+
+        float yVelocityBeforeHit = player.CurrentVelocity.y;
+
+        if (isJumping || isAscending) {
+            bool hasCheckedHeadCorner = false;
+            if (player.CurrentVelocity.y != 0f) yVelocityBeforeHit = player.CurrentVelocity.y;
+
+            if (isTouchingCeiling && !hasCheckedHeadCorner) {
+                hasCheckedHeadCorner = true;
+
+                bool correctCorner = player.CheckCeilingCornerCorrection();
+
+                if (correctCorner) {
+                    correctCorner = false;
+                    player.CorrectHeadCorner(yVelocityBeforeHit);
+                }
+                else {
+                    player.SetVelocityY(0f);
+                }
+            }
+        }
+
+        float xVelocityBeforeHit = player.CurrentVelocity.x;
+
+        if (xInput != 0) {
+            bool hasCheckedFootCorner = false;
+
+            if (player.CurrentVelocity.x != 0f) xVelocityBeforeHit = player.CurrentVelocity.x;
+
+            if (!isTouchingLedge && isTouchingLedgeWithFoot && !hasCheckedFootCorner) {
+                hasCheckedFootCorner = true;
+
+                bool correctLedge = player.CheckFootLedgeCorrection();
+
+                if (correctLedge) {
+                    correctLedge = false;
+                    player.CorrectFootLedge(xVelocityBeforeHit);
+                }
+                else {
+                    player.SetVelocityX(0f);
+                }
+            }
+        }
         
         if (xInput == 0f)
             player.SetVelocityX(0f, playerData.airDecceleration, playerData.lerpVelocityInAir);
@@ -171,7 +190,7 @@ public class PlayerAirborneState : PlayerState {
     private void CheckJumpMultiplier() {
         if (!isJumping) return;
         
-        if (playerData.jumpInputStop) {
+        if (jumpInputStop) {
             player.SetVelocityY(player.CurrentVelocity.y * playerData.variableJumpHeightMultiplier);
             isJumping = false;
             player.InputHandler.UseJumpStopInput();

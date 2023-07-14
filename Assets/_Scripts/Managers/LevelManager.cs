@@ -7,9 +7,9 @@ using System.Linq;
 
 public class LevelManager : MonoBehaviour {
     public static LevelManager instance;
-    public Player PlayerInstance { get; private set; }
     public WorldMapManager WorldMapManagerInstance { get; private set; }
     public LevelStructure LevelStructure { get; private set; }
+    [field: SerializeField] public Player PlayerInstance { get; private set; }
 
     public List<BoolSO> EnabledAbilitiesList;
     public List<BoolSO> DisabledAbilitiesList;
@@ -173,7 +173,7 @@ public class LevelManager : MonoBehaviour {
         }
 
         PlayerInstance.transform.SetParent(null);
-        PlayerInstance.transform.position = startingCheckpoint.BasepointTransform.position;
+        PlayerInstance.transform.position = currentCheckpoint.BasepointTransform.position;
         // PlayerInstance.transform.position = startingCheckpoint.SpawnpointTransform.position;
 
         PlayerInstance.OnPlayerDeathEnd += RespawnPlayer;
@@ -182,6 +182,8 @@ public class LevelManager : MonoBehaviour {
         PlayerInstance.HealthSystem.HasInfiniteLives = currentLevel.enableInfiniteLives;
 
         OnPlayerSpawn?.Invoke();
+
+        Debug.Log($"Respawned player");
     }
 
     public void RespawnPlayer() {
@@ -255,14 +257,22 @@ public class LevelManager : MonoBehaviour {
     }
 
     public IEnumerator RespawnPlayerRoutine() {
-        PlayerInstance.PlayerSprite.enabled = false;
-        yield return new WaitForSeconds(playerRespawnTimer);
-        PlayerInstance.PlayerSprite.enabled = true;
-        PlayerInstance.transform.position = currentCheckpoint.BasepointTransform.position;
-        // PlayerInstance.transform.position = currentCheckpoint.SpawnpointTransform.position;
-        PlayerInstance.HealthSystem.InitializeHealth();
+        //PlayerInstance.PlayerSprite.enabled = false;
+        // yield return new WaitForSeconds(playerRespawnTimer);
+        //PlayerInstance.PlayerSprite.enabled = true;
+        // PlayerInstance.transform.position = currentCheckpoint.BasepointTransform.position;
+        // // PlayerInstance.transform.position = currentCheckpoint.SpawnpointTransform.position;
+        // PlayerInstance.HealthSystem.InitializeHealth();
+        // OnPlayerSpawn?.Invoke();
 
-        OnPlayerSpawn?.Invoke();
+        // PlayerInstance.PlayerSprite.enabled = false;
+        if (PlayerInstance.IsNotNull()) {
+            PlayerInstance.gameObject.Destroy();
+            Debug.Log($"Destroyed player");
+        }
+        yield return new WaitForSeconds(playerRespawnTimer);
+        SpawnPlayer();
+
         yield return null;
     }
 }

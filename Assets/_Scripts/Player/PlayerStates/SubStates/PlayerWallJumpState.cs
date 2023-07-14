@@ -5,7 +5,12 @@ using ExtensionMethods;
 
 public class PlayerWallJumpState : PlayerAbilityState {
     protected int wallJumpDirection;
-    protected Vector2 nextWallJumpDirectionVec;
+
+    protected float nextVelocity;
+    protected Vector2 nextAngle;
+    protected int nextDirection; 
+    protected float usedTime;
+    protected float elapsedJumpTime;
 
     public PlayerWallJumpState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
     }
@@ -13,39 +18,33 @@ public class PlayerWallJumpState : PlayerAbilityState {
     public override void Enter() {
         base.Enter();
 
-        isWallJumping = true;
         player.Rb.gravityScale = 0f;
+        elapsedJumpTime = 0f;
 
         player.InputHandler.UseJumpInput();
-        wallJumpDirection = -player.FacingDirection;
-        // player.SetVelocity(playerData.wallJumpSpeed, playerData.wallJumpDirectionOffAngle, wallJumpDirection);
-        player.SetVelocity(playerData.wallJumpSpeed, nextWallJumpDirectionVec, wallJumpDirection);
-        player.CheckFacingDirection(wallJumpDirection);
+
+        player.AirborneState.StopWallJumpCoyoteTime();
         player.JumpState.ResetAmountOfJumpsLeft();
         player.JumpState.DecreaseAmountOfJumpsLeft();
-        player.AirborneState.StopWallJumpCoyoteTime();
 
-        // default angle
-        nextWallJumpDirectionVec = playerData.wallJumpDirectionOffAngle;
+        isWallJumping = true;
+
+        RaycastHit2D wallHit = player.GetWallHit(nextDirection);
+
+        if (wallHit) wallJumpDirection = -nextDirection;
+        else wallJumpDirection = nextDirection;
+
+        player.SetVelocity(nextVelocity, nextAngle, wallJumpDirection, true);
+        player.CheckFacingDirection(wallJumpDirection);
     }
 
     public override void Exit() {
         base.Exit();
 
-        isWallJumping = false;
         player.Rb.gravityScale = playerData.defaultGravityScale;
-        
-        // player.CheckFacingDirection(xInput);
 
-        // if (xInput == player.FacingDirection) {
-        //     player.SetVelocityX(xInput * playerData.runSpeed);
-        // }
-        // else if (xInput == -player.FacingDirection) {
-        //     player.SetVelocityX(xInput * playerData.runSpeed, playerData.airAcceleration, playerData.lerpVelocityInAir);
-        // }
-        // else if (xInput == 0) {
-        //     player.SetVelocityX(0f, playerData.airDecceleration, playerData.lerpVelocityInAir);
-        // }
+        isWallJumping = false;
+        elapsedJumpTime = 0f;
     }
 
     public override void LogicUpdate() {
@@ -55,19 +54,22 @@ public class PlayerWallJumpState : PlayerAbilityState {
 
         CheckWallJumpMultiplier();
 
-        if (Time.time >= startTime + playerData.wallJumpTime)
+        elapsedJumpTime += Time.deltaTime;
+
+        if (elapsedJumpTime >= usedTime || isTouchingCeiling || isOnSolidGround)
             isAbilityDone = true;
     }
 
-    // public override void PhysicsUpdate() {
-    //     base.PhysicsUpdate();
-    // }
+    public override void PhysicsUpdate() {
+        base.PhysicsUpdate();
+    }
 
     private void CheckWallJumpMultiplier() {
         if (!isWallJumping) return;
 
         if (jumpInputStop) {
             player.InputHandler.UseJumpStopInput();
+            player.SetVelocityX(player.CurrentVelocity.x * playerData.variableJumpHeightMultiplier);
             player.SetVelocityY(player.CurrentVelocity.y * playerData.variableJumpHeightMultiplier);
             isWallJumping = false;
             isAbilityDone = true;
@@ -79,14 +81,13 @@ public class PlayerWallJumpState : PlayerAbilityState {
         }
     }
 
-    public void SetNextWallJumpDirection(Vector2 vector) {
-        nextWallJumpDirectionVec = vector;
-    }
+    public void WallJumpConfiguration(float velocity, Vector2 angle, int direction, float time) {
+        nextVelocity = velocity;
+        nextAngle = angle;
+        nextDirection = direction;
 
-    public void GetWallJumpDirection(bool isTouchingWall) {
-        if (isTouchingWall)
-            wallJumpDirection = -player.FacingDirection;
-        else
-            wallJumpDirection = player.FacingDirection;
+        usedTime = time;
+
+        Debug.Log($"Wall Jumped");
     }
 }

@@ -289,7 +289,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 0, y: 2}
   m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &3501560442075035344
@@ -425,7 +425,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54cd327a20f58594c885d38f90e2939f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Entity>k__BackingField: {fileID: 0}
+  <RelatedEntity>k__BackingField: {fileID: 0}
   <HealthSystem>k__BackingField: {fileID: 0}
   <InteractableSystem>k__BackingField: {fileID: 3950113998975318465}
   <CurrentFlashConfiguration>k__BackingField: {fileID: 11400000, guid: 5e6d9f4b629caba4293723bcc964e8b8, type: 2}
@@ -490,7 +490,7 @@ MonoBehaviour:
   <SignCanvas>k__BackingField: {fileID: 1207854489643463584}
   <TextOrigin>k__BackingField: {fileID: 7226298214773371348}
   <TextTarget>k__BackingField: {fileID: 7136224594106649052}
-  <TypewriterSystem>k__BackingField: {fileID: 0}
+  <TypewriterSystem>k__BackingField: {fileID: 2297845854984603649}
   <SignPanel>k__BackingField: {fileID: 5122788260580587040}
   <SignText>k__BackingField: {fileID: 3280843593238520412}
   <TextTransitionTime>k__BackingField: 3
@@ -569,16 +569,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a868f7bb924d62429ff37efc9e85fea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <InteractedFlash>k__BackingField: {fileID: 11400000, guid: 5e6d9f4b629caba4293723bcc964e8b8, type: 2}
+  <InteractedFlash>k__BackingField: {fileID: 11400000, guid: 41df279f16178fe4b909d5706d33a676, type: 2}
   <RequiresInput>k__BackingField: 0
-  <FlashesOnInteract>k__BackingField: 0
+  <FlashesOnInteract>k__BackingField: 1
   <FlashesOnInteractStop>k__BackingField: 0
   <OneTimeIntectarion>k__BackingField: 0
   <IsInteractable>k__BackingField: 1
   <WasInteracted>k__BackingField: 0
   <IsToggable>k__BackingField: 0
   <HasDelay>k__BackingField: 1
-  <InteractionStopDelay>k__BackingField: 0.3
+  <InteractionStopDelay>k__BackingField: 0.5
 --- !u!61 &3950113998975318466
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -592,7 +592,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0, y: 1}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.25, y: 0}
@@ -603,7 +603,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 2, y: 2}
+  m_Size: {x: 4, y: 4}
   m_EdgeRadius: 0
 --- !u!1 &7407131779829420918
 GameObject:
@@ -641,7 +641,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1428607475630876929

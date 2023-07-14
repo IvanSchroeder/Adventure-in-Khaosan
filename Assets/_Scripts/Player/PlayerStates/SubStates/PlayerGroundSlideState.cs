@@ -48,14 +48,14 @@ public class PlayerGroundSlideState : PlayerGroundedState {
         }
 
         if (stopSlide) {
-            if (isTouchingCeiling || yInput == -1 || !player.CheckForSpace(player.MidPoint.position) || player.CheckHazards(player.MidPoint.position)) {
+            if (isTouchingCeiling || crouchInputHold || !player.CheckForSpace(player.GroundPoint.position.ToVector2() + Vector2.up * 0.015f, Vector2.up) || player.CheckHazards(player.MidPoint.position)) {
                 player.SetColliderParameters(player.MovementCollider, playerData.crouchColliderConfig);
                 player.SetColliderParameters(player.HitboxTrigger, playerData.crouchColliderConfig);
 
-                if ((player.CurrentVelocity.x.AbsoluteValue() == 0f || isTouchingWall) && xInput == 0f /*|| player.FacingDirection == -player.CurrentVelocity.x.Sign()*/) {
+                if ((player.CurrentVelocity.x.AbsoluteValue() == 0f || isTouchingWall) && xInput == 0f || player.FacingDirection == -player.CurrentVelocity.x.Sign()) {
                     stateMachine.ChangeState(player.CrouchIdleState);
                 }
-                else if (player.CurrentVelocity.x.AbsoluteValue() == playerData.crouchWalkSpeed && xInput == player.FacingDirection) {
+                else if (xInput == player.FacingDirection && player.CurrentVelocity.x.AbsoluteValue() <= playerData.crouchWalkSpeed) {
                     stateMachine.ChangeState(player.CrouchMoveState);
                 }
             }
@@ -63,11 +63,11 @@ public class PlayerGroundSlideState : PlayerGroundedState {
                 player.SetColliderParameters(player.MovementCollider, playerData.standingColliderConfig);
                 // player.SetColliderParameters(player.HitboxTrigger, playerData.standingColliderConfig);
 
-                if (xInput == player.FacingDirection && player.CurrentVelocity.x.AbsoluteValue() >= playerData.runSpeed) {
-                    stateMachine.ChangeState(player.MoveState);
-                }
-                else if (player.CurrentVelocity.x.AbsoluteValue() == 0f && xInput == 0) {
+                if (player.CurrentVelocity.x.AbsoluteValue() == 0f && xInput == 0 || player.FacingDirection == -player.CurrentVelocity.x.Sign()) {
                     stateMachine.ChangeState(player.IdleState);
+                }
+                else if (xInput == player.FacingDirection && player.CurrentVelocity.x.AbsoluteValue() <= playerData.runSpeed) {
+                    stateMachine.ChangeState(player.MoveState);
                 }
             }
 
@@ -99,7 +99,9 @@ public class PlayerGroundSlideState : PlayerGroundedState {
 
         if (isExitingState) return;
 
-        if (isTouchingWall) player.SetVelocityX(0f);
+        if (isTouchingWall) {
+            player.SetVelocityX(0f);
+        }
 
         if (stopSlide) {
             if (yInput == -1 && (xInput == 0 && player.CurrentVelocity.x.AbsoluteValue() >= 0f))

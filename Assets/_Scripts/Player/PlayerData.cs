@@ -3,45 +3,6 @@ using ExtensionMethods;
 
 [CreateAssetMenu(fileName = "NewPlayerData", menuName = "Assets/Data/Entity/Player")]
 public class PlayerData : EntityData {
-    // [Header("--- Entity Info ---")]
-    // [Space(5)]
-
-    // [Header("Values")]
-
-    // public Vector2 currentVelocity;
-    // public ColliderConfiguration currentColliderConfiguration;
-    // public Direction facingDirection = Direction.Right;
-    // // public int currentLives;
-    // // public float currentHealth;
-    // // public int currentHearts;
-    // public string currentLayer;
-    // public float currentGravityScale;
-    // public float currentFallSpeed;
-    // public int amountOfJumpsLeft;
-    // public float slopeDownAngle;
-    // public float slopeSideAngle;
-    // public float cumulatedKnockbackTime;
-    
-    [Header("--- Inputs Info ---")]
-    [Space(5)]
-    public int xInput;
-    public int lastXInput;
-    public int yInput;
-    public bool jumpInput;
-    public bool jumpInputStop;
-    public bool jumpInputHold;
-    public bool interactInput;
-    public bool interactInputHold;
-    public bool interactInputStop;
-    public bool crouchInput;
-    public bool crouchInputHold;
-    public bool crouchInputStop;
-    public bool unplatformInput;
-    public bool attackInput;
-    public bool attackInputHold;
-    public bool attackInputStop;
-    public bool grabInput;
-
     [Space(20)]
 
     [Header("--- States Info ---")]
@@ -51,6 +12,7 @@ public class PlayerData : EntityData {
     public bool isOnPlatform;
     public bool isIgnoringPlatforms;
     public bool isOnSlope;
+    public bool isAirborne;
     public bool isIdle;
     public bool isMoving;
     public bool isRunning;
@@ -61,7 +23,6 @@ public class PlayerData : EntityData {
     public bool isCrouching;
     public bool isGroundSliding;
     public bool stopSlide;
-    public bool isAirborne;
     public bool isJumping;
     public bool isAscending;
     public bool isFalling;
@@ -134,10 +95,12 @@ public class PlayerData : EntityData {
     [Space(5)]
     [Header("General")]
     [Space(3)]
-    // public bool enableFriction = true;
     public bool stickToGround;
+    public bool correctLedgeOnGround;
     public bool lerpVelocity = false;
     public bool conserveMomentum = false;
+    public bool enableFriction = true;
+    public float frictionAmount = 1f;
     [Range(0f, 30f)] public float maxHorizontalSpeed;
     [Space(3)]
     [Header("Run")]
@@ -179,7 +142,7 @@ public class PlayerData : EntityData {
     [Space(3)]
     [Range(0, 100)] public int deathSlideDecceleration;
     [Range(0f, 50f)] public float deathJumpSpeed;
-    [Range(-90f, 90f)] public float deathJumpAngle;
+    [Range(0f, 360f)] public float deathJumpAngle;
     public Vector2 deathJumpDirectionOffAngle;
     public int maxBouncesOffGround = 3;
     [Range(0f, 1f)] public float wallBounceFalloff = 0.5f;
@@ -214,7 +177,6 @@ public class PlayerData : EntityData {
     public int amountOfJumps = 1;
     public float jumpHeight;
     [Range(0f, 1f)] public float variableJumpHeightMultiplier = 0.5f;
-    public float cornerCorrectionRepositionOffset = 0.015f;
     public float maxAscendantSpeed;
 
     [Space(5)]
@@ -251,6 +213,7 @@ public class PlayerData : EntityData {
     public float wallJumpSpeed = 15f;
     public float wallHopSpeed = 10f;
     [Range(0f, 0.5f)] public float wallJumpTime = 0.4f;
+    [Range(0f, 0.25f)] public float wallHopTime = 0.1f;
     [Range(-90f, 90f)] public float wallJumpAngle;
     [Range(-90f, 90f)] public float wallHopAngle;
     public Vector2 wallJumpDirectionOffAngle;
@@ -276,6 +239,12 @@ public class PlayerData : EntityData {
     public float groundCheckDistance;
     public float slopeCheckDistance;
 
+    public Vector2 ledgeInnerCheckOffset;
+    public Vector2 ledgeEdgeCheckOffset;
+    public float ledgeFootCheckDistance;
+    public float groundUpCheckDistance;
+    public float ledgeCorrectionRepositionOffset = 0.015f;
+
     [Space(5)]
     [Header("Walls")]
     [Space(3)]
@@ -295,6 +264,7 @@ public class PlayerData : EntityData {
     public Vector2 cornerEdgeCheckOffset;
     public float cornerCheckDistance;
     public float topCheckDistance;
+    public float cornerCorrectionRepositionOffset = 0.015f;
 
     [Space(5)]
     [Header("Layers")]
@@ -304,6 +274,12 @@ public class PlayerData : EntityData {
     public LayerMask wallLayer;
     public LayerMask platformLayer;
     public LayerMask hazardsLayer;
+
+    public void OnValidate() {
+        wallJumpDirectionOffAngle = wallJumpAngle.AngleFloatToVector2();
+        wallHopDirectionOffAngle = wallHopAngle.AngleFloatToVector2();
+        deathJumpDirectionOffAngle = deathJumpAngle.AngleFloatToVector2();
+    }
 
     public override void OnEnable() {
         Init();
@@ -319,75 +295,75 @@ public class PlayerData : EntityData {
         currentLayer = "Player";
         currentFallSpeed = defaultFallSpeed;
         currentGravityScale = defaultGravityScale;
-        cumulatedGroundSlideTime = 0f;
-        cumulatedGroundSlideCooldown = groundSlideDelay;
-        cumulatedKnockbackTime = 0f;
-        cumulatedWallJumpCoyoteTime = 0f;
+        // cumulatedGroundSlideTime = 0f;
+        // cumulatedGroundSlideCooldown = groundSlideDelay;
+        // cumulatedKnockbackTime = 0f;
+        // cumulatedWallJumpCoyoteTime = 0f;
         amountOfJumpsLeft = amountOfJumps;
+
+        // xInput = 0;
+        // lastXInput = 0;
+        // yInput = 0;
+        // jumpInput = false;
+        // jumpInputStop = false;
+        // jumpInputHold = false;
+        // attackInput = false;
+        // attackInputHold = false;
+        // attackInputStop = false;
+        // interactInput = false;
+        // interactInputHold = false;
+        // interactInputStop = false;
+        // crouchInput = false;
+        // crouchInputHold = false;
+        // crouchInputStop = false;
+        // unplatformInput = false;
+        // grabInput = false;
+
+        // isGrounded = false;
+        // isOnSolidGround = false;
+        // isOnPlatform = false;
+        // isIgnoringPlatforms = false;
+        // isOnSlope = false;
+        // isIdle = true;
+        // isMoving = false;
+        // isRunning = false;
+        // isRunningAtMaxSpeed = false;
+        // isChangingDirections = false;
+        // isSprinting = false;
+        // isSprintingAtMaxSpeed = false;
+        // isCrouching = false;
+        // isGroundSliding = false;
+        // stopSlide = false;
+        // isAirborne = false;
+        // isJumping = false;
+        // isAscending = false;
+        // isFalling = false;
+        // isFastFalling = false;
+        // isTouchingCeiling = false;
+        // isTouchingWall = false;
+        // isTouchingBackWall = false;
+        // hasTouchedWall = false;
+        // hasTouchedWallBack = false;
+        // isTouchingLedge = false;
+        // isWallSliding = false;
+        // isWallGrabing = false;
+        // isWallClimbing = false;
+        // isWallJumping = false;
+        // isHanging = false;
+        // isClimbing = false;
+        // isDamaged = false;
+        // isDead = false;
+        // isDeadOnGround = false;
+        // isInvulnerable = false;
+        // isAnimationFinished = false;
+        // isAbilityDone = false;
+        // isExitingState = false;
+        // hasCoyoteTime = false;
+        // hasWallJumpCoyoteTime = false;
+        // hasGroundSlideTime = false;
+
         maxRunSpeedThreshold = Mathf.Lerp(0f, runSpeed, maxRunSpeedThresholdMult);
         maxSprintSpeedThreshold = Mathf.Lerp(runSpeed, sprintSpeed, maxSprintSpeedThresholdMult);
-
-        xInput = 0;
-        lastXInput = 0;
-        yInput = 0;
-        jumpInput = false;
-        jumpInputStop = false;
-        jumpInputHold = false;
-        attackInput = false;
-        attackInputHold = false;
-        attackInputStop = false;
-        interactInput = false;
-        interactInputHold = false;
-        interactInputStop = false;
-        crouchInput = false;
-        crouchInputHold = false;
-        crouchInputStop = false;
-        unplatformInput = false;
-        grabInput = false;
-
-        isGrounded = false;
-        isOnSolidGround = false;
-        isOnPlatform = false;
-        isIgnoringPlatforms = false;
-        isOnSlope = false;
-        isIdle = true;
-        isMoving = false;
-        isRunning = false;
-        isRunningAtMaxSpeed = false;
-        isChangingDirections = false;
-        isSprinting = false;
-        isSprintingAtMaxSpeed = false;
-        isCrouching = false;
-        isGroundSliding = false;
-        stopSlide = false;
-        isAirborne = false;
-        isJumping = false;
-        isAscending = false;
-        isFalling = false;
-        isFastFalling = false;
-        isTouchingCeiling = false;
-        isTouchingWall = false;
-        isTouchingBackWall = false;
-        hasTouchedWall = false;
-        hasTouchedWallBack = false;
-        isTouchingLedge = false;
-        isWallSliding = false;
-        isWallGrabing = false;
-        isWallClimbing = false;
-        isWallJumping = false;
-        isHanging = false;
-        isClimbing = false;
-        isDamaged = false;
-        isDead = false;
-        isDeadOnGround = false;
-        isInvulnerable = false;
-        isAnimationFinished = false;
-        isAbilityDone = false;
-        isExitingState = false;
-        hasCoyoteTime = false;
-        hasWallJumpCoyoteTime = false;
-        hasGroundSlideTime = false;
-
         wallJumpDirectionOffAngle = wallJumpAngle.AngleFloatToVector2();
         wallHopDirectionOffAngle = wallHopAngle.AngleFloatToVector2();
         deathJumpDirectionOffAngle = deathJumpAngle.AngleFloatToVector2();

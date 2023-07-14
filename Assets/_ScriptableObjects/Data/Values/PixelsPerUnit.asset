@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 634a9ec4d4aa8c848b9ab492ce4580d2, type: 3}
   m_Name: PixelsPerUnit
   m_EditorClassIdentifier: 
-  _value: 8
+  _value: 1
   _defaultValue: 8
   resetsOnEnable: 0
   resetsOnDisable: 0

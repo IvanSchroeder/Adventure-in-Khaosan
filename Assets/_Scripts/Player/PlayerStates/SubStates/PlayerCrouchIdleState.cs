@@ -40,22 +40,22 @@ public class PlayerCrouchIdleState : PlayerGroundedState {
         if (xInput != 0) {
             player.CheckFacingDirection(xInput);
             
-            if(playerData.CanMove.Value && !isTouchingWall)
+            if(playerData.CanMove.Value)
                 stateMachine.ChangeState(player.CrouchMoveState);
         }
-        else if (yInput != -1 && !isTouchingCeiling) {
+        else if (!crouchInputHold && !isTouchingCeiling) {
             player.SetColliderParameters(player.MovementCollider, playerData.standingColliderConfig);
             player.SetColliderParameters(player.HitboxTrigger, playerData.standingColliderConfig);
             stateMachine.ChangeState(player.IdleState);
         }
-        else if (isTouchingCeiling) {
-            if (yInput == -1) {
-                player.CameraTarget.SetTargetPosition(Vector3.down, 3f, true);
-            }
-            else if (yInput == 0f) {
-                player.CameraTarget.SetTargetPosition(Vector3.zero, 0f, true);
-            }
-        }
+        // else if (isTouchingCeiling) {
+        //     if (yInput == -1) {
+        //         player.CameraTarget.SetTargetPosition(Vector3.down, 3f, true);
+        //     }
+        //     else if (yInput == 0f) {
+        //         player.CameraTarget.SetTargetPosition(Vector3.zero, 0f, true);
+        //     }
+        // }
     }
 
     public override void PhysicsUpdate() {

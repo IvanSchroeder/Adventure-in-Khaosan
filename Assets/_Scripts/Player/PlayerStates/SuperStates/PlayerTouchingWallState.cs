@@ -67,12 +67,16 @@ public class PlayerTouchingWallState : PlayerState {
             // }
 
             if ((isWallSliding && yInput == 0) || (isWallGrabing) || (isWallClimbing && yInput != 1)) {
-                player.WallJumpState.SetNextWallJumpDirection(playerData.wallJumpDirectionOffAngle * Vector2.right);
+                player.WallJumpState.WallJumpConfiguration(playerData.wallJumpSpeed, playerData.wallJumpDirectionOffAngle * Vector2.right, player.FacingDirection, playerData.wallJumpTime);
             }
             else {
-                player.WallJumpState.SetNextWallJumpDirection(playerData.wallJumpDirectionOffAngle);
+                player.WallJumpState.WallJumpConfiguration(playerData.wallJumpSpeed, playerData.wallJumpDirectionOffAngle, player.FacingDirection, playerData.wallJumpTime);
             }
 
+            stateMachine.ChangeState(player.WallJumpState);
+        }
+        else if (xInput == -player.FacingDirection && !isWallJumping) {
+            player.WallJumpState.WallJumpConfiguration(playerData.wallHopSpeed, playerData.wallHopDirectionOffAngle, player.FacingDirection, playerData.wallHopTime);
             stateMachine.ChangeState(player.WallJumpState);
         }
         else if (!isTouchingWall) {
@@ -82,14 +86,10 @@ public class PlayerTouchingWallState : PlayerState {
 
     public override void PhysicsUpdate() {
         base.PhysicsUpdate();
-        
-        wallHit = Physics2D.Raycast((Vector2)player.GroundPoint.position + (Vector2.up * playerData.wallCheckOffset.y), Vector2.right * player.FacingDirection, playerData.wallCheckDistance * 1.5f, playerData.wallLayer);
-        player.wallHitPos = wallHit.point;
-    }
 
-    public void WallHop(float velocity, Vector2 angle, int direction) {
-        player.SetVelocity(velocity, angle, direction);
-        player.CheckFacingDirection(xInput);
-        stateMachine.ChangeState(player.AirborneState);
+        player.SetVelocityX(0f);
+        
+        wallHit = player.GetWallHit(player.FacingDirection);
+        if (wallHit) player.wallHitPos = wallHit.point;
     }
 }

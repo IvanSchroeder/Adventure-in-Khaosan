@@ -13,7 +13,7 @@ public class HealthSystem : MonoBehaviour {
     [field: SerializeField] public LayerMask DamagedBy { get; set; }
     [field: SerializeField] public HealthType HealthType { get; set; }
     [field: SerializeField] public SpriteFlashConfiguration DamagedFlash { get; set; }
-    [field: SerializeField] public SpriteFlashConfiguration InvulnerableFlash { get; set; }
+    [field: SerializeField] public SpriteFlashConfiguration InvulnerabilityFlash { get; set; }
     [field: SerializeField] public bool IsRespawneable { get; set; }
     [field: SerializeField] public bool CanRespawn { get; set; }
     [field: SerializeField] public bool HasInfiniteLives { get; set; }
@@ -92,6 +92,7 @@ public class HealthSystem : MonoBehaviour {
         if (IsInvulnerable || IsDead || !IsDamagedBy(entityDamagedEventArgs.DamageDealerSource.DamageDealerLayer)) return;
 
         IsInvulnerable = true;
+        HitboxTrigger.enabled = false;
 
         switch (HealthType) {
             case HealthType.Numerical:
@@ -119,10 +120,10 @@ public class HealthSystem : MonoBehaviour {
 
         if(IsDead) {
             ReduceLives(entityDamagedEventArgs);
-            OnEntityDeath?.Invoke(this, entityDamagedEventArgs);
+            OnEntityDeath?.Invoke(sender, entityDamagedEventArgs);
         }
         else {
-            OnEntityDamaged?.Invoke(this, entityDamagedEventArgs);
+            OnEntityDamaged?.Invoke(sender, entityDamagedEventArgs);
         }
     }
 
@@ -140,25 +141,23 @@ public class HealthSystem : MonoBehaviour {
         EntityData.currentLives = CurrentLives;
     }
 
-    public void Invulnerable(object sender, OnEntityDamagedEventArgs entityArgs) {
-        IsInvulnerable = true;
-        HitboxTrigger.enabled = false;
-        OnInvulnerabilityStart?.Invoke(this, entityArgs);
+    // public void SetInvulnerability(object sender, OnEntityDamagedEventArgs entityDamagedEventArgs) {
+    //     entityDamagedEventArgs.CurrentFlash = EntityData.invulnerabilityFlash;
+    //     invulnerabilityCoroutine = StartCoroutine(InvulnerabilityFramesRoutine(entityDamagedEventArgs));
+    // }
+
+    public void SetInvulnerability() {
+        invulnerabilityCoroutine = StartCoroutine(InvulnerabilityFramesRoutine());
     }
 
-    public void SetInvulnerability(object sender, OnEntityDamagedEventArgs entityDamagedEventArgs) {
-        invulnerabilityCoroutine = StartCoroutine(InvulnerabilityFramesRoutine(entityDamagedEventArgs));
-    }
-
-    private IEnumerator InvulnerabilityFramesRoutine(OnEntityDamagedEventArgs entityDamagedEventArgs) {
-        IsInvulnerable = true;
-        HitboxTrigger.enabled = false;
-        entityDamagedEventArgs.CurrentFlash = EntityData.invulnerabilityFlash;
-        OnInvulnerabilityStart?.Invoke(this, entityDamagedEventArgs);
+    private IEnumerator InvulnerabilityFramesRoutine() {
+        // IsInvulnerable = true;
+        // HitboxTrigger.enabled = false;
+        OnInvulnerabilityStart?.Invoke(null, null);
         yield return invulnerabilityDelay;
         IsInvulnerable = false;
         HitboxTrigger.enabled = true;
-        OnInvulnerabilityEnd?.Invoke(this, entityDamagedEventArgs);
+        OnInvulnerabilityEnd?.Invoke(this, null);
         yield return null;
     }
 }

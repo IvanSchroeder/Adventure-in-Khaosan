@@ -15,22 +15,22 @@ MonoBehaviour:
   levelName: Tutorial
   levelID: 0
   levelNumber: 1
-  worldMap: {fileID: 2282873368466760177, guid: 42b5a36a20eaca74d97b06ddb364d565, type: 3}
+  worldMap: {fileID: 7912036136065168777, guid: 2b959bcdb39ec704da212c0982832fe9, type: 3}
   enableInfiniteLives: 1
   AbilitiesToEnableList:
   - {fileID: 11400000, guid: 9d07fb32c4a7fa94b8988ef3f3d8cb02, type: 2}
-  AbilitiesToDisableList:
-  - {fileID: 11400000, guid: 72685af96d158444f9993153f7b7e2ff, type: 2}
+  - {fileID: 11400000, guid: cb9a5bcc8c2680b4598db308d8495103, type: 2}
   - {fileID: 11400000, guid: 960913a60fb85fc47bde7285a4816a84, type: 2}
   - {fileID: 11400000, guid: 28b3fb9cda5cb1949a0562099e411ecb, type: 2}
-  - {fileID: 11400000, guid: bb1c808d7efb5e442bee5079cb65936f, type: 2}
-  - {fileID: 11400000, guid: 23c36e8ca242fd94c86dd67dad05beb0, type: 2}
-  - {fileID: 11400000, guid: fe90c649b2c0252438e67dbbec7f4861, type: 2}
-  - {fileID: 11400000, guid: b66cd3fd886b96549abe71c8e3558784, type: 2}
+  - {fileID: 11400000, guid: 72685af96d158444f9993153f7b7e2ff, type: 2}
   - {fileID: 11400000, guid: 5eaa47b95ac681140af2ccf86a46582d, type: 2}
+  - {fileID: 11400000, guid: b66cd3fd886b96549abe71c8e3558784, type: 2}
   - {fileID: 11400000, guid: 5f70c527ff1248b4f9729650344f64ce, type: 2}
   - {fileID: 11400000, guid: 4dd8bd050ab8bff489d809d0a878d4b3, type: 2}
-  - {fileID: 11400000, guid: cb9a5bcc8c2680b4598db308d8495103, type: 2}
+  - {fileID: 11400000, guid: 23c36e8ca242fd94c86dd67dad05beb0, type: 2}
+  - {fileID: 11400000, guid: fe90c649b2c0252438e67dbbec7f4861, type: 2}
+  - {fileID: 11400000, guid: bb1c808d7efb5e442bee5079cb65936f, type: 2}
+  AbilitiesToDisableList: []
   isUnlocked: 1
   collectedAllCoins: 0
   collectedAllDishes: 0

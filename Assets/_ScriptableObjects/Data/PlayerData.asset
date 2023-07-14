@@ -17,56 +17,36 @@ MonoBehaviour:
   interactedFlash: {fileID: 11400000, guid: fc38e4012282de94bae91f56827ca71a, type: 2}
   currentVelocity: {x: 0, y: 0}
   currentColliderConfiguration:
-    <Offset>k__BackingField: {x: 0, y: 0.375}
-    <Size>k__BackingField: {x: 1, y: 0.75}
+    <Offset>k__BackingField: {x: 0, y: 0.75}
+    <Size>k__BackingField: {x: 1, y: 1.5}
   facingDirection: 1
   currentLives: 3
   currentHealth: 0
-  currentHearts: 0
-  currentLayer: IgnorePlatforms
+  currentHearts: 1
+  currentLayer: Player
   currentGravityScale: 3
   currentFallSpeed: 20
   amountOfJumpsLeft: 1
   slopeDownAngle: 0
   slopeSideAngle: 0
-  cumulatedWallJumpCoyoteTime: 0
-  cumulatedKnockbackTime: 0
-  cumulatedGroundSlideTime: 0
-  cumulatedGroundSlideCooldown: 0.5
   damagedBy:
     serializedVersion: 2
     m_Bits: 4352
   healthType: 1
   maxLives: 3
-  maxHearts: 1
+  maxHearts: 3
   maxHealth: 100
   invulnerabilitySeconds: 2
   minKnockbackTime: 0.5
   maxKnockbackTime: 2
   deadOnGroundTime: 1
-  xInput: 0
-  lastXInput: -1
-  yInput: 0
-  jumpInput: 0
-  jumpInputStop: 0
-  jumpInputHold: 0
-  interactInput: 0
-  interactInputHold: 0
-  interactInputStop: 0
-  crouchInput: 0
-  crouchInputHold: 0
-  crouchInputStop: 0
-  unplatformInput: 0
-  attackInput: 0
-  attackInputHold: 0
-  attackInputStop: 0
-  grabInput: 0
   isGrounded: 1
   isOnSolidGround: 1
   isOnPlatform: 0
-  isIgnoringPlatforms: 1
+  isIgnoringPlatforms: 0
   isOnSlope: 0
-  isIdle: 0
+  isAirborne: 0
+  isIdle: 1
   isMoving: 0
   isRunning: 0
   isRunningAtMaxSpeed: 0
@@ -76,7 +56,6 @@ MonoBehaviour:
   isCrouching: 0
   isGroundSliding: 0
   stopSlide: 0
-  isAirborne: 0
   isJumping: 0
   isAscending: 0
   isFalling: 0
@@ -94,11 +73,11 @@ MonoBehaviour:
   isHanging: 0
   isClimbing: 0
   isDamaged: 0
-  isDead: 1
+  isDead: 0
   isDeadOnGround: 0
   isInvulnerable: 0
   isAnimationFinished: 0
-  isAbilityDone: 1
+  isAbilityDone: 0
   isExitingState: 0
   hasCoyoteTime: 0
   hasWallJumpCoyoteTime: 0
@@ -116,8 +95,11 @@ MonoBehaviour:
   CanLedgeClimb: {fileID: 11400000, guid: 5eaa47b95ac681140af2ccf86a46582d, type: 2}
   CanAttack: {fileID: 11400000, guid: cb9a5bcc8c2680b4598db308d8495103, type: 2}
   stickToGround: 0
+  correctLedgeOnGround: 1
   lerpVelocity: 1
   conserveMomentum: 1
+  enableFriction: 1
+  frictionAmount: 1
   maxHorizontalSpeed: 30
   runSpeed: 10
   maxRunSpeedThresholdMult: 1
@@ -135,6 +117,7 @@ MonoBehaviour:
   crouchWalkSpeed: 5
   crouchAcceleration: 30
   crouchDecceleration: 75
+  standupDelay: 0.3
   groundSlideDuration: 0.5
   groundSlideMaxDuration: 2
   groundSlideDelay: 0.5
@@ -142,9 +125,9 @@ MonoBehaviour:
   groundSlideAcceleration: 80
   groundSlideDecceleration: 50
   deathSlideDecceleration: 20
-  deathJumpSpeed: 50
-  deathJumpAngle: 45
-  deathJumpDirectionOffAngle: {x: 0.70710677, y: 0.70710677}
+  deathJumpSpeed: 5.7
+  deathJumpAngle: 90
+  deathJumpDirectionOffAngle: {x: -0.00000004371139, y: 1}
   maxBouncesOffGround: 3
   wallBounceFalloff: 0.9
   groundBounceXFalloff: 0.9
@@ -171,7 +154,6 @@ MonoBehaviour:
   amountOfJumps: 1
   jumpHeight: 20
   variableJumpHeightMultiplier: 0
-  cornerCorrectionRepositionOffset: 1
   maxAscendantSpeed: 50
   defaultFallSpeed: 20
   fastFallSpeed: 35
@@ -187,33 +169,40 @@ MonoBehaviour:
   autoWallSlide: 1
   wallSlideSpeed: 6
   wallClimbSpeed: 6
-  fastWallSlideSpeed: 10
+  fastWallSlideSpeed: 12
   lerpWallVelocity: 1
-  wallSlideAcceleration: 40
-  wallGrabAcceleration: 50
+  wallSlideAcceleration: 60
+  wallGrabAcceleration: 70
   wallClimbAcceleration: 60
   wallJumpSpeed: 15
   wallHopSpeed: 10
   wallJumpTime: 0.25
-  wallJumpAngle: 40
-  wallHopAngle: 10
-  wallJumpDirectionOffAngle: {x: 0.76604444, y: 0.6427876}
-  wallHopDirectionOffAngle: {x: 0.9848077, y: 0.17364818}
+  wallHopTime: 0.1
+  wallJumpAngle: 45
+  wallHopAngle: 0
+  wallJumpDirectionOffAngle: {x: 0.70710677, y: 0.70710677}
+  wallHopDirectionOffAngle: {x: 1, y: 0}
   startOffset: {x: 0.63, y: 0}
   stopOffset: {x: 0.5, y: 1}
   groundCheckOffset: {x: 0.475, y: 0.1}
   groundCheckDistance: 0.4
   slopeCheckDistance: 1.13
+  ledgeInnerCheckOffset: {x: 0, y: 1.15}
+  ledgeEdgeCheckOffset: {x: 0, y: 0.03}
+  ledgeFootCheckDistance: 1
+  groundUpCheckDistance: 1.3
+  ledgeCorrectionRepositionOffset: 0.015
   wallCheckOffset: {x: 0, y: 0.9}
-  wallCheckDistance: 0.8
+  wallCheckDistance: 0.55
   ledgeCheckOffset: {x: 0, y: 1.1}
-  ledgeCheckDistance: 0.8
+  ledgeCheckDistance: 0.55
   ceilingCheckOffset: {x: 0.475, y: 0.1}
   ceilingCheckDistance: 0.4
-  cornerInnerCheckOffset: {x: 0.125, y: 0}
+  cornerInnerCheckOffset: {x: -0.2, y: 0}
   cornerEdgeCheckOffset: {x: 0.5, y: 0}
   cornerCheckDistance: 1
   topCheckDistance: 1.3
+  cornerCorrectionRepositionOffset: 0.1
   groundLayer:
     serializedVersion: 2
     m_Bits: 192
@@ -226,3 +215,6 @@ MonoBehaviour:
   platformLayer:
     serializedVersion: 2
     m_Bits: 128
+  hazardsLayer:
+    serializedVersion: 2
+    m_Bits: 256

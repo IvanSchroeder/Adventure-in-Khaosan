@@ -52,22 +52,11 @@ public class Sign : MonoBehaviour, IInteractable {
 
         SignPanel.transform.position = TextOrigin.position;
         SignPanel.color = SignPanel.color.SetA(0f);
-        // SignPanel.enabled = false;
 
-        // SignText.transform.position = TextOrigin.position;
         SignText.color = SignText.color.SetA(0f);
-        // SignText.enabled = false;
 
         isActive = false;
-
-        // index = 0;
-        // SignText.text = string.Empty;
-        // StartDialogue();
     }
-
-    // void StartDialogue() {
-    //     StartCoroutine(TypeLineRoutine());
-    // }
 
     public void EnableSign(object sender, OnEntityInteractedEventArgs entityInteracted) {
         if (textEnablingCoroutine != null) {
@@ -91,7 +80,6 @@ public class Sign : MonoBehaviour, IInteractable {
 
         isActive = false;
 
-        TypewriterSystem.StopTypewrite();
         textEnablingCoroutine = StartCoroutine(TextEnablingRoutine(isActive));
     }
 
@@ -100,9 +88,6 @@ public class Sign : MonoBehaviour, IInteractable {
     }
 
     public IEnumerator TextEnablingRoutine(bool enable) {
-        // SignText.enabled = true;
-        // SignPanel.enabled = true;
-
         float elapsedTime = 0f;
         float percentage = elapsedTime / TextTransitionTime;
         float textAlpha = SignText.color.a;
@@ -121,7 +106,6 @@ public class Sign : MonoBehaviour, IInteractable {
 
 
         while (elapsedTime < TextTransitionTime) {
-            // SignText.transform.position = Vector2.Lerp(SignText.transform.position, targetPosition, TextEnablingCurve.Evaluate(percentage));
             textAlpha = Mathf.Lerp(textAlpha, targetAlpha, TextEnablingCurve.Evaluate(percentage));
             SignText.color = SignText.color.SetA(textAlpha);
             
@@ -135,15 +119,15 @@ public class Sign : MonoBehaviour, IInteractable {
             yield return null;
         }
 
-        // SignText.transform.position = targetPosition;
         SignText.color = SignText.color.SetA(targetAlpha);
-        // SignText.enabled = enable;
 
         SignPanel.transform.position = targetPosition;
         SignPanel.color = SignPanel.color.SetA(targetAlpha * 0.5f);
-        // SignPanel.enabled = enable;
 
-        if (!enable) TypewriterSystem.ResetText();
+        if (!enable) {
+            TypewriterSystem.StopTypewrite();
+            TypewriterSystem.ResetText();
+        }
 
         yield return null;
     }
@@ -155,34 +139,4 @@ public class Sign : MonoBehaviour, IInteractable {
     void StartDialog() {
         index = 0;
     }
-
-    // IEnumerator TypeLineRoutine() {
-    //     foreach (char c in lines[index].ToCharArray()) {
-    //         SignText.text += c;
-    //         yield return new WaitForSeconds(textSpeed);
-    //     }
-    // }
-
-    // void NextLine() {
-    //     if (index < lines.Length - 1) {
-    //         index++;
-    //         textComponent.text = string.Empty;
-    //         StartCoroutine(TypeLineRoutine());
-    //     }
-    //     else {
-    //         gameObject.SetActive(false);
-    //     }
-    // }
-
-    // void Update() {
-    //     if (Mouse.current.leftButton.wasPressedThisFrame) {
-    //         if (SignText.text == lines[index]) {
-    //             NextLine();
-    //         }
-    //     }
-    //     else {
-    //         StopAllCoroutines();
-    //         SignText.text = lines[index];
-    //     }
-    // }
 }

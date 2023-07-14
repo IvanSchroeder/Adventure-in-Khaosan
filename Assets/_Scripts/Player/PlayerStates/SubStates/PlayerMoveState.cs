@@ -45,7 +45,7 @@ public class PlayerMoveState : PlayerGroundedState {
 
         if (isExitingState) return;
 
-        if ((xInput == 0) || (xInput != 0 && (isTouchingWall || isTouchingLedge))) {
+        if (xInput == 0 && player.CurrentVelocity.x.AbsoluteValue() == 0f) {
             isSprinting = false;
             stateMachine.ChangeState(player.IdleState);
         }
@@ -57,6 +57,12 @@ public class PlayerMoveState : PlayerGroundedState {
                 stateMachine.ChangeState(player.CrouchMoveState);
             }
         }
+        else if (playerData.CanWallClimb.Value && isTouchingWall && isTouchingLedge) {
+                if (((playerData.autoWallGrab && xInput == player.FacingDirection) || (!playerData.autoWallGrab && grabInput)) && yInput == 0) 
+                    stateMachine.ChangeState(player.WallGrabState);
+                else if ((playerData.autoWallGrab || (!playerData.autoWallGrab && grabInput)) && (/*(isOnPlatform && yInput != 0) ||*/ (isGrounded && yInput == 1)))
+                    stateMachine.ChangeState(player.WallClimbState);
+            }
 
         if (isRunning && !isSprinting && player.CurrentVelocity.x.AbsoluteValue() >= playerData.maxRunSpeedThreshold) {
             isRunningAtMaxSpeed = true;
@@ -98,6 +104,29 @@ public class PlayerMoveState : PlayerGroundedState {
         base.PhysicsUpdate();
 
         if (isExitingState) return;
+
+        if (playerData.correctLedgeOnGround) {
+            float velocityBeforeHit = player.CurrentVelocity.x;
+
+            if (xInput != 0) {
+                bool hasCheckedFootCorner = false;
+
+                if (!isTouchingLedge && isTouchingLedgeWithFoot && !hasCheckedFootCorner) {
+                    hasCheckedFootCorner = true;
+
+                    bool correctLedge = player.CheckFootLedgeCorrection();
+
+                    if (correctLedge) {
+                        correctLedge = false;
+                        player.CorrectFootLedge(velocityBeforeHit);
+                        player.SetVelocityY(0f);
+                    }
+                    else {
+                        player.SetVelocityX(0f);
+                    }
+                }
+            }
+        }
 
         if (isRunning) {
             if (isChangingDirections && xInput != 0)
