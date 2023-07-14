@@ -12,9 +12,9 @@ public class SpriteManager : MonoBehaviour {
     [field: SerializeField] public IInteractable Interactable { get; private set; }
     [field: SerializeField] public InteractableSystem InteractableSystem { get; private set; }
     [field: SerializeField] public SpriteFlashConfiguration CurrentFlashConfiguration { get; private set; }
-    // [field: SerializeField] public SpriteFlashConfiguration DamageFlash { get; private set; }
-    // [field: SerializeField] public SpriteFlashConfiguration InvulnerabilityFlash { get; private set; }
-    // [field: SerializeField] public SpriteFlashConfiguration InteractedFlash { get; private set; }
+    [field: SerializeField] public SpriteFlashConfiguration DamagedFlash { get; private set; }
+    [field: SerializeField] public SpriteFlashConfiguration InvulnerabilityFlash { get; private set; }
+    [field: SerializeField] public SpriteFlashConfiguration InteractedFlash { get; private set; }
 
     [field: SerializeField, ColorUsage(true, true)] public Color DefaultFlashColor { get; private set; } = Color.white;
     [field: SerializeField, ColorUsage(true, true)] public Color CurrentFlashColor { get; private set; } = Color.white;
@@ -118,7 +118,16 @@ public class SpriteManager : MonoBehaviour {
     }
 
     public void SetCurrentDamageableFlash(object sender, OnEntityDamagedEventArgs args) {
-        CurrentFlashConfiguration = HealthSystem.DamagedFlash;
+        if (args.CurrentFlash.IsNotNull()) {
+            CurrentFlashConfiguration = args.CurrentFlash;
+        }
+        else if (HealthSystem.InvulnerabilityFlash.IsNotNull()) {
+            CurrentFlashConfiguration = HealthSystem.DamagedFlash;
+        }
+        else {
+            CurrentFlashConfiguration = DamagedFlash;
+        }
+
         Debug.Log($"CurrentFlashConfiguration {CurrentFlashConfiguration}");
         InitializeFlashConfiguration(CurrentFlashConfiguration);
 
@@ -126,8 +135,16 @@ public class SpriteManager : MonoBehaviour {
     }
 
     public void SetCurrentInvulnerabilityFlash(object sender, OnEntityDamagedEventArgs args) {
-        // CurrentFlashConfiguration = HealthSystem.InvulnerabilityFlash;
-        CurrentFlashConfiguration = args.CurrentFlash;
+        if (args.CurrentFlash.IsNotNull()) {
+            CurrentFlashConfiguration = args.CurrentFlash;
+        }
+        else if (HealthSystem.InvulnerabilityFlash.IsNotNull()) {
+            CurrentFlashConfiguration = HealthSystem.InvulnerabilityFlash;
+        }
+        else {
+            CurrentFlashConfiguration = InvulnerabilityFlash;
+        }
+
         Debug.Log($"CurrentFlashConfiguration {CurrentFlashConfiguration}");
         InitializeFlashConfiguration(CurrentFlashConfiguration);
 
@@ -137,7 +154,16 @@ public class SpriteManager : MonoBehaviour {
     public void SetCurrentInteractableFlash(object sender, OnEntityInteractedEventArgs args) {
         if (!args.ShouldFlash) return;
 
-        CurrentFlashConfiguration = InteractableSystem.InteractedFlash;
+        if (args.CurrentFlash.IsNotNull()) {
+            CurrentFlashConfiguration = args.CurrentFlash;
+        }
+        else if (InteractableSystem.InteractedFlash.IsNotNull()) {
+            CurrentFlashConfiguration = InteractableSystem.InteractedFlash;
+        }
+        else {
+            CurrentFlashConfiguration = InteractedFlash;
+        }
+
         Debug.Log($"CurrentFlashConfiguration {CurrentFlashConfiguration}");
         InitializeFlashConfiguration(CurrentFlashConfiguration);
 

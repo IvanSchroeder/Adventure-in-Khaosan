@@ -97,10 +97,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54cd327a20f58594c885d38f90e2939f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <RelatedEntity>k__BackingField: {fileID: 3125253531432767928}
   <HealthSystem>k__BackingField: {fileID: 5509863583808375652}
   <InteractableSystem>k__BackingField: {fileID: 0}
   <CurrentFlashConfiguration>k__BackingField: {fileID: 11400000, guid: 4d82b7bcf41c0e646937f0d0d6aca977, type: 2}
+  <DamagedFlash>k__BackingField: {fileID: 11400000, guid: 0514c15ea549b1f40b1d147ef537951e, type: 2}
+  <InvulnerabilityFlash>k__BackingField: {fileID: 11400000, guid: 4d82b7bcf41c0e646937f0d0d6aca977, type: 2}
+  <InteractedFlash>k__BackingField: {fileID: 11400000, guid: fc38e4012282de94bae91f56827ca71a, type: 2}
   <DefaultFlashColor>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
   <CurrentFlashColor>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
   <CurrentAlphaAmount>k__BackingField: 1
