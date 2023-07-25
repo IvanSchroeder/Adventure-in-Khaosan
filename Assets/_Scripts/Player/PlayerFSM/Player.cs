@@ -344,20 +344,20 @@ public class Player : Entity, IDamageable, IInteractor {
         return CurrentVelocity.y > 0.0f && !playerData.isGrounded;
     }
 
-    public bool CheckForSpace(Vector2 originPoint, Vector2 direction) {
-        bool space = !Physics2D.Raycast(originPoint, direction, 1.25f, playerData.wallLayer);
+    public bool CheckForSpace(Vector2 originPoint, Vector2 direction, float distance) {
+        bool space = !Physics2D.Raycast(originPoint, direction, distance, playerData.wallLayer);
 
-        if (space) Debug.DrawRay(originPoint, direction * 1.25f, Color.green, 1f);
-        else Debug.DrawRay(originPoint, direction * 1.25f, Color.red, 1f);
+        if (space) Debug.DrawRay(originPoint, direction * distance, Color.green, 1f);
+        else Debug.DrawRay(originPoint, direction * distance, Color.red, 1f);
 
         return space;
     }
 
-    public bool CheckHazards(Vector2 originPoint) {
-        bool hazard = Physics2D.Raycast(originPoint, Vector2.up, 1.25f, playerData.hazardsLayer);
+    public bool CheckHazards(Vector2 originPoint, Vector2 direction, float distance) {
+        bool hazard = Physics2D.Raycast(originPoint, direction, distance, playerData.hazardsLayer);
 
-        if (hazard) Debug.DrawRay(originPoint, Vector2.up * 1.25f, Color.red, 1f);
-        else Debug.DrawRay(originPoint, Vector2.up * 1.25f, Color.green, 1f);
+        if (hazard) Debug.DrawRay(originPoint, direction * distance, Color.red, 1f);
+        else Debug.DrawRay(originPoint, direction * distance, Color.green, 1f);
 
         return hazard;
     }
@@ -400,8 +400,11 @@ public class Player : Entity, IDamageable, IInteractor {
     }
 
     public void StandOnCheckpoint() {
-        CurrentVelocity = Vector2.zero;
-        Rb.velocity = CurrentVelocity;
+        SetVelocityX(0f);
+        SetVelocityY(0f);
+
+        HitboxTrigger.enabled = false;
+        InteractorTrigger.enabled = false;
 
         if (playerData.isAirborne) {
             transform.position = LevelManager.instance.currentCheckpoint.SpawnpointTransform.position;
@@ -443,11 +446,11 @@ public class Player : Entity, IDamageable, IInteractor {
 
         RaycastHit2D innerFootHit = Physics2D.Raycast(GroundPoint.position.ToVector2() + playerData.ledgeInnerCheckOffset + Vector2.right * FacingDirection * playerData.ledgeFootCheckDistance, Vector2.down, playerData.groundUpCheckDistance, playerData.solidsLayer);
         
-        if (innerFootHit && CheckForSpace(innerFootHit.point + Vector2.up * 0.015f, Vector2.up)) {
+        if (innerFootHit && CheckForSpace(innerFootHit.point + Vector2.up * 0.05f, Vector2.up, 1f)) {
             newPos = Vector2.Distance(new Vector2(transform.position.x, innerFootHit.point.y) + Vector2.down * playerData.groundUpCheckDistance,
                 transform.position.ToVector2() - playerData.ledgeEdgeCheckOffset + Vector2.right * FacingDirection * playerData.ledgeFootCheckDistance);
             
-            transform.position = new Vector2(transform.position.x, innerFootHit.point.y + playerData.ledgeCorrectionRepositionOffset);
+            transform.position = new Vector2(transform.position.x + (playerData.ledgeCorrectionRepositionOffset * FacingDirection), innerFootHit.point.y + playerData.ledgeCorrectionRepositionOffset);
             // transform.position = new Vector2(transform.position.x, transform.position.y - newPos + playerData.ledgeCorrectionRepositionOffset);
             Rb.velocity = new Vector2(currentXVelocity, Rb.velocity.y);
             return;

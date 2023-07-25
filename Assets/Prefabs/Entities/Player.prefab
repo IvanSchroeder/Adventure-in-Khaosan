@@ -71,8 +71,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -185507137
-  m_SortingLayer: 4
+  m_SortingLayerID: -1407808905
+  m_SortingLayer: 3
   m_SortingOrder: 1
   m_Sprite: {fileID: -1178371387, guid: 206262f7f8cb1654f941885b8c24d87d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -99,10 +99,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <HealthSystem>k__BackingField: {fileID: 5509863583808375652}
   <InteractableSystem>k__BackingField: {fileID: 0}
-  <CurrentFlashConfiguration>k__BackingField: {fileID: 11400000, guid: 4d82b7bcf41c0e646937f0d0d6aca977, type: 2}
-  <DamagedFlash>k__BackingField: {fileID: 11400000, guid: 0514c15ea549b1f40b1d147ef537951e, type: 2}
-  <InvulnerabilityFlash>k__BackingField: {fileID: 11400000, guid: 4d82b7bcf41c0e646937f0d0d6aca977, type: 2}
-  <InteractedFlash>k__BackingField: {fileID: 11400000, guid: fc38e4012282de94bae91f56827ca71a, type: 2}
+  <CurrentFlashConfiguration>k__BackingField: {fileID: 0}
   <DefaultFlashColor>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
   <CurrentFlashColor>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
   <CurrentAlphaAmount>k__BackingField: 1
@@ -567,7 +564,7 @@ MonoBehaviour:
     m_ActionId: 8f6fe5d6-c7ec-417f-acb8-c2dddc45f233
     m_ActionName: Gameplay/Crouch[/Keyboard/s,/Keyboard/downArrow]
   m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: Gamepad
+  m_DefaultControlScheme: Keyboard
   m_DefaultActionMap: Gameplay
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
@@ -583,6 +580,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65133d7af4b653445b1e7488b7fc9f8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PlayerInputComponent: {fileID: 3125253531432767934}
   <LockInputs>k__BackingField: 0
   <InputHoldTime>k__BackingField: 0.2
 --- !u!114 &3125253531432767928
@@ -1016,7 +1014,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0, y: 0.5}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -1027,7 +1025,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.5, y: 0.5}
+  m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
 --- !u!114 &7848817237780654624
 MonoBehaviour:

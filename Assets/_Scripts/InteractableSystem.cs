@@ -28,15 +28,15 @@ public class InteractableSystem : MonoBehaviour {
         if (Interactable == null) Interactable = this.GetComponentInHierarchy<IInteractable>();
 
         WasInteracted = false;
+        IsInteractable = true;
     }
 
-    public void Interact() {
+    public void Interact(OnEntityInteractedEventArgs entityInteracted) {
         if (!IsInteractable) return;
 
         if (OneTimeIntectarion) IsInteractable = false;
         WasInteracted = true;
 
-        OnEntityInteractedEventArgs entityInteracted = new OnEntityInteractedEventArgs();
         entityInteracted.IsInteracted = IsInteractable;
         entityInteracted.ShouldFlash = FlashesOnInteract;
         entityInteracted.CurrentFlash = InteractedFlash;

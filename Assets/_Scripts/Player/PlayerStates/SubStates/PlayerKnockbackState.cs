@@ -17,7 +17,8 @@ public class PlayerKnockbackState : PlayerState {
         cumulatedKnockbackTime = 0f;
         hasBouncedOffWall = false;
         hasBouncedOffCeiling = false;
-        // player.CanMove = false;
+
+        player.InteractorSystem.CanInteract = false;
     }
 
     public override void Exit() {
@@ -25,7 +26,8 @@ public class PlayerKnockbackState : PlayerState {
 
         isDamaged = false;
         player.KnockbackEnd();
-        // player.CanMove = true;
+
+        player.InteractorSystem.CanInteract = true;
     }
 
     public override void LogicUpdate() {

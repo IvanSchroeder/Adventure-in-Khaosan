@@ -21,15 +21,16 @@ public class InteractorSystem : MonoBehaviour {
 
         InteractableSystem interactableSystem = collision.GetComponentInHierarchy<InteractableSystem>();
         IInteractable interactableEntity = interactableSystem.Interactable;
-        interactableEntity.CurrentInteractor = Interactor;
 
         InteractablesList.Add(interactableSystem);
 
+        OnEntityInteractedEventArgs entityInteracted = new OnEntityInteractedEventArgs();
+        entityInteracted.ContactPoint = collision.transform.position;
+
         if (!interactableSystem.RequiresInput) {
-            interactableSystem.Interact();
+            interactableSystem.Interact(entityInteracted);
         }
         else {
-            OnEntityInteractedEventArgs entityInteracted = new OnEntityInteractedEventArgs();
             interactableSystem.SetInteractionState(entityInteracted, true);
         }
     }
@@ -39,9 +40,11 @@ public class InteractorSystem : MonoBehaviour {
 
         if (InteractablesList.Count > 0) {
             foreach (InteractableSystem interactable in InteractablesList) {
+                OnEntityInteractedEventArgs entityInteracted = new OnEntityInteractedEventArgs();
+                entityInteracted.ContactPoint = collision.transform.position;
+
                 if (interactable.RequiresInput && CanInteract && Interactor.InputHandler.InteractInput) {
-                    interactable.Interact();
-                    interactable.WasInteracted = true;
+                    interactable.Interact(entityInteracted);
                 }
             }
 
@@ -68,44 +71,6 @@ public class InteractorSystem : MonoBehaviour {
         
         OnEntityInteractedEventArgs entityInteracted = new OnEntityInteractedEventArgs();
         interactableSystem.SetInteractionState(entityInteracted, false);
-        interactableEntity.CurrentInteractor = null;
         Interactor.InputHandler.UseInteractInput();
     }
-
-    // public void OnTriggerEnter2D(Collider2D collision) {
-    //     InteractableSystem interactableSystem = collision.GetComponentInHierarchy<InteractableSystem>();
-
-    //     if (!CanInteract || interactableSystem.IsNull()) return;
-
-    //     IInteractable interactableEntity = interactableSystem.Interactable;
-
-    //     Interactor.CurrentInteractable = interactableEntity;
-    //     interactableEntity.CurrentInteractor = Interactor;
-
-    //     if (!interactableSystem.RequiresInput) Interactor.CurrentInteractable.InteractableSystem.Interact();
-    //     else interactableSystem.SetInteractionState(true);
-    // }
-
-    // public void OnTriggerStay2D(Collider2D collision) {
-    //     if (!CanInteract || !collision.HasComponentInHierarchy<IInteractable>()) return;
-
-    //     if (Interactor.CurrentInteractable.InteractableSystem.RequiresInput && CanInteract && Interactor.InputHandler.InteractInput) {
-    //         Interactor.InputHandler.UseInteractInput();
-    //         Interactor.CurrentInteractable.InteractableSystem.Interact();
-    //     }
-    // }
-
-    // public void OnTriggerExit2D(Collider2D collision) {
-    //     InteractableSystem interactableSystem = collision.GetComponentInHierarchy<InteractableSystem>();
-
-    //     if (!CanInteract || interactableSystem.IsNull()) return;
-
-    //     IInteractable interactableEntity = interactableSystem.Interactable;
-
-    //     if (Interactor.CurrentInteractable.InteractableSystem.WasInteracted) Interactor.CurrentInteractable.InteractableSystem.InteractionStop();
-    //     Interactor.CurrentInteractable.InteractableSystem.SetInteractionState(false);
-    //     Interactor.CurrentInteractable = null;
-    //     interactableEntity.CurrentInteractor = null;
-    //     Interactor.InputHandler.UseInteractInput();
-    // }
 }

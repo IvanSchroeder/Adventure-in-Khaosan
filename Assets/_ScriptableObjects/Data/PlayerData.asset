@@ -20,12 +20,12 @@ MonoBehaviour:
     <Offset>k__BackingField: {x: 0, y: 0.75}
     <Size>k__BackingField: {x: 1, y: 1.5}
   facingDirection: 1
-  currentLives: 3
+  currentLives: 0
   currentHealth: 0
-  currentHearts: 1
+  currentHearts: 0
   currentLayer: Player
-  currentGravityScale: 3
-  currentFallSpeed: 20
+  currentGravityScale: 5
+  currentFallSpeed: 30
   amountOfJumpsLeft: 1
   slopeDownAngle: 0
   slopeSideAngle: 0
@@ -38,7 +38,7 @@ MonoBehaviour:
   maxHealth: 100
   invulnerabilitySeconds: 2
   minKnockbackTime: 0.5
-  maxKnockbackTime: 2
+  maxKnockbackTime: 1
   deadOnGroundTime: 1
   isGrounded: 1
   isOnSolidGround: 1
@@ -46,7 +46,7 @@ MonoBehaviour:
   isIgnoringPlatforms: 0
   isOnSlope: 0
   isAirborne: 0
-  isIdle: 1
+  isIdle: 0
   isMoving: 0
   isRunning: 0
   isRunningAtMaxSpeed: 0
@@ -75,9 +75,9 @@ MonoBehaviour:
   isDamaged: 0
   isDead: 0
   isDeadOnGround: 0
-  isInvulnerable: 1
+  isInvulnerable: 0
   isAnimationFinished: 0
-  isAbilityDone: 1
+  isAbilityDone: 0
   isExitingState: 0
   hasCoyoteTime: 0
   hasWallJumpCoyoteTime: 0
@@ -96,6 +96,8 @@ MonoBehaviour:
   CanAttack: {fileID: 11400000, guid: cb9a5bcc8c2680b4598db308d8495103, type: 2}
   stickToGround: 0
   correctLedgeOnGround: 1
+  correctCornerOnAir: 1
+  correctLedgeOnAir: 1
   lerpVelocity: 1
   conserveMomentum: 1
   enableFriction: 1
@@ -104,12 +106,18 @@ MonoBehaviour:
   runSpeed: 10
   maxRunSpeedThresholdMult: 1
   maxRunSpeedThreshold: 10
+  runSpeedCutoff: 1
+  runSpeedCutoffThreshold: 0.1
+  runSpeedCutoffAmount: 0.2
   runAcceleration: 35
   runDecceleration: 40
   runDirectionChangeAcceleration: 55
   sprintSpeed: 17.5
   maxSprintSpeedThresholdMult: 0.5
   maxSprintSpeedThreshold: 13.75
+  sprintSpeedCutoff: 1
+  sprintSpeedCutoffThreshold: 0.1
+  sprintSpeedCutoffAmount: 0.6
   sprintStopDelay: 0.25
   sprintAcceleration: 50
   sprintDecceleration: 20
@@ -125,7 +133,7 @@ MonoBehaviour:
   groundSlideAcceleration: 80
   groundSlideDecceleration: 50
   deathSlideDecceleration: 20
-  deathJumpSpeed: 5.7
+  deathJumpSpeed: 30
   deathJumpAngle: 90
   deathJumpDirectionOffAngle: {x: -0.00000004371139, y: 1}
   maxBouncesOffGround: 3
@@ -152,12 +160,12 @@ MonoBehaviour:
   standColliderHeight: 1.5
   crouchColliderHeight: 0.8
   amountOfJumps: 1
-  jumpHeight: 20
-  variableJumpHeightMultiplier: 0
+  jumpHeight: 25
+  variableJumpHeightMultiplier: 0.2
   maxAscendantSpeed: 50
-  defaultFallSpeed: 20
-  fastFallSpeed: 35
-  defaultGravityScale: 3
+  defaultFallSpeed: 30
+  fastFallSpeed: 50
+  defaultGravityScale: 5
   fallThreshold: -0.01
   lerpVerticalVelocity: 1
   fallAcceleration: 100
@@ -167,21 +175,25 @@ MonoBehaviour:
   jumpBufferTime: 0.5
   autoWallGrab: 1
   autoWallSlide: 1
+  hasGrabDelay: 1
+  grabDelay: 0.3
   wallSlideSpeed: 6
   wallClimbSpeed: 6
   fastWallSlideSpeed: 12
   lerpWallVelocity: 1
-  wallSlideAcceleration: 60
-  wallGrabAcceleration: 70
-  wallClimbAcceleration: 60
+  wallTouchVelocityCutoff: 0.75
+  wallSlideAcceleration: 100
+  wallGrabAcceleration: 100
+  wallClimbAcceleration: 100
   wallJumpSpeed: 15
-  wallHopSpeed: 10
-  wallJumpTime: 0.25
+  wallHopSpeed: 5
+  wallJumpTime: 0.3
   wallHopTime: 0.1
+  minWallJumpTime: 0.2
   wallJumpAngle: 45
-  wallHopAngle: 0
+  wallHopAngle: 25
   wallJumpDirectionOffAngle: {x: 0.70710677, y: 0.70710677}
-  wallHopDirectionOffAngle: {x: 1, y: 0}
+  wallHopDirectionOffAngle: {x: 0.90630776, y: 0.42261827}
   startOffset: {x: 0.63, y: 0}
   stopOffset: {x: 0.5, y: 1}
   groundCheckOffset: {x: 0.475, y: 0.1}
@@ -191,14 +203,14 @@ MonoBehaviour:
   ledgeEdgeCheckOffset: {x: 0, y: 0.03}
   ledgeFootCheckDistance: 1
   groundUpCheckDistance: 1.3
-  ledgeCorrectionRepositionOffset: 0.015
+  ledgeCorrectionRepositionOffset: 0.1
   wallCheckOffset: {x: 0, y: 0.9}
-  wallCheckDistance: 0.55
+  wallCheckDistance: 0.7
   ledgeCheckOffset: {x: 0, y: 1.1}
-  ledgeCheckDistance: 0.55
+  ledgeCheckDistance: 0.7
   ceilingCheckOffset: {x: 0.475, y: 0.1}
   ceilingCheckDistance: 0.4
-  cornerInnerCheckOffset: {x: -0.2, y: 0}
+  cornerInnerCheckOffset: {x: 0, y: 0}
   cornerEdgeCheckOffset: {x: 0.5, y: 0}
   cornerCheckDistance: 1
   topCheckDistance: 1.3

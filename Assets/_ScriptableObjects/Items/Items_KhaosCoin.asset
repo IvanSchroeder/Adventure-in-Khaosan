@@ -17,6 +17,7 @@ MonoBehaviour:
   m_DefaultColliderType: 0
   m_TilingRules: []
   alwaysConnect: 0
+  overrideNotThis: 0
   tilesToConnect: []
   checkSelf: 1
   tileColor: {r: 1, g: 1, b: 1, a: 1}

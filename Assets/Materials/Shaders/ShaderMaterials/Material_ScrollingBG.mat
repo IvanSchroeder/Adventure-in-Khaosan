@@ -47,7 +47,7 @@ Material:
     - _EnableScroll: 0
     - _ForwardScroll: 1
     - _HorizontalScroll: 1
-    - _HorizontalScrollSpeed: 0.025
+    - _HorizontalScrollSpeed: 0.01
     - _UpwardScroll: 1
     - _VerticalScroll: 0
     - _VerticalScrollSpeed: 0.05

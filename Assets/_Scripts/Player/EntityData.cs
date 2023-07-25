@@ -42,9 +42,10 @@ public abstract class EntityData : ScriptableObject {
     [Space(5)]
     public LayerMask damagedBy;
     public HealthType healthType = HealthType.Hearts;
-    public int maxLives;
-    public int maxHearts;
-    public float maxHealth;
+    [Range(1, 99)] public int maxLives;
+    [Range(1, 10)] public int maxHearts;
+    [Range(1, 10)] public int startingHearts;
+    [Range(1f, 100f)] public float maxHealth;
     public float invulnerabilitySeconds;
     public float minKnockbackTime;
     public float maxKnockbackTime;

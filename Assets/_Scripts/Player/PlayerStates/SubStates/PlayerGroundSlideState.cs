@@ -48,7 +48,7 @@ public class PlayerGroundSlideState : PlayerGroundedState {
         }
 
         if (stopSlide) {
-            if (isTouchingCeiling || crouchInputHold || !player.CheckForSpace(player.GroundPoint.position.ToVector2() + Vector2.up * 0.015f, Vector2.up) || player.CheckHazards(player.MidPoint.position)) {
+            if (isTouchingCeiling || crouchInputHold || !player.CheckForSpace(player.GroundPoint.position.ToVector2() + Vector2.up * 0.015f, Vector2.up, 1.1f) || player.CheckHazards(player.MidPoint.position, Vector2.up, 1.1f)) {
                 player.SetColliderParameters(player.MovementCollider, playerData.crouchColliderConfig, true);
                 player.SetColliderParameters(player.HitboxTrigger, playerData.crouchColliderConfig);
 

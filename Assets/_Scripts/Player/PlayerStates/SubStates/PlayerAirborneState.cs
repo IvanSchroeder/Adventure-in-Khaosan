@@ -80,7 +80,7 @@ public class PlayerAirborneState : PlayerState {
             player.LedgeClimbState.SetDetectedPosition(player.transform.position);
             stateMachine.ChangeState(player.LedgeClimbState);
         }
-        else if (isOnSolidGround && !isJumping) {
+        else if (isOnSolidGround && (!isJumping || player.CurrentVelocity.y.AbsoluteValue() > 0f)) {
             RaycastHit2D detectedGround = player.GetGroundHit();
             if (detectedGround) {
                 Vector2 position = new Vector2(player.transform.position.x, detectedGround.point.y + 0.05f);
@@ -113,58 +113,63 @@ public class PlayerAirborneState : PlayerState {
             else
                 stateMachine.ChangeState(player.LandState);
         }
-        else if (playerData.CanWallSlide.Value && !playerData.autoWallGrab && isTouchingWall && isTouchingLedge && !isJumping) {
+        else if (playerData.CanWallSlide.Value && playerData.autoWallGrab && isTouchingWall && isTouchingLedge) {
+            if (playerData.CanWallClimb.Value && xInput == player.FacingDirection) stateMachine.ChangeState(player.WallGrabState);
+            else if ((xInput == 0 || playerData.autoWallSlide) && !isJumping) stateMachine.ChangeState(player.WallSlideState);
+        }
+        else if (playerData.CanWallSlide.Value && !playerData.autoWallGrab && isTouchingWall && isTouchingLedge) {
             if (playerData.CanWallClimb.Value && grabInput) stateMachine.ChangeState(player.WallGrabState);
             else if (xInput == player.FacingDirection || playerData.autoWallSlide) stateMachine.ChangeState(player.WallSlideState);
-        }
-        else if (playerData.CanWallSlide.Value && playerData.autoWallGrab && isTouchingWall && isTouchingLedge && !isJumping) {
-            if (playerData.CanWallClimb.Value && xInput == player.FacingDirection) stateMachine.ChangeState(player.WallGrabState);
-            else if (xInput == 0 || playerData.autoWallSlide) stateMachine.ChangeState(player.WallSlideState);
         }
     }
 
     public override void PhysicsUpdate() {
         base.PhysicsUpdate();
 
-        float yVelocityBeforeHit = player.CurrentVelocity.y;
+        if (playerData.correctCornerOnAir) {
+            float yVelocityBeforeHit = player.CurrentVelocity.y;
 
-        if (isJumping || isAscending) {
-            bool hasCheckedHeadCorner = false;
-            if (player.CurrentVelocity.y != 0f) yVelocityBeforeHit = player.CurrentVelocity.y;
+            if (isJumping || isAscending) {
+                bool hasCheckedHeadCorner = false;
+                if (player.CurrentVelocity.y != 0f) yVelocityBeforeHit = player.CurrentVelocity.y;
 
-            if (isTouchingCeiling && !hasCheckedHeadCorner) {
-                hasCheckedHeadCorner = true;
+                if (isTouchingCeiling && !hasCheckedHeadCorner) {
+                    hasCheckedHeadCorner = true;
 
-                bool correctCorner = player.CheckCeilingCornerCorrection();
+                    bool correctCorner = player.CheckCeilingCornerCorrection();
 
-                if (correctCorner) {
-                    correctCorner = false;
-                    player.CorrectHeadCorner(yVelocityBeforeHit);
-                }
-                else {
-                    player.SetVelocityY(0f);
+                    if (correctCorner) {
+                        correctCorner = false;
+                        player.CorrectHeadCorner(yVelocityBeforeHit);
+                    }
+                    else {
+                        player.SetVelocityY(0f);
+                    }
                 }
             }
         }
 
-        float xVelocityBeforeHit = player.CurrentVelocity.x;
+        if (playerData.correctLedgeOnAir && player.CurrentVelocity.x.AbsoluteValue() > playerData.runSpeed * 0.3f) {
+            float xVelocityBeforeHit = player.CurrentVelocity.x;
 
-        if (xInput != 0) {
-            bool hasCheckedFootCorner = false;
+            if (xInput != 0) {
+                bool hasCheckedFootCorner = false;
 
-            if (player.CurrentVelocity.x != 0f) xVelocityBeforeHit = player.CurrentVelocity.x;
+                if (player.CurrentVelocity.x != 0f) xVelocityBeforeHit = player.CurrentVelocity.x;
 
-            if (!isTouchingLedge && isTouchingLedgeWithFoot && !hasCheckedFootCorner) {
-                hasCheckedFootCorner = true;
+                if (!isTouchingLedge && isTouchingLedgeWithFoot && !hasCheckedFootCorner) {
+                    hasCheckedFootCorner = true;
 
-                bool correctLedge = player.CheckFootLedgeCorrection();
+                    bool correctLedge = player.CheckFootLedgeCorrection();
 
-                if (correctLedge) {
-                    correctLedge = false;
-                    player.CorrectFootLedge(xVelocityBeforeHit);
-                }
-                else {
-                    player.SetVelocityX(0f);
+                    if (correctLedge) {
+                        correctLedge = false;
+                        player.SetVelocityY(0f);
+                        player.CorrectFootLedge(xVelocityBeforeHit);
+                    }
+                    else {
+                        player.SetVelocityX(0f);
+                    }
                 }
             }
         }

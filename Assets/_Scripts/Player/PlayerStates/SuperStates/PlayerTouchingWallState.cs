@@ -23,13 +23,20 @@ public class PlayerTouchingWallState : PlayerState {
     public override void Enter() {
         base.Enter();
 
+        wallHit = player.GetWallHit(player.FacingDirection);
+        if (wallHit) {
+            player.wallHitPos = wallHit.point;
+            player.transform.SetParent(wallHit.transform);
+        }
+
         player.Rb.gravityScale = 0f;
+        if (player.CurrentVelocity.y.Sign() == -1) player.SetVelocityY(player.CurrentVelocity.y * playerData.wallTouchVelocityCutoff);
     }
 
     public override void Exit() {
         base.Exit();
 
-        if (isExitingState) return;
+        if (player.transform.parent.IsNotNull()) player.transform.SetParent(null);
 
         player.Rb.gravityScale = playerData.defaultGravityScale;
 
@@ -52,32 +59,14 @@ public class PlayerTouchingWallState : PlayerState {
 
         if (isExitingState) return;
         
-        if (playerData.CanWallJump.Value && jumpInput && (isTouchingWall || isTouchingBackWall || wallJumpCoyoteTime || hasTouchedWall)) {
-            // if (yInput == -1) {
-            //     player.WallJumpState.SetNextWallJumpDirection(playerData.wallJumpDirectionOffAngle * new Vector2(1f, -1f));
-            //     stateMachine.ChangeState(player.WallJumpState);
-            // }
-            // else if (xInput == 0 && yInput == 0) {
-            //     player.WallJumpState.SetNextWallJumpDirection(playerData.wallJumpDirectionOffAngle * Vector2.right);
-            //     stateMachine.ChangeState(player.WallJumpState);
-            // }
-            // else {
-            //     player.WallJumpState.SetNextWallJumpDirection(playerData.wallJumpDirectionOffAngle);
-            //     stateMachine.ChangeState(player.WallJumpState);
-            // }
-
-            if ((isWallSliding && yInput == 0) || (isWallGrabing) || (isWallClimbing && yInput != 1)) {
-                player.WallJumpState.WallJumpConfiguration(playerData.wallJumpSpeed, playerData.wallJumpDirectionOffAngle * Vector2.right, player.FacingDirection, playerData.wallJumpTime);
+        if (xInput == -player.FacingDirection && !isWallJumping) {
+            if (isOnSolidGround) {
+                stateMachine.ChangeState(player.IdleState);
             }
             else {
-                player.WallJumpState.WallJumpConfiguration(playerData.wallJumpSpeed, playerData.wallJumpDirectionOffAngle, player.FacingDirection, playerData.wallJumpTime);
+                player.WallJumpState.WallJumpConfiguration(playerData.wallHopSpeed, playerData.wallHopDirectionOffAngle, player.FacingDirection, playerData.wallHopTime, true);
+                stateMachine.ChangeState(player.WallJumpState);
             }
-
-            stateMachine.ChangeState(player.WallJumpState);
-        }
-        else if (xInput == -player.FacingDirection && !isWallJumping) {
-            player.WallJumpState.WallJumpConfiguration(playerData.wallHopSpeed, playerData.wallHopDirectionOffAngle, player.FacingDirection, playerData.wallHopTime);
-            stateMachine.ChangeState(player.WallJumpState);
         }
         else if (!isTouchingWall) {
             stateMachine.ChangeState(player.AirborneState);

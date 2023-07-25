@@ -2364,6 +2364,16 @@ namespace ExtensionMethods {
 			public static Vector3 Clamp(this Vector3 input, Vector3 max, Vector3 min) => input.SetXYZ(input.x.Clamp(max.x, min.x), input.y.Clamp(max.y, min.y), input.z.Clamp(max.z, min.z));
 			public static Vector2 Clamp(this Vector2 input, Vector2 max, Vector2 min) => input.SetXY(input.x.Clamp(max.x, min.x), input.y.Clamp(max.y, min.y));
 
+			public static float LerpTo(this float a, float b, float t) => (b - a) * t + a;
+			public static float SpeedLerpTo(this float a, float b, float speed, float dt) {
+				var v = b - a;
+				var dv = speed * dt;
+				if (dv > v)
+					return b;
+				else
+					return a + v * dv;
+			}
+
 			/// <summary>
 			/// Unity's Vector2.Lerp clamps between 0->1, this allows a true lerp of all ranges.
 			/// </summary>

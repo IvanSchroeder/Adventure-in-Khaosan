@@ -4,6 +4,9 @@ using UnityEngine;
 using ExtensionMethods;
 
 public class PlayerWallGrabState : PlayerTouchingWallState {
+    protected float elapsedGrabTime;
+    protected bool stopGrabbing;
+
     public PlayerWallGrabState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
     }
 
@@ -21,6 +24,10 @@ public class PlayerWallGrabState : PlayerTouchingWallState {
         base.Enter();
 
         isWallGrabing = true;
+
+        elapsedGrabTime = 0f;
+        stopGrabbing = false;
+
         player.SetVelocityX(0f);
     }
 
@@ -28,6 +35,9 @@ public class PlayerWallGrabState : PlayerTouchingWallState {
         base.Exit();
 
         isWallGrabing = false;
+
+        elapsedGrabTime = 0f;
+        stopGrabbing = false;
     }
 
     public override void LogicUpdate() {
@@ -35,22 +45,40 @@ public class PlayerWallGrabState : PlayerTouchingWallState {
 
         if (isExitingState) return;
 
+        if (xInput == player.FacingDirection) {
+            elapsedGrabTime = 0f;
+            stopGrabbing = false;
+        }
+        else if (xInput == 0) {
+            elapsedGrabTime += Time.deltaTime;
+
+            if (elapsedGrabTime >= playerData.grabDelay && !stopGrabbing) {
+                stopGrabbing = true;
+            }
+        }
+
         if (playerData.CanLedgeGrab.Value && isTouchingWall & !isTouchingLedge) {
             player.LedgeClimbState.SetDetectedPosition(player.transform.position);
             stateMachine.ChangeState(player.LedgeClimbState);
         }
-        // else if (xInput == -player.FacingDirection && !isWallJumping) {
-        //     player.WallJumpState.WallJumpConfiguration(playerData.wallHopSpeed, playerData.wallHopDirectionOffAngle, player.FacingDirection, playerData.wallHopTime);
-        //     stateMachine.ChangeState(player.WallJumpState);
-        // }
-        else if (player.CheckGround(playerData.platformLayer) && xInput == 0) {
-            stateMachine.ChangeState(player.LandState);
+        else if (playerData.CanWallJump.Value && jumpInput && (isTouchingWall || isTouchingBackWall || wallJumpCoyoteTime || hasTouchedWall) && !isOnSolidGround) {
+            if (yInput >= 0) {
+                player.WallJumpState.WallJumpConfiguration(playerData.wallJumpSpeed, playerData.wallJumpDirectionOffAngle, player.FacingDirection, playerData.wallJumpTime);
+            }
+            else {
+                player.WallJumpState.WallJumpConfiguration(playerData.wallJumpSpeed, -player.FacingDirection * Vector2.right, player.FacingDirection, playerData.wallJumpTime);
+            }
+
+            stateMachine.ChangeState(player.WallJumpState);
         }
+        // else if (player.CheckGround(playerData.platformLayer) && xInput == 0) {
+        //     stateMachine.ChangeState(player.LandState);
+        // }
         else if (playerData.autoWallGrab) {
-            if (playerData.CanWallClimb.Value && xInput == player.FacingDirection && yInput != 0) {
+            if (playerData.CanWallClimb.Value && yInput != 0) {
                 stateMachine.ChangeState(player.WallClimbState);
             }
-            else if (xInput == 0) {
+            else if ((!playerData.hasGrabDelay && xInput == 0) || (playerData.hasGrabDelay && stopGrabbing)) {
                 if (playerData.CanWallSlide.Value && playerData.autoWallSlide)
                     stateMachine.ChangeState(player.WallSlideState);
                 else
@@ -64,7 +92,7 @@ public class PlayerWallGrabState : PlayerTouchingWallState {
                 }
             }
             else if (!grabInput) {
-                if (xInput == 0) {
+                if ((!playerData.hasGrabDelay && xInput == 0) || (playerData.hasGrabDelay && stopGrabbing)) {
                     if (playerData.CanWallSlide.Value && playerData.autoWallSlide)
                         stateMachine.ChangeState(player.WallSlideState);
                     else

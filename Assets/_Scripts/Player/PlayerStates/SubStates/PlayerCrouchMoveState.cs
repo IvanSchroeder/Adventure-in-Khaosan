@@ -44,7 +44,7 @@ public class PlayerCrouchMoveState : PlayerGroundedState {
     public override void PhysicsUpdate() {
         base.PhysicsUpdate();
 
-        if (!crouchInputHold && player.CheckForSpace(player.GroundPoint.position.ToVector2() + Vector2.up * 0.015f, Vector2.up) /*|| !isTouchingCeiling*/) {
+        if (!crouchInputHold && player.CheckForSpace(player.GroundPoint.position.ToVector2() + Vector2.up * 0.015f, Vector2.up, 1.1f) /*|| !isTouchingCeiling*/) {
             standUp = true;
         }
 

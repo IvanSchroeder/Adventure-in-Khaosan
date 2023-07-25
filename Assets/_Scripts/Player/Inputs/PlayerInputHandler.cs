@@ -4,6 +4,9 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerInputHandler : MonoBehaviour {
+    public PlayerInput PlayerInputComponent;
+    public InputMaster PlayerInputsMaster;
+
     public Vector2 RawMovementInput { get; private set; }
     public int LastXInput { get; private set; }
     public int NormInputX { get; private set; }
@@ -27,26 +30,48 @@ public class PlayerInputHandler : MonoBehaviour {
     [field: SerializeField] public float InputHoldTime { get; private set; } = 0.2f;
     private float jumpInputStartTime;
 
+    private InputActionMap gameplayMap;
+    private InputActionMap uiMap;
+
     private void OnEnable() {
-        LevelManager.OnLevelStarted += UnlockGameplayInputs;
+        //LevelManager.OnLevelStarted += EnableGameplayInputs;
         LevelManager.OnLevelStarted += ResetInputs;
-        LevelManager.OnLevelFinished += LockGameplayInputs;
+
+        LevelManager.OnLevelFinished += DisableGameplayInputs;
         LevelManager.OnLevelFinished += ResetInputs;
-        LevelManager.OnPlayerSpawn += UnlockGameplayInputs;
+
+        //LevelManager.OnPlayerSpawn += EnableGameplayInputs;
         LevelManager.OnPlayerSpawn += ResetInputs;
+
+        LevelManager.OnGamePaused += DisableGameplayInputs;
+        LevelManager.OnGameUnpaused += EnableGameplayInputs;
     }
 
     private void OnDisable() {
-        LevelManager.OnLevelStarted -= UnlockGameplayInputs;
+        //LevelManager.OnLevelStarted -= EnableGameplayInputs;
         LevelManager.OnLevelStarted -= ResetInputs;
-        LevelManager.OnLevelFinished -= LockGameplayInputs;
+
+        LevelManager.OnLevelFinished -= DisableGameplayInputs;
         LevelManager.OnLevelFinished -= ResetInputs;
-        LevelManager.OnPlayerSpawn -= UnlockGameplayInputs;
+
+        //LevelManager.OnPlayerSpawn -= EnableGameplayInputs;
         LevelManager.OnPlayerSpawn -= ResetInputs;
+
+        LevelManager.OnGamePaused -= DisableGameplayInputs;
+        LevelManager.OnGameUnpaused -= EnableGameplayInputs;
     }
 
     private void Start() {
-        UnlockGameplayInputs();
+        PlayerInputsMaster = new InputMaster();
+        // gameplayMap = PlayerInputsMaster.asset.FindActionMap("Gameplay");
+        // uiMap = PlayerInputsMaster.asset.FindActionMap("UI");
+
+        gameplayMap = PlayerInputComponent.actions.FindActionMap("Gameplay");
+        uiMap = PlayerInputComponent.actions.FindActionMap("UI");
+
+        EnableGameplayInputs();
+        EnableUIInputs();
+        
         ResetInputs();
     }
 
@@ -197,5 +222,21 @@ public class PlayerInputHandler : MonoBehaviour {
         AttackInput = false;
         AttackInputStop = false;
         AttackInputHold = false;
+    }
+
+    public void EnableGameplayInputs() {
+        gameplayMap.Enable();
+    }
+
+    public void DisableGameplayInputs() {
+        gameplayMap.Disable();
+    }
+
+    public void EnableUIInputs() {
+        uiMap.Enable();
+    }
+
+    public void DisableUIInputs() {
+        uiMap.Disable();
     }
 }

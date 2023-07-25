@@ -6,15 +6,11 @@ using System;
 using System.Linq;
 
 public class SpriteManager : MonoBehaviour {
-    // [field: SerializeField] public Entity RelatedEntity { get; private set; }
     [field: SerializeField] public HealthSystem HealthSystem { get; private set; }
     [field: SerializeField] public IDamageable Damageable { get; private set; }
     [field: SerializeField] public IInteractable Interactable { get; private set; }
     [field: SerializeField] public InteractableSystem InteractableSystem { get; private set; }
     [field: SerializeField] public SpriteFlashConfiguration CurrentFlashConfiguration { get; private set; }
-    [field: SerializeField] public SpriteFlashConfiguration DamagedFlash { get; private set; }
-    [field: SerializeField] public SpriteFlashConfiguration InvulnerabilityFlash { get; private set; }
-    [field: SerializeField] public SpriteFlashConfiguration InteractedFlash { get; private set; }
 
     [field: SerializeField, ColorUsage(true, true)] public Color DefaultFlashColor { get; private set; } = Color.white;
     [field: SerializeField, ColorUsage(true, true)] public Color CurrentFlashColor { get; private set; } = Color.white;
@@ -40,7 +36,7 @@ public class SpriteManager : MonoBehaviour {
     private SpriteRenderer spriteRenderer;
 
     private Coroutine spriteFlashCoroutine;
-    private WaitForSeconds colorChangeDelay;
+    private WaitForSeconds flashStartDelay;
 
     private void OnEnable() {
         if (HealthSystem.IsNotNull()) {
@@ -89,6 +85,8 @@ public class SpriteManager : MonoBehaviour {
         _materials = new Material[1];
         _materials[0] = spriteRenderer.material;
 
+        flashStartDelay = new WaitForSeconds(0.1f);
+
         SetDefaultValues();
     }
 
@@ -97,12 +95,9 @@ public class SpriteManager : MonoBehaviour {
         CurrentColorIndex = 0;
         CurrentAlphaIndex = 0;
 
-        if (CurrentFlashConfiguration.SelectedColorsList.Count > 0) CurrentFlashColor = CurrentFlashConfiguration.SelectedColorsList.ElementAt(CurrentColorIndex);
-        else CurrentFlashColor = DefaultFlashColor;
-        if (CurrentFlashConfiguration.SelectedAlphasList.Count > 0) CurrentAlphaAmount = CurrentFlashConfiguration.SelectedAlphasList.ElementAt(CurrentAlphaIndex);
-        else CurrentAlphaAmount = DefaultAlphaAmount;
+        CurrentFlashColor = DefaultFlashColor;
+        CurrentAlphaAmount = DefaultAlphaAmount;
 
-        SetFlashColor(CurrentFlashColor);
         SetFlashAmount(CurrentFlashConfiguration.MaxFlashAmount);
         SetAlphaAmount(CurrentAlphaAmount);
     }
@@ -124,12 +119,6 @@ public class SpriteManager : MonoBehaviour {
         else if (HealthSystem.InvulnerabilityFlash.IsNotNull()) {
             CurrentFlashConfiguration = HealthSystem.DamagedFlash;
         }
-        else {
-            CurrentFlashConfiguration = DamagedFlash;
-        }
-
-        Debug.Log($"CurrentFlashConfiguration {CurrentFlashConfiguration}");
-        InitializeFlashConfiguration(CurrentFlashConfiguration);
 
         StartFlash(CurrentFlashConfiguration);
     }
@@ -141,12 +130,6 @@ public class SpriteManager : MonoBehaviour {
         else if (HealthSystem.InvulnerabilityFlash.IsNotNull()) {
             CurrentFlashConfiguration = HealthSystem.InvulnerabilityFlash;
         }
-        else {
-            CurrentFlashConfiguration = InvulnerabilityFlash;
-        }
-
-        Debug.Log($"CurrentFlashConfiguration {CurrentFlashConfiguration}");
-        InitializeFlashConfiguration(CurrentFlashConfiguration);
 
         StartFlash(CurrentFlashConfiguration);
     }
@@ -160,12 +143,6 @@ public class SpriteManager : MonoBehaviour {
         else if (InteractableSystem.InteractedFlash.IsNotNull()) {
             CurrentFlashConfiguration = InteractableSystem.InteractedFlash;
         }
-        else {
-            CurrentFlashConfiguration = InteractedFlash;
-        }
-
-        Debug.Log($"CurrentFlashConfiguration {CurrentFlashConfiguration}");
-        InitializeFlashConfiguration(CurrentFlashConfiguration);
 
         StartFlash(CurrentFlashConfiguration);
     }
@@ -173,7 +150,6 @@ public class SpriteManager : MonoBehaviour {
     private void InitializeFlashConfiguration(SpriteFlashConfiguration config) {
         config.Init();
         Init();
-        colorChangeDelay = new WaitForSeconds(config.SecondsBetweenFlashes);
     }
 
     public void SetInteractedOutline(object sender, OnEntityInteractedEventArgs args) {
@@ -183,7 +159,10 @@ public class SpriteManager : MonoBehaviour {
     }
 
     private void StartFlash(SpriteFlashConfiguration configuration) {
-        // if (IsFlashing) IsFlashing = false;
+        if (IsFlashing) IsFlashing = false;
+
+        configuration.Init();
+        Init();
 
         if (spriteFlashCoroutine != null) {
             StopCoroutine(spriteFlashCoroutine);
@@ -206,6 +185,8 @@ public class SpriteManager : MonoBehaviour {
 
     private IEnumerator SpriteFlashRoutine(SpriteFlashConfiguration config) {
         IsFlashing = true;
+
+        yield return flashStartDelay;
 
         while ((CurrentFlashConfiguration.LoopFlash) || (!CurrentFlashConfiguration.LoopFlash && CurrentAmountOfFlashes < CurrentFlashConfiguration.MaxAmountOfFlashes)) {
             if (CurrentFlashConfiguration.ChangeColor) {
@@ -231,7 +212,7 @@ public class SpriteManager : MonoBehaviour {
                 yield break;
             }
 
-            yield return colorChangeDelay;
+            yield return CurrentFlashConfiguration.colorChangeDelay;
         }
 
         StopFlash();

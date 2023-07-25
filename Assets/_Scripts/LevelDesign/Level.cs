@@ -30,7 +30,7 @@ public class Level : ScriptableObject {
     public bool collectedAllDishes = false;
     public bool killedAllEnemies = false;
     public bool noHitFinished = false;
-    public bool finishedInTimeRecord = false;
+    public bool finishedInRecordTime = false;
     public bool isFinished = false;
     public bool isFullyCompleted = false;
 
@@ -40,22 +40,33 @@ public class Level : ScriptableObject {
     [Space(5)]
     public int totalCoinsAmount;
     public int totalEnemiesAmount;
-    // public float baseRecordTime = 60f;
     public float baseRecordTime = 60f;
 
     [Space(20)]
     
     [Header("Check Parameters")]
-    public float currentRecordTime;
+    public float personalBestTime = 0f;
     public bool wasHit = false;
+
+    public void InitLevel() {
+        wasHit = false;
+    }
     
-    public void CheckCompletion(float currentTimer) {
+    public void CheckCompletion(float currentTimer, int coinsCollected) {
         CheckRecordTime(currentTimer);
+        if (!noHitFinished && !wasHit) noHitFinished = true;
+        if (!collectedAllCoins && coinsCollected == totalCoinsAmount) collectedAllCoins = true;
     }
 
     public void CheckRecordTime(float currentTimer) {
-        if (currentTimer < currentRecordTime) {
-            currentRecordTime = currentTimer;
+        if ((currentTimer < personalBestTime) || (personalBestTime == 0f)) {
+            personalBestTime = currentTimer;
+            Debug.Log($"New personal best time! ({personalBestTime})");
+
+            if (!finishedInRecordTime && personalBestTime < baseRecordTime) {
+                finishedInRecordTime = true;
+                Debug.Log($"Finished in record time! ({personalBestTime})");
+            }
         }
     }
 

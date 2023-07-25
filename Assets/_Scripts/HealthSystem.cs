@@ -37,14 +37,6 @@ public class HealthSystem : MonoBehaviour {
     private WaitForSeconds invulnerabilityDelay;
     private WaitForSeconds invulnerabilityStartDelay;
 
-    // private void OnEnable() {
-    //     OnInvulnerabilityStart += SpriteManager.SetCurrentInvulnerabilityFlash;
-    // }
-
-    // private void OnDisable() {
-    //     OnInvulnerabilityStart -= SpriteManager.SetCurrentInvulnerabilityFlash;
-    // }
-
     private void Awake() {
         if (Entity == null) Entity = this.GetComponentInHierarchy<Entity>();
         if (HitboxTrigger == null) HitboxTrigger = GetComponent<BoxCollider2D>();
@@ -52,6 +44,10 @@ public class HealthSystem : MonoBehaviour {
     }
 
     private void Start() {
+        Init();
+    }
+
+    public void Init() {
         if (EntityData == null) EntityData = Entity.entityData;
 
         DamagedBy = EntityData.damagedBy;

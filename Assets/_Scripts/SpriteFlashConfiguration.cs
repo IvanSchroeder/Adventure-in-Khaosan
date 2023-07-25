@@ -28,9 +28,7 @@ public class SpriteFlashConfiguration : ScriptableObject {
     [field: SerializeField] public ColorsListType ColorsType { get; private set; } = ColorsListType.Set;
     [HideInInspector] public List<Color> SelectedColorsList { get; private set; }
     [field: SerializeField, ColorUsage(true, true)] public List<Color> SetColorsList { get; private set; }
-    [field: SerializeField] public AnimationCurve FlashAnimationCurve { get; private set; } 
-    // [field: SerializeField, ColorUsage(true, true)] public Color StartColor { get; private set; } = Color.white;
-    // [field: SerializeField, ColorUsage(true, true)] public Color EndColor { get; private set; } = Color.black;
+    [field: SerializeField] public AnimationCurve FlashAnimationCurve { get; private set; }
 
     [field: SerializeField, Range(0f, 1f), Space(20f), Header("--- Flash Amount Parameters ---"), Space(5f)] public float MinFlashAmount { get; private set; } = 0;
     [field: SerializeField, Range(0f, 1f)] public float MaxFlashAmount { get; private set; } = 1;
@@ -46,8 +44,14 @@ public class SpriteFlashConfiguration : ScriptableObject {
     [field: SerializeField, Range(0f, 1f)] public float MinAlphaAmount { get; private set; } = 0;
     [field: SerializeField, Range(0f, 1f)] public float MaxAlphaAmount { get; private set; } = 1;
 
+    public WaitForSeconds colorChangeDelay { get; private set; }
+
     private void OnValidate() {
         Init();
+    }
+
+    public void OnEnable() {
+        colorChangeDelay = new WaitForSeconds(SecondsBetweenFlashes);
     }
 
     public void Init() {

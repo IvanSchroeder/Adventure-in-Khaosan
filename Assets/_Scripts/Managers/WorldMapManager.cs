@@ -31,7 +31,7 @@ public class WorldMapManager : MonoBehaviour {
     }
 
     private void Awake() {
-        if (instance == null) {
+        if (instance.IsNull()) {
             instance = this;
         }
         else if (instance != this) {
@@ -42,7 +42,7 @@ public class WorldMapManager : MonoBehaviour {
     }
 
     private void Start() {
-        if (LevelManagerInstance == null) LevelManagerInstance = LevelManager.instance;
+        if (LevelManagerInstance.IsNull()) LevelManagerInstance = LevelManager.instance;
     }
 
     public void LoadWorldMap() {

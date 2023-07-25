@@ -4,8 +4,17 @@ using UnityEngine;
 using ExtensionMethods;
 using System;
 using System.Linq;
+using DG.Tweening;
+
+public enum GameState {
+    MainMenu,
+    Gameplay,
+    Paused
+}
 
 public class LevelManager : MonoBehaviour {
+    public GameState CurrentGameState;
+
     public static LevelManager instance;
     public WorldMapManager WorldMapManagerInstance { get; private set; }
     public LevelStructure LevelStructure { get; private set; }
@@ -23,7 +32,9 @@ public class LevelManager : MonoBehaviour {
     public Level currentLevel;
     public Level lastUnlockedLevel;
 
-    // public List<CoinItem> CoinItems;
+    public List<Coin> CoinsList;
+    public IntSO coinsCollectedCount;
+    public int coinsInLevelCount;
     // public List<FoodItem> FoodItemsList;
     // public List<Enemy> EnemiesList;
     public List<Checkpoint> CheckpointsList = new List<Checkpoint>();
@@ -33,8 +44,10 @@ public class LevelManager : MonoBehaviour {
 
     public bool startedLevel = false;
     public bool isInGameplay;
+    public bool enableTimer;
     public FloatSO currentTimer;
     public float playerRespawnTimer = 1f;
+    public float pauseLerpSpeed = 1f;
 
     private Coroutine loadLevelCoroutine;
     private Coroutine playerSpawnCoroutine;
@@ -42,11 +55,21 @@ public class LevelManager : MonoBehaviour {
     public static Action OnLevelLoaded;
     public static Action OnLevelStarted;
     public static Action OnLevelFinished;
+    public static Action OnLevelRestart;
+    public static Action OnGamePaused;
+    public static Action OnGameUnpaused;
     public static Action OnPlayerSpawn;
+    public static Action<GameState> OnGameStateChanged;
     
     private void OnEnable() {
         WorldMapManager.OnWorldMapLoaded += SpawnPlayer;
+        UIManager.OnPause += PauseLevel;
+        UIManager.OnPauseAnimationCompleted += UnpauseLevel;
+
         Checkpoint.OnCheckpointActive += SetCurrentCheckpoint;
+
+        Coin.OnCoinCreated += RegisterCoin;
+        Coin.OnCoinPickup += RemoveCoin;
 
         startingCheckpoint = null;
         currentCheckpoint = null;
@@ -55,9 +78,16 @@ public class LevelManager : MonoBehaviour {
 
     private void OnDisable() {
         WorldMapManager.OnWorldMapLoaded -= SpawnPlayer;
+        UIManager.OnPause -= PauseLevel;
+        UIManager.OnPauseAnimationCompleted -= UnpauseLevel;
+
         Checkpoint.OnCheckpointActive -= SetCurrentCheckpoint;
 
+        Coin.OnCoinCreated -= RegisterCoin;
+        Coin.OnCoinPickup -= RemoveCoin;
+
         if (PlayerInstance != null) {
+            PlayerInstance.OnEntityDamaged -= CheckPlayerHit;
             PlayerInstance.OnLivesDepleted -= GameOver;
             PlayerInstance.OnPlayerDeathEnd -= RespawnPlayer;
         }
@@ -67,7 +97,6 @@ public class LevelManager : MonoBehaviour {
         currentCheckpoint = null;
         lastCheckpoint = null;
 
-        // List<BoolSO> abilities = new List<BoolSO>(EnabledAbilitiesList.UnifyLists([DisableAbilities]));
         List<BoolSO> abilities = new List<BoolSO>();
         List<BoolSO>[] abilitiesToUnify = { EnabledAbilitiesList , DisabledAbilitiesList };
         abilities = new List<BoolSO>(abilities.UnifyLists(abilitiesToUnify));
@@ -78,22 +107,42 @@ public class LevelManager : MonoBehaviour {
     }
 
     private void Awake() {
-        if (instance == null) {
+        if (instance.IsNull()) {
             instance = this;
         }
         else if (instance != this) {
             Destroy(gameObject);
         }
+
+        coinsCollectedCount.Value = 0;
+        coinsInLevelCount = 0;
     }
 
     private void Start() {
-        if (WorldMapManagerInstance == null) WorldMapManagerInstance = WorldMapManager.instance;
+        if (WorldMapManagerInstance.IsNull()) WorldMapManagerInstance = WorldMapManager.instance;
 
-        LoadLevelData();
+        CurrentGameState = GameState.Gameplay;
+
+        switch (CurrentGameState) {
+            case GameState.Gameplay:
+                LoadLevelData();
+            break;
+            case GameState.MainMenu:
+            break;
+            case GameState.Paused:
+            break;
+        }
+    }
+
+    private void ChangeGameState(GameState state) {
+        if (CurrentGameState == state) return;
+
+        CurrentGameState = state;
+        OnGameStateChanged?.Invoke(CurrentGameState);
     }
 
     private void Update() {
-        if (isInGameplay) {
+        if (isInGameplay && enableTimer) {
             currentTimer.Value += Time.deltaTime;
         }
     }
@@ -125,15 +174,35 @@ public class LevelManager : MonoBehaviour {
     }
 
     public void FinishLevel() {
-        Debug.Log($"Level completed!");
-        currentLevel.CheckCompletion(currentTimer.Value);
+        enableTimer = false;
+        currentLevel.CheckCompletion(currentTimer.Value, coinsCollectedCount.Value);
         OnLevelFinished?.Invoke();
+    }
+
+    public void PauseLevel(bool pause) {
+        ChangeGameState(GameState.Paused);
+        if (pause)
+            SetTimeScale(0f);
+    }
+
+    public void UnpauseLevel(bool pause) {
+        ChangeGameState(GameState.Gameplay);
+        if (!pause)
+            SetTimeScale(1f);
+    }
+
+    public void SetTimeScale(float scale, bool instant = false) {
+        DOTween.To(() => Time.timeScale, x => Time.timeScale = x, scale, instant == false ? pauseLerpSpeed : 0f).SetUpdate(true);
     }
 
     public void RestartLevel() {
         // corutina?
         startedLevel = false;
         currentTimer.Value = 0f;
+        enableTimer = false;
+        isInGameplay = false;
+
+        Debug.Log($"Show restart menu UI");
     }
 
     public void GameOver() {
@@ -146,14 +215,11 @@ public class LevelManager : MonoBehaviour {
 
         CheckpointsList = new List<Checkpoint>();
 
-        Checkpoint[] checkpointArray = GameObject.FindObjectsOfType<Checkpoint>();
+        Checkpoint[] checkpointArray = GameObject.FindObjectsOfType<Checkpoint>().OrderBy(ch => ch.checkpointOrderID).ToArray();
 
         for (int i = 0; i < checkpointArray.Count(); i++) {
-            checkpointArray[i].checkpointOrderID = i;
             CheckpointsList.Add(checkpointArray[i]);
         }
-
-        CheckpointsList.OrderBy(ch => ch.checkpointOrderID);
 
         startingCheckpoint = CheckpointsList.GetFirstElement();
         currentCheckpoint = startingCheckpoint;
@@ -173,9 +239,9 @@ public class LevelManager : MonoBehaviour {
         }
 
         PlayerInstance.transform.SetParent(null);
-        PlayerInstance.transform.position = currentCheckpoint.BasepointTransform.position;
-        // PlayerInstance.transform.position = startingCheckpoint.SpawnpointTransform.position;
+        PlayerInstance.transform.position = currentCheckpoint.SpawnpointTransform.position;
 
+        PlayerInstance.OnEntityDamaged += CheckPlayerHit;
         PlayerInstance.OnPlayerDeathEnd += RespawnPlayer;
         PlayerInstance.OnLivesDepleted += GameOver;
 
@@ -186,14 +252,28 @@ public class LevelManager : MonoBehaviour {
         Debug.Log($"Respawned player");
     }
 
+    private void CheckPlayerHit(object sender, OnEntityDamagedEventArgs args) {
+        if (!currentLevel.wasHit) currentLevel.SetHitStatus();
+    }
+
     public void RespawnPlayer() {
         if (PlayerInstance.HealthSystem.IsRespawneable && PlayerInstance.HealthSystem.CanRespawn) {
             playerSpawnCoroutine = StartCoroutine(RespawnPlayerRoutine());
         }
     }
 
-    public void RemoveCoin() {
+    private void RegisterCoin(Coin coin) {
+        CoinsList.Add(coin);
+        coinsInLevelCount++;
+    }
 
+    private void RemoveCoin(Coin coin) {
+        CoinsList.Remove(coin);
+        coinsCollectedCount.Value++;
+        
+        if (coinsCollectedCount.Value >= currentLevel.totalCoinsAmount) {
+            Debug.Log($"Collected all coins!");
+        }
     }
 
     private void EnableCheckpoints() {
@@ -201,8 +281,6 @@ public class LevelManager : MonoBehaviour {
         lastCheckpoint.isFinalCheckpoint = true;
 
         startingCheckpoint.InteractableSystem.RequiresInput = false;
-
-        Debug.Log("Enabled Checkpoints");
     }
 
     public void EnableAbilities() {
@@ -211,7 +289,6 @@ public class LevelManager : MonoBehaviour {
         foreach (BoolSO ability in currentLevel.AbilitiesToEnableList) {
             ability.OnValueChange += ChangeAbilityInList;
             ability.Value = true;
-            // EnabledAbilitiesList.Add(ability);
         }
     }
 
@@ -221,7 +298,6 @@ public class LevelManager : MonoBehaviour {
         foreach (BoolSO ability in currentLevel.AbilitiesToDisableList) {
             ability.OnValueChange += ChangeAbilityInList;
             ability.Value = false;
-            // DisabledAbilitiesList.Add(ability);
         }
     }
 
@@ -238,42 +314,40 @@ public class LevelManager : MonoBehaviour {
 
     public IEnumerator LoadLevelRoutine() {
         SpawnLevelStructure();
-        Debug.Log("Spawned Level structure");
-        if (!currentLevel.isFinished) currentLevel.currentRecordTime = currentLevel.baseRecordTime;
-        // send event to scene manager to enable scene transition
+        // send event to UI manager to enable scene transition
         yield return new WaitForSecondsRealtime(3f);
         EnableCheckpoints();
-        isInGameplay = true;
         startedLevel = true;
+        isInGameplay = true;
+        enableTimer = true;
+        currentLevel.totalCoinsAmount = coinsInLevelCount;
         OnLevelStarted?.Invoke();
         OnLevelLoaded?.Invoke();
         yield return null;
     }
 
     public IEnumerator GameOverRoutine() {
-        isInGameplay = false;
-        yield return new WaitForSecondsRealtime(3f);
-        PlayerInstance.gameObject.SetActive(false);
+        enableTimer = false;
         Debug.Log($"Game Over");
-        // send event to scene manager to enable scene transition
+        yield return new WaitForSecondsRealtime(2f);
+
+        isInGameplay = false;
+        Debug.Log($"Show restart menu UI");
+
         yield return null;
+        // send event to scene manager to enable scene transition
     }
 
     public IEnumerator RespawnPlayerRoutine() {
-        //PlayerInstance.PlayerSprite.enabled = false;
-        // yield return new WaitForSeconds(playerRespawnTimer);
-        //PlayerInstance.PlayerSprite.enabled = true;
-        // PlayerInstance.transform.position = currentCheckpoint.BasepointTransform.position;
-        // // PlayerInstance.transform.position = currentCheckpoint.SpawnpointTransform.position;
-        // PlayerInstance.HealthSystem.InitializeHealth();
-        // OnPlayerSpawn?.Invoke();
+        // if (PlayerInstance.IsNotNull()) {
+        //     PlayerInstance.gameObject.Destroy();
+        // }
 
-        // PlayerInstance.PlayerSprite.enabled = false;
-        if (PlayerInstance.IsNotNull()) {
-            PlayerInstance.gameObject.Destroy();
-            Debug.Log($"Destroyed player");
-        }
+        PlayerInstance.PlayerSprite.enabled = false;
+
         yield return new WaitForSeconds(playerRespawnTimer);
+
+        PlayerInstance.PlayerSprite.enabled = true;
         SpawnPlayer();
 
         yield return null;

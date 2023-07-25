@@ -97,6 +97,8 @@ public class PlayerData : EntityData {
     [Space(3)]
     public bool stickToGround;
     public bool correctLedgeOnGround;
+    public bool correctCornerOnAir;
+    public bool correctLedgeOnAir;
     public bool lerpVelocity = false;
     public bool conserveMomentum = false;
     public bool enableFriction = true;
@@ -108,6 +110,9 @@ public class PlayerData : EntityData {
     [Range(0f, 10f)] public float runSpeed;
     [Range(0f, 1f)] public float maxRunSpeedThresholdMult;
     public float maxRunSpeedThreshold;
+    public bool runSpeedCutoff;
+    [Range(0f, 1f)] public float runSpeedCutoffThreshold = 0.1f;
+    [Range(0f, 1f)] public float runSpeedCutoffAmount = 0.5f;
     [Range(0, 100)] public int runAcceleration;
     [Range(0, 100)] public int runDecceleration;
     [Range(0, 100)] public int runDirectionChangeAcceleration;
@@ -117,6 +122,9 @@ public class PlayerData : EntityData {
     [Range(0f, 30f)] public float sprintSpeed;
     [Range(0f, 1f)] public float maxSprintSpeedThresholdMult;
     public float maxSprintSpeedThreshold;
+    public bool sprintSpeedCutoff;
+    [Range(0f, 1f)] public float sprintSpeedCutoffThreshold = 0.1f;
+    [Range(0f, 1f)] public float sprintSpeedCutoffAmount = 0.5f;
     [Range(0f, 2f)] public float sprintStopDelay;
     [Range(0, 100)] public int sprintAcceleration;
     [Range(0, 100)] public int sprintDecceleration;
@@ -203,17 +211,21 @@ public class PlayerData : EntityData {
     [Space(5)]
     public bool autoWallGrab = false;
     public bool autoWallSlide = false;
+    public bool hasGrabDelay = true;
+    public float grabDelay = 0.2f;
     public float wallSlideSpeed = 2.5f;
     public float wallClimbSpeed = 3f;
     public float fastWallSlideSpeed = 5f;
     public bool lerpWallVelocity = false;
+    [Range(0f, 1f)] public float wallTouchVelocityCutoff = 0.75f;
     [Range(0, 100)] public int wallSlideAcceleration;
     [Range(0, 100)] public int wallGrabAcceleration;
     [Range(0, 100)] public int wallClimbAcceleration;
     public float wallJumpSpeed = 15f;
     public float wallHopSpeed = 10f;
     [Range(0f, 0.5f)] public float wallJumpTime = 0.4f;
-    [Range(0f, 0.25f)] public float wallHopTime = 0.1f;
+    [Range(0f, 0.5f)] public float wallHopTime = 0.2f;
+    [Range(0f, 0.5f)] public float minWallJumpTime = 0.15f;
     [Range(-90f, 90f)] public float wallJumpAngle;
     [Range(-90f, 90f)] public float wallHopAngle;
     public Vector2 wallJumpDirectionOffAngle;

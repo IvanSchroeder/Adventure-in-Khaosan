@@ -11,7 +11,6 @@ public class Sign : MonoBehaviour, IInteractable {
     [field: SerializeField] public BoxCollider2D InteractTrigger { get; set; }
     [field: SerializeField] public InteractableSystem InteractableSystem { get; set; }
     [field: SerializeField] public SpriteManager SpriteManager { get; set; }
-    [field: SerializeField] public IInteractor CurrentInteractor { get; set; }
 
     [field: SerializeField] public Canvas SignCanvas { get; set; }
     [field: SerializeField] public Transform TextOrigin { get; set; }
@@ -29,8 +28,6 @@ public class Sign : MonoBehaviour, IInteractable {
     public bool isActive = false;
 
     private Coroutine textEnablingCoroutine;
-
-    public EventHandler<OnEntityInteractedEventArgs> OnInteracted;
 
     private void OnEnable() {
         InteractableSystem.OnInteracted += EnableSign;

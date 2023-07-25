@@ -36,11 +36,11 @@ MonoBehaviour:
   collectedAllDishes: 0
   killedAllEnemies: 0
   noHitFinished: 0
-  finishedInTimeRecord: 0
+  finishedInRecordTime: 0
   isFinished: 0
   isFullyCompleted: 0
   totalCoinsAmount: 0
   totalEnemiesAmount: 0
   baseRecordTime: 60
-  currentRecordTime: 60
+  personalBestTime: 0
   wasHit: 0

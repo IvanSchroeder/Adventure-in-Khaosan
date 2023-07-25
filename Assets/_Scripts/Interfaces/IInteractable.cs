@@ -27,5 +27,4 @@ public interface IInteractable {
     BoxCollider2D InteractTrigger { get; set; }
     InteractableSystem InteractableSystem { get; set; }
     SpriteManager SpriteManager { get; set; }
-    IInteractor CurrentInteractor { get; set; }
 }
