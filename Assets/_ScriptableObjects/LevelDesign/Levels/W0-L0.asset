@@ -31,6 +31,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 23c36e8ca242fd94c86dd67dad05beb0, type: 2}
   - {fileID: 11400000, guid: fe90c649b2c0252438e67dbbec7f4861, type: 2}
   - {fileID: 11400000, guid: bb1c808d7efb5e442bee5079cb65936f, type: 2}
+  resetLevelStatus: 1
   isUnlocked: 1
   collectedAllCoins: 0
   collectedAllDishes: 0
@@ -44,3 +45,4 @@ MonoBehaviour:
   baseRecordTime: 60
   personalBestTime: 0
   wasHit: 0
+  recordBeaten: 0

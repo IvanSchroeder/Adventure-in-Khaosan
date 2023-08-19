@@ -11,12 +11,14 @@ public enum HealthType {
 public class OnEntityDamagedEventArgs : EventArgs {
     public IDamageDealer DamageDealerSource { get; set; }
     public float DamageAmount { get; set; }
+    public IntSO DamageInHearts { get; set; }
     public Vector2 ContactPoint { get; set; }
     public SpriteFlashConfiguration CurrentFlash { get; set; }
 
-    public OnEntityDamagedEventArgs(IDamageDealer ds = null, float da = 0f, Vector2 cp = default, SpriteFlashConfiguration cf = null) {
+    public OnEntityDamagedEventArgs(IDamageDealer ds = null, float da = 0f, IntSO dh = null, Vector2 cp = default, SpriteFlashConfiguration cf = null) {
         DamageDealerSource = ds;
         DamageAmount = da;
+        DamageInHearts = dh;
         ContactPoint = cp;
         CurrentFlash = cf;
     }

@@ -3,7 +3,9 @@ guid: 886755ae7d89e7348ba2960f3373569c
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - <DamageHitbox>k__BackingField: {instanceID: 0}
+  - <DamageInHearts>k__BackingField: {fileID: 11400000, guid: c33e7bc293f2f754185f728ac1c18a41, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

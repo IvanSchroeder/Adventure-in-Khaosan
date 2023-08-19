@@ -33,8 +33,9 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4352
   healthType: 1
-  maxLives: 3
+  maxLives: 1
   maxHearts: 3
+  startingHearts: 3
   maxHealth: 100
   invulnerabilitySeconds: 2
   minKnockbackTime: 0.5
@@ -46,7 +47,7 @@ MonoBehaviour:
   isIgnoringPlatforms: 0
   isOnSlope: 0
   isAirborne: 0
-  isIdle: 0
+  isIdle: 1
   isMoving: 0
   isRunning: 0
   isRunningAtMaxSpeed: 0
@@ -75,7 +76,7 @@ MonoBehaviour:
   isDamaged: 0
   isDead: 0
   isDeadOnGround: 0
-  isInvulnerable: 0
+  isInvulnerable: 1
   isAnimationFinished: 0
   isAbilityDone: 0
   isExitingState: 0

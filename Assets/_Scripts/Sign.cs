@@ -128,12 +128,4 @@ public class Sign : MonoBehaviour, IInteractable {
 
         yield return null;
     }
-
-    public string[] lines;
-    public float textSpeed = 0.1f;
-    private int index;
-
-    void StartDialog() {
-        index = 0;
-    }
 }

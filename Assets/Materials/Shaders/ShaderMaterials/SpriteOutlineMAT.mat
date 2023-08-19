@@ -38,7 +38,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _EightDirections: 1
+    - _EightDirections: 0
     - _EnableOutline: 0
     - _OutlineAmount: 1
     m_Colors:

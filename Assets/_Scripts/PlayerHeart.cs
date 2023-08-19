@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+public enum HeartState {
+    Idle,
+    Broken,
+    Restored
+}
+
 public class PlayerHeart : MonoBehaviour {
-    public enum HeartState {
-        Idle,
-        Broken,
-        Restored
-    }
 
     public Animator anim;
     public Image heartSprite;
@@ -19,6 +20,7 @@ public class PlayerHeart : MonoBehaviour {
 
         switch (heartState) {
             case HeartState.Idle:
+                anim.SetTrigger("idle");
             break;
             case HeartState.Broken:
                 anim.SetTrigger("broken");

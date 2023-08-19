@@ -49,17 +49,25 @@ public class LevelManager : MonoBehaviour {
     public float playerRespawnTimer = 1f;
     public float pauseLerpSpeed = 1f;
 
-    private Coroutine loadLevelCoroutine;
+    public float levelFinishDelaySeconds;
+    private WaitForSeconds levelFinishDelay;
+
+    private Coroutine levelHandlerCoroutine;
     private Coroutine playerSpawnCoroutine;
 
     public static Action OnLevelLoaded;
-    public static Action OnLevelStarted;
     public static Action OnLevelFinished;
+    public static Action<bool> OnNewTimeRecord;
     public static Action OnLevelRestart;
     public static Action OnGamePaused;
     public static Action OnGameUnpaused;
+    public static Action OnGameOver;
     public static Action OnPlayerSpawn;
     public static Action<GameState> OnGameStateChanged;
+
+    private void OnValidate() {
+        levelFinishDelay = new WaitForSeconds(levelFinishDelaySeconds);
+    }
     
     private void OnEnable() {
         WorldMapManager.OnWorldMapLoaded += SpawnPlayer;
@@ -170,13 +178,21 @@ public class LevelManager : MonoBehaviour {
     }
 
     public void LoadLevel() {
-        loadLevelCoroutine = StartCoroutine(LoadLevelRoutine());
+        if (levelHandlerCoroutine.IsNotNull()) {
+            StopCoroutine(levelHandlerCoroutine);
+            levelHandlerCoroutine = null;
+        }
+
+        levelHandlerCoroutine = StartCoroutine(LoadLevelRoutine());
     }
 
     public void FinishLevel() {
-        enableTimer = false;
-        currentLevel.CheckCompletion(currentTimer.Value, coinsCollectedCount.Value);
-        OnLevelFinished?.Invoke();
+        if (levelHandlerCoroutine.IsNotNull()) {
+            StopCoroutine(levelHandlerCoroutine);
+            levelHandlerCoroutine = null;
+        }
+
+        levelHandlerCoroutine = StartCoroutine(LevelFinishRoutine());
     }
 
     public void PauseLevel(bool pause) {
@@ -206,7 +222,12 @@ public class LevelManager : MonoBehaviour {
     }
 
     public void GameOver() {
-        loadLevelCoroutine = StartCoroutine(GameOverRoutine());
+        if (levelHandlerCoroutine.IsNotNull()) {
+            StopCoroutine(levelHandlerCoroutine);
+            levelHandlerCoroutine = null;
+        }
+
+        levelHandlerCoroutine = StartCoroutine(GameOverRoutine());
     }
 
     public void SpawnLevelStructure() {
@@ -321,18 +342,33 @@ public class LevelManager : MonoBehaviour {
         isInGameplay = true;
         enableTimer = true;
         currentLevel.totalCoinsAmount = coinsInLevelCount;
-        OnLevelStarted?.Invoke();
         OnLevelLoaded?.Invoke();
+        yield return null;
+    }
+    public IEnumerator LevelFinishRoutine() {
+        enableTimer = false;
+        currentLevel.CheckCompletion(currentTimer.Value, coinsCollectedCount.Value);
+
+        yield return levelFinishDelay;
+        
+        if (currentLevel.enableLevelTimer) {
+            bool record = currentLevel.GetRecordStatus();
+            OnNewTimeRecord?.Invoke(record);
+        }
+        // show level checks in the panel, also changing colors when breaking records and etc...
+        isInGameplay = false;
+        OnLevelFinished?.Invoke();
+
         yield return null;
     }
 
     public IEnumerator GameOverRoutine() {
         enableTimer = false;
-        Debug.Log($"Game Over");
-        yield return new WaitForSecondsRealtime(2f);
+
+        yield return levelFinishDelay;
 
         isInGameplay = false;
-        Debug.Log($"Show restart menu UI");
+        OnGameOver?.Invoke();
 
         yield return null;
         // send event to scene manager to enable scene transition

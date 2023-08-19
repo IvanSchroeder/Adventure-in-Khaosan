@@ -12,11 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b5b160b42cd77545b85f6b96d9d58fc, type: 3}
   m_Name: W0-L1
   m_EditorClassIdentifier: 
-  levelName: Vetical Test
+  levelName: Vertical Test
   levelID: 1
   levelNumber: 1
   worldMap: {fileID: 7912036136065168777, guid: 2b959bcdb39ec704da212c0982832fe9, type: 3}
-  enableInfiniteLives: 0
   AbilitiesToEnableList:
   - {fileID: 11400000, guid: 9d07fb32c4a7fa94b8988ef3f3d8cb02, type: 2}
   - {fileID: 11400000, guid: cb9a5bcc8c2680b4598db308d8495103, type: 2}
@@ -31,6 +30,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: fe90c649b2c0252438e67dbbec7f4861, type: 2}
   - {fileID: 11400000, guid: bb1c808d7efb5e442bee5079cb65936f, type: 2}
   AbilitiesToDisableList: []
+  resetLevelStatus: 1
+  enableInfiniteLives: 0
+  enableLevelTimer: 1
   isUnlocked: 1
   collectedAllCoins: 0
   collectedAllDishes: 0
@@ -42,5 +44,6 @@ MonoBehaviour:
   totalCoinsAmount: 27
   totalEnemiesAmount: 0
   baseRecordTime: 60
-  personalBestTime: 15.218959
+  personalBestTime: 0
   wasHit: 1
+  recordBeaten: 1

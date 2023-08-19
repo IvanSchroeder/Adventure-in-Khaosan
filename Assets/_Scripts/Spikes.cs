@@ -9,6 +9,7 @@ public class Spikes : MonoBehaviour, IDamageDealer {
     [field: SerializeField] public LayerMask DamageablesLayers { get; set; }
     [field: SerializeField] public int DamageDealerLayer { get; set; }
     [field: SerializeField] public float DamageAmount { get; set; }
+    [field: SerializeField] public IntSO DamageInHearts { get; set; }
 
     private void Awake() {
         if (DamageHitbox.IsNull()) DamageHitbox = this.GetComponentInHierarchy<Collider2D>();
@@ -23,7 +24,7 @@ public class Spikes : MonoBehaviour, IDamageDealer {
 
         HealthSystem entityHealthSystem = damagedEntity.HealthSystem;
 
-        OnEntityDamagedEventArgs entityArgs = new OnEntityDamagedEventArgs(this, DamageAmount, collision.ClosestPoint(this.transform.position), entityHealthSystem.DamagedFlash);
+        OnEntityDamagedEventArgs entityArgs = new OnEntityDamagedEventArgs(this, DamageAmount, DamageInHearts, collision.ClosestPoint(this.transform.position), entityHealthSystem.DamagedFlash);
         damagedEntity.Damage(this, entityArgs);
     }
 }

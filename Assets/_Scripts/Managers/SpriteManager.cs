@@ -4,6 +4,7 @@ using UnityEngine;
 using ExtensionMethods;
 using System;
 using System.Linq;
+using DG.Tweening;
 
 public class SpriteManager : MonoBehaviour {
     [field: SerializeField] public HealthSystem HealthSystem { get; private set; }
@@ -21,6 +22,18 @@ public class SpriteManager : MonoBehaviour {
     [field: SerializeField] public int CurrentAmountIndex { get; private set; }
     [field: SerializeField] public int CurrentAlphaIndex { get; private set; }
     [field: SerializeField] public int CurrentAmountOfFlashes { get; private set; }
+
+    [Space(5f)]
+    [Header("After Image Properties")]
+    [Space(3f)]
+    public bool canCreateAfterImage;
+    public bool enableAfterImage;
+    public float afterImageInterval;
+    public float afterImageDecayDelay;
+    public float afterImageDecaySpeed;
+    public float afterImageStartingAlpha;
+    public float afterImageColor;
+    [Space(5f)]
 
     private static readonly int _enableFlashID = Shader.PropertyToID("_EnableFlash");
     private static readonly int _flashColorID = Shader.PropertyToID("_FlashColor");
@@ -145,11 +158,6 @@ public class SpriteManager : MonoBehaviour {
         }
 
         StartFlash(CurrentFlashConfiguration);
-    }
-
-    private void InitializeFlashConfiguration(SpriteFlashConfiguration config) {
-        config.Init();
-        Init();
     }
 
     public void SetInteractedOutline(object sender, OnEntityInteractedEventArgs args) {

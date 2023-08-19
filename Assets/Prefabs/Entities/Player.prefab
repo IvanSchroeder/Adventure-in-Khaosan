@@ -99,7 +99,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <HealthSystem>k__BackingField: {fileID: 5509863583808375652}
   <InteractableSystem>k__BackingField: {fileID: 0}
-  <CurrentFlashConfiguration>k__BackingField: {fileID: 0}
+  <CurrentFlashConfiguration>k__BackingField: {fileID: 11400000, guid: 4d82b7bcf41c0e646937f0d0d6aca977, type: 2}
   <DefaultFlashColor>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
   <CurrentFlashColor>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
   <CurrentAlphaAmount>k__BackingField: 1
@@ -109,6 +109,13 @@ MonoBehaviour:
   <CurrentAmountIndex>k__BackingField: 0
   <CurrentAlphaIndex>k__BackingField: 0
   <CurrentAmountOfFlashes>k__BackingField: 0
+  canCreateAfterImage: 0
+  enableAfterImage: 0
+  afterImageInterval: 0
+  afterImageDecayDelay: 0
+  afterImageDecaySpeed: 0
+  afterImageStartingAlpha: 0
+  afterImageColor: 0
 --- !u!1 &443455453067590178
 GameObject:
   m_ObjectHideFlags: 0
@@ -940,8 +947,8 @@ MonoBehaviour:
   <MaxHearts>k__BackingField: 0
   <CurrentHearts>k__BackingField: 0
   <IsDead>k__BackingField: 0
+  <HasInvulnerabilityFrames>k__BackingField: 1
   <IsInvulnerable>k__BackingField: 0
-  <InvulnerabilitySeconds>k__BackingField: 0
 --- !u!61 &5362580700939068921
 BoxCollider2D:
   m_ObjectHideFlags: 0

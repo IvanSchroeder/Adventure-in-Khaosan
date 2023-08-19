@@ -35,7 +35,7 @@ public class PlayerInputHandler : MonoBehaviour {
 
     private void OnEnable() {
         //LevelManager.OnLevelStarted += EnableGameplayInputs;
-        LevelManager.OnLevelStarted += ResetInputs;
+        LevelManager.OnLevelLoaded += ResetInputs;
 
         LevelManager.OnLevelFinished += DisableGameplayInputs;
         LevelManager.OnLevelFinished += ResetInputs;
@@ -49,7 +49,7 @@ public class PlayerInputHandler : MonoBehaviour {
 
     private void OnDisable() {
         //LevelManager.OnLevelStarted -= EnableGameplayInputs;
-        LevelManager.OnLevelStarted -= ResetInputs;
+        LevelManager.OnLevelLoaded -= ResetInputs;
 
         LevelManager.OnLevelFinished -= DisableGameplayInputs;
         LevelManager.OnLevelFinished -= ResetInputs;

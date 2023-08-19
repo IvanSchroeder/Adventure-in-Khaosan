@@ -24,8 +24,8 @@ public class HealthSystem : MonoBehaviour {
     [field: SerializeField] public int MaxHearts { get; set; }
     [field: SerializeField] public int CurrentHearts { get; set; }
     [field: SerializeField] public bool IsDead { get; set; }
+    [field: SerializeField] public bool HasInvulnerabilityFrames { get; set; }
     [field: SerializeField] public bool IsInvulnerable { get; set; }
-    [field: SerializeField] public float InvulnerabilitySeconds { get; set; }
 
     public EventHandler<OnEntityDamagedEventArgs> OnEntityDamaged;
     public EventHandler<OnEntityDamagedEventArgs> OnEntityDeath;
@@ -57,8 +57,7 @@ public class HealthSystem : MonoBehaviour {
         if (CurrentLives > 1) CanRespawn = true;
         EntityData.currentLives = CurrentLives;
 
-        InvulnerabilitySeconds = EntityData.invulnerabilitySeconds;
-        invulnerabilityDelay = new WaitForSeconds(InvulnerabilitySeconds);
+        invulnerabilityDelay = new WaitForSeconds(EntityData.invulnerabilitySeconds);
         invulnerabilityStartDelay = new WaitForSeconds(0.1f);
 
         InitializeHealth();
@@ -79,7 +78,7 @@ public class HealthSystem : MonoBehaviour {
             break;
             case HealthType.Hearts:
                 MaxHearts = EntityData.maxHearts;
-                CurrentHearts = MaxHearts;
+                CurrentHearts = EntityData.startingHearts;
                 EntityData.currentHearts = CurrentHearts;
                 // spawn hearts in UI slots, maybe with a list/array and an event?
             break;
@@ -94,14 +93,18 @@ public class HealthSystem : MonoBehaviour {
         return false;
     }
 
+    public void AddHealth(float amount) {
+
+    }
+
     public void ReduceHealth(object sender, OnEntityDamagedEventArgs entityDamagedEventArgs) {
         if (IsInvulnerable || IsDead || !IsDamagedBy(entityDamagedEventArgs.DamageDealerSource.DamageDealerLayer)) return;
 
-        IsInvulnerable = true;
-        HitboxTrigger.enabled = false;
 
         switch (HealthType) {
             case HealthType.Numerical:
+                if (entityDamagedEventArgs.DamageAmount == 0f) return;
+
                 CurrentHealth -= entityDamagedEventArgs.DamageAmount;
 
                 if (CurrentHealth <= 0f) {
@@ -112,7 +115,9 @@ public class HealthSystem : MonoBehaviour {
                 EntityData.currentHealth = CurrentHealth;
             break;
             case HealthType.Hearts:
-                CurrentHearts -= 1;
+                if (entityDamagedEventArgs.DamageInHearts.Value == 0) return;
+
+                CurrentHearts -= entityDamagedEventArgs.DamageInHearts.Value;
 
                 if (CurrentHearts <= 0) {
                     CurrentHearts = 0;
@@ -124,7 +129,10 @@ public class HealthSystem : MonoBehaviour {
             break;
         }
 
-        if(IsDead) {
+        IsInvulnerable = true;
+        HitboxTrigger.enabled = false;
+
+        if (IsDead) {
             ReduceLives(entityDamagedEventArgs);
             OnEntityDeath?.Invoke(sender, entityDamagedEventArgs);
         }
@@ -147,13 +155,8 @@ public class HealthSystem : MonoBehaviour {
         EntityData.currentLives = CurrentLives;
     }
 
-    // public void SetInvulnerability(object sender, OnEntityDamagedEventArgs entityDamagedEventArgs) {
-    //     entityDamagedEventArgs.CurrentFlash = EntityData.invulnerabilityFlash;
-    //     invulnerabilityCoroutine = StartCoroutine(InvulnerabilityFramesRoutine(entityDamagedEventArgs));
-    // }
-
     public void SetInvulnerability() {
-        invulnerabilityCoroutine = StartCoroutine(InvulnerabilityFramesRoutine());
+        if (HasInvulnerabilityFrames) invulnerabilityCoroutine = StartCoroutine(InvulnerabilityFramesRoutine());
     }
 
     private IEnumerator InvulnerabilityFramesRoutine() {

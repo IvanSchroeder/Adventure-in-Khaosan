@@ -1677,6 +1677,7 @@ MonoBehaviour:
     m_Bits: 1536
   <DamageDealerLayer>k__BackingField: 0
   <DamageAmount>k__BackingField: 10
+  <DamageInHearts>k__BackingField: {fileID: 11400000, guid: c33e7bc293f2f754185f728ac1c18a41, type: 2}
 --- !u!1839735485 &2854569919692439511
 Tilemap:
   m_ObjectHideFlags: 0

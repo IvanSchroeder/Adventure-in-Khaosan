@@ -15,39 +15,50 @@ public class UIManager : MonoBehaviour {
     public FloatSO LevelTimer;
 
     public GameObject HeartSlotPrefab;
-    public GameObject MainMenuUI;
-    public GameObject GameplayUI;
-    public GameObject PauseMenuUI;
+    public GameObject HeartsGroupContainer;
+    [Space(3f)]
     public CanvasGroup MainMenuGroup;
+    public CanvasGroup InGameGroup;
+    [Space(3f)]
     public CanvasGroup GameplayGUIGroup;
     public CanvasGroup PauseMenuGroup;
-    public RectTransform PauseMenuPanelRect;
-    public GameObject HeartsGroup;
+    public CanvasGroup GameOverMenuGroup;
+    public CanvasGroup LevelCompletedMenuGroup;
+    [Space(3f)]
     public TMP_Text CoinsText;
+    public GameObject LevelTimerPanel;
     public TMP_Text LevelTimerText;
     public TMP_Text VersionText;
-    public string CurrentVersion;
+    public TMP_Text CompletedTimer;
+    private string currentVersion;
 
     public float panelFadeSpeed;
-    public float PausePanelYOffset;
+    public float InGamePanelYOffset;
     public static Action<bool> OnPause;
     public static Action<bool> OnPauseAnimationCompleted;
 
+    public float heartRestoreDelaySeconds;
+    private WaitForSecondsRealtime heartRestoreDelay;
+
     private Coroutine gamePausedCoroutine;
+    private Coroutine heartRestorationCoroutine;
 
     private void OnValidate() {
-        UpdateTimerText(LevelTimer);
+        heartRestoreDelay = new WaitForSecondsRealtime(heartRestoreDelaySeconds);
 
-        UpdateVersionText(CurrentVersion);
+        UpdateTimerText(LevelTimer);
+        UpdateVersionText(currentVersion);
     }
 
     private void OnEnable() {
         CoinCounter.OnValueChange += UpdateCoinText;
         LevelTimer.OnValueChange += UpdateTimerText;
 
-        // LevelManager.OnGameStateChanged += SetUIState;
         LevelManager.OnLevelLoaded += EnablePlayerResources;
-        LevelManager.OnPlayerSpawn += RestoreAllHearts;
+        LevelManager.OnPlayerSpawn += RestoreStartingHearts;
+        LevelManager.OnLevelFinished += ShowLevelFinishUI;
+        LevelManager.OnNewTimeRecord += UpdateCompletedTimer;
+        LevelManager.OnGameOver += ShowGameOverUI;
 
         Player.OnPlayerDamaged += ReduceHearts;
     }
@@ -56,56 +67,52 @@ public class UIManager : MonoBehaviour {
         CoinCounter.OnValueChange -= UpdateCoinText;
         LevelTimer.OnValueChange -= UpdateTimerText;
 
-        // LevelManager.OnGameStateChanged -= SetUIState;
         LevelManager.OnLevelLoaded -= EnablePlayerResources;
-        LevelManager.OnPlayerSpawn -= RestoreAllHearts;
+        LevelManager.OnPlayerSpawn -= RestoreStartingHearts;
+        LevelManager.OnLevelFinished -= ShowLevelFinishUI;
+        LevelManager.OnNewTimeRecord -= UpdateCompletedTimer;
+        LevelManager.OnGameOver -= ShowGameOverUI;
 
         Player.OnPlayerDamaged -= ReduceHearts;
     }
 
-    private void Start() {
-        SetPanelMenuUI(MainMenuGroup, false);
-        SetPanelMenuUI(GameplayGUIGroup, true, true);
-        SetPanelMenuUI(PauseMenuGroup, false, false, true, PausePanelYOffset);
+    private void Awake() {
+        if (instance == null) {
+            instance = this;
+        }
+        else if (instance != this) {
+            Destroy(gameObject);
+        }
+    }
 
-        // SetCanvasGroupAlpha(MainMenuGroup, 0f);
-        // SetCanvasGroupAlpha(GameplayGUIGroup, 1f);
-        // SetCanvasGroupAlpha(PauseMenuGroup, 0f);
-        // PauseMenuPanelRect.DOLocalMoveY(PausePanelYOffset, 0f).SetUpdate(true);
+    private void Start() {
+        heartRestoreDelay = new WaitForSecondsRealtime(heartRestoreDelaySeconds);
+
+        Init();
+    }
+
+    private void Init(){
+        SetPanelMenuUI(MainMenuGroup, false);
+        SetPanelMenuUI(InGameGroup, true, true);
+
+        SetPanelMenuUI(GameplayGUIGroup, true, true);
+        SetPanelMenuUI(PauseMenuGroup, false, false, true, InGamePanelYOffset, true);
+        SetPanelMenuUI(GameOverMenuGroup, false, false, true, InGamePanelYOffset, true);
+        SetPanelMenuUI(LevelCompletedMenuGroup, false, false, true, InGamePanelYOffset, true);
+
+        UpdateTimerText(LevelTimer);
+        UpdateVersionText(currentVersion);
+
+        LevelTimerPanel.gameObject.SetActive(false);
+        CompletedTimer.gameObject.SetActive(false);
     }
 
     private void SetPanelMenuUI(CanvasGroup group, bool enabled, bool instantFade = false, bool displace = false, float displacement = 0f, bool instantDisplacement = false) {
         group.DOFade(enabled == true ? 1f : 0f, instantFade == true ? 0f : panelFadeSpeed).SetUpdate(true);
-        if (displace) group.GetComponentInHierarchy<RectTransform>().DOLocalMoveY(displacement, instantDisplacement == true ? 0f : panelFadeSpeed).SetUpdate(true);
+        if (displace)
+            group.GetComponentInChildren<RectTransform>().DOMoveY(displacement, instantDisplacement == true ? 0f : panelFadeSpeed).SetUpdate(true);
 
-        group.interactable = enabled;
-    }
-
-    private void SetCanvasGroupAlpha(CanvasGroup canvasGroup, float targetAlpha) {
-        canvasGroup.alpha = targetAlpha;
-    }
-
-    public void SetUIState(GameState state) {
-        switch (state) {
-            case GameState.MainMenu:
-                MainMenuUI.SetActive(true);
-
-                GameplayUI.SetActive(false);
-                PauseMenuUI.SetActive(false);
-            break;
-            case GameState.Gameplay:
-                GameplayUI.SetActive(true);
-
-                MainMenuUI.SetActive(false);
-                PauseMenuUI.SetActive(false);
-            break;
-            case GameState.Paused:
-                PauseMenuUI.SetActive(true);
-
-                MainMenuUI.SetActive(false);
-                GameplayUI.SetActive(false);
-            break;
-        }
+        group.blocksRaycasts = enabled;
     }
 
     public void SetPausedState(bool pause) {
@@ -117,90 +124,34 @@ public class UIManager : MonoBehaviour {
         gamePausedCoroutine = StartCoroutine(GamePauseRoutine(pause));
     }
 
-    private IEnumerator GamePauseRoutine(bool pause) {
-        float gameplayAlpha = GameplayGUIGroup.alpha;
-        float pauseAlpha = PauseMenuGroup.alpha;
-
-        float elapsedTime = 0f;
-        float percentage = elapsedTime / panelFadeSpeed;
-
-        if (pause) {
-            OnPause?.Invoke(true);
-
-            SetPanelMenuUI(GameplayGUIGroup, false, true);
-            SetPanelMenuUI(PauseMenuGroup, true, false, true, 0f);
-
-            // GameplayGUIGroup.DOFade(0f, panelFadeSpeed).SetUpdate(true);
-            // PauseMenuGroup.DOFade(1f, panelFadeSpeed).SetUpdate(true);
-            // PauseMenuPanelRect.DOLocalMoveY(0f, panelFadeSpeed).SetUpdate(true);
-
-            // while (elapsedTime < PauseSpeed) {
-            //     // gameplayAlpha = Mathf.Lerp(gameplayAlpha, 0f, percentage);
-            //     // pauseAlpha = Mathf.Lerp(pauseAlpha, 1f, percentage);
-
-            //     gameplayAlpha = gameplayAlpha.LerpTo(0f, percentage);
-            //     pauseAlpha = gameplayAlpha.LerpTo(1f, percentage);
-
-            //     elapsedTime += Time.unscaledDeltaTime;
-            //     percentage = elapsedTime / PauseSpeed;
-
-            //     SetCanvasGroupAlpha(GameplayGUIGroup, gameplayAlpha);
-            //     SetCanvasGroupAlpha(PauseMenuGroup, pauseAlpha);
-            //     yield return null;
-            // }
-
-            // SetCanvasGroupAlpha(GameplayGUIGroup, 0f);
-            // SetCanvasGroupAlpha(PauseMenuGroup, 1f);
-        }
-        else {
-            SetPanelMenuUI(GameplayGUIGroup, true, true);
-            SetPanelMenuUI(PauseMenuGroup, false, false, true, PausePanelYOffset);
-
-            // GameplayGUIGroup.DOFade(1f, panelFadeSpeed).SetUpdate(true);
-            // PauseMenuGroup.DOFade(0f, panelFadeSpeed).SetUpdate(true);
-            // PauseMenuPanelRect.DOLocalMoveY(PausePanelYOffset, panelFadeSpeed).SetUpdate(true);
-
-            // while (elapsedTime < PauseSpeed) {
-            //     // gameplayAlpha = Mathf.Lerp(gameplayAlpha, 1f, percentage);
-            //     // pauseAlpha = Mathf.Lerp(pauseAlpha, 0f, percentage);
-
-            //     gameplayAlpha = gameplayAlpha.LerpTo(1f, percentage);
-            //     pauseAlpha = gameplayAlpha.LerpTo(0f, percentage);
-
-            //     elapsedTime += Time.unscaledDeltaTime;
-            //     percentage = elapsedTime / PauseSpeed;
-
-            //     SetCanvasGroupAlpha(GameplayGUIGroup, gameplayAlpha);
-            //     SetCanvasGroupAlpha(PauseMenuGroup, pauseAlpha);
-            //     yield return null;
-            // }
-
-            // SetCanvasGroupAlpha(GameplayGUIGroup, 1f);
-            // SetCanvasGroupAlpha(PauseMenuGroup, 0f);
-
-            OnPauseAnimationCompleted?.Invoke(false);
-        }
-
-        yield return null;
-    }
-
-    private void Awake() {
-        if (instance == null) {
-            instance = this;
-        }
-        else if (instance != this) {
-            Destroy(gameObject);
-        }
-
-        UpdateVersionText(CurrentVersion);
-    }
-
     public void EnablePlayerResources() {
         InitializeHearts();
+        ShowTimerPanel();
+    }
+
+    public void ShowTimerPanel() {
+        if (LevelManager.instance.currentLevel.enableLevelTimer) {
+            LevelTimerPanel.gameObject.SetActive(true);
+            CompletedTimer.gameObject.SetActive(true);
+        }
+        else {
+            LevelTimerPanel.gameObject.SetActive(false);
+            CompletedTimer.gameObject.SetActive(false);
+        }
+    }
+
+    private void ShowLevelFinishUI() {
+        SetPanelMenuUI(GameplayGUIGroup, false, true);
+        SetPanelMenuUI(LevelCompletedMenuGroup, true, false, true, InGamePanelYOffset);
+    }
+
+    private void ShowGameOverUI() {
+        SetPanelMenuUI(GameplayGUIGroup, false, true);
+        SetPanelMenuUI(GameOverMenuGroup, true, false, true, InGamePanelYOffset);
     }
 
     public void UpdateVersionText(string version) {
-        CurrentVersion = Application.version;
+        currentVersion = Application.version;
         VersionText.text = $"v." + version;
     }
 
@@ -216,39 +167,120 @@ public class UIManager : MonoBehaviour {
         LevelTimerText.text = $"TIEMPO: {string.Format("{0:00}:{1:00}.{2:00}", minutes, seconds, miliseconds)}";
     }
 
+    public void UpdateCompletedTimer(bool isRecord) {
+        string timer = LevelTimerText.text;
+
+        Debug.Log($"Is record {isRecord}");
+
+        if (isRecord) {
+            CompletedTimer.text = $"{timer}. <style=\"Bold\">Nuevo Record!</style>";
+        }
+        else {
+            CompletedTimer.text = $"{timer}";
+        }
+
+    }
+
     public void InitializeHearts() {
         for (int i = 0; i < PlayerData.maxHearts; i++) {
-            GameObject slot = Instantiate(HeartSlotPrefab, HeartsGroup.transform.position, Quaternion.identity);
+            GameObject slot = Instantiate(HeartSlotPrefab, HeartsGroupContainer.transform.position, Quaternion.identity);
             slot.name = $"HeartSlot_0{i}";
-            slot.transform.SetParent(HeartsGroup.transform);
+            slot.transform.SetParent(HeartsGroupContainer.transform);
             slot.transform.localScale = new Vector3(1, 1, 1);
 
             PlayerHeart heart = slot.GetComponentInChildren<PlayerHeart>();
             heart.transform.name = $"Heart_0{i}";
             PlayerHeartsList.Add(heart);
+            heart.SetHeartState(HeartState.Broken);
 
             heart.DisableSprite();
         }
     }
 
-    public void RestoreAllHearts() {
-        StartCoroutine(RestoreHeartsRoutine());
+    public void RestoreStartingHearts() {
+        RestoreHearts(PlayerData.startingHearts);
     }
 
-    private IEnumerator RestoreHeartsRoutine() {
-        foreach (PlayerHeart heart in PlayerHeartsList) {
-            heart.SetHeartState(PlayerHeart.HeartState.Restored);
-            yield return new WaitForSecondsRealtime(0.2f);
+    public void RestoreHearts(int heartsToRestore) {
+        UpdateHearts(true, heartsToRestore);
+    }
+
+    public void ReduceHearts(OnEntityDamagedEventArgs args) {
+        UpdateHearts(false, args.DamageInHearts.Value);
+    }
+
+    public void UpdateHearts(bool heal, int heartsToRestore) {
+        if (heartRestorationCoroutine.IsNotNull()) {
+            StopCoroutine(heartRestorationCoroutine);
+            heartRestorationCoroutine = null;
+        }
+
+        heartRestorationCoroutine = StartCoroutine(HeartsRestorationRoutine(heal, heartsToRestore));
+    }
+
+    private IEnumerator GamePauseRoutine(bool pause) {
+        float gameplayAlpha = GameplayGUIGroup.alpha;
+        float pauseAlpha = PauseMenuGroup.alpha;
+
+        float elapsedTime = 0f;
+        float percentage = elapsedTime / panelFadeSpeed;
+
+        if (pause) {
+            OnPause?.Invoke(true);
+
+            SetPanelMenuUI(GameplayGUIGroup, false, true);
+            SetPanelMenuUI(PauseMenuGroup, true, false, true, 0f, false);
+        }
+        else {
+            SetPanelMenuUI(GameplayGUIGroup, true, true);
+            SetPanelMenuUI(PauseMenuGroup, false, false, true, InGamePanelYOffset, false);
+
+            yield return new WaitForSecondsRealtime(panelFadeSpeed);
+            OnPauseAnimationCompleted?.Invoke(false);
         }
 
         yield return null;
     }
+    
+    private IEnumerator HeartsRestorationRoutine(bool heal, int heartsAmount) {
+        if (heal) {
+            for (int i = 0; i < PlayerHeartsList.Count; i++) {
+                if (PlayerHeartsList.GetElement(i).heartState == HeartState.Broken) {
+                    if (i + heartsAmount > PlayerData.maxHearts) {
+                        int diff = (i + heartsAmount) - PlayerData.maxHearts;
+                        heartsAmount -= diff;
+                    }
 
-    public void ReduceHearts() {
-        PlayerHeartsList[PlayerData.currentHearts].SetHeartState(PlayerHeart.HeartState.Broken);
-    }
+                    for (int j = 0; j < heartsAmount; j++) {
+                        PlayerHeartsList.GetElement(i + j).SetHeartState(HeartState.Restored);
 
-    public void EnablePlayerUI() {
-        // GameplayUI = Instantiate(GameplayUIPrefab);
+                        yield return heartRestoreDelay;
+                    }
+
+                    break;
+                }
+                else continue;
+            }
+        }
+        else {
+            for (int i = PlayerHeartsList.Count - 1; i >= 0; i--) {
+                if (PlayerHeartsList.GetElement(i).heartState == HeartState.Idle) {
+                    if (i - heartsAmount < 0) {
+                        int diff = heartsAmount - i - 1;
+                        heartsAmount -= diff;
+                    }
+
+                    for (int j = 0; j < heartsAmount; j++) {
+                        PlayerHeartsList.GetElement(i - j).SetHeartState(HeartState.Broken);                
+                        yield return heartRestoreDelay;
+                    }
+
+                    break;
+                }
+                else continue;
+            }
+        }
+
+        yield return null;
     }
 }

@@ -82,13 +82,13 @@ public class Player : Entity, IDamageable, IInteractor {
 
     [SerializeField] private bool drawGizmos;
 
-    public static event Action<Player> OnPlayerSpawned;
-    public static event Action<Player> OnPlayerDeath;
-    public static event Action OnPlayerDamaged;
+    public static Action<Player> OnPlayerSpawned;
+    public static Action<Player> OnPlayerDeath;
+    public static Action<OnEntityDamagedEventArgs> OnPlayerDamaged;
     
     public Action OnInvulnerability;
     public Action OnPlayerDeathEnd;
-    public event Action OnLivesDepleted;
+    public Action OnLivesDepleted;
 
     private void UpdateCurrentState(PlayerState current, PlayerState previous) {
         CurrentState = current;
@@ -222,7 +222,7 @@ public class Player : Entity, IDamageable, IInteractor {
     public void Damage(object sender, OnEntityDamagedEventArgs entityDamagedArgs) {
         lastContactPoint = entityDamagedArgs.ContactPoint;
         OnEntityDamaged?.Invoke(sender, entityDamagedArgs);
-        OnPlayerDamaged?.Invoke();
+        OnPlayerDamaged?.Invoke(entityDamagedArgs);
     }
 
     public void KnockbackStart(object sender, OnEntityDamagedEventArgs entityDamagedArgs) {

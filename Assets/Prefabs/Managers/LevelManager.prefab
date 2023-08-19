@@ -69,3 +69,4 @@ MonoBehaviour:
   currentTimer: {fileID: 11400000, guid: ae6d182de68a0b94db50413c77e60b0a, type: 2}
   playerRespawnTimer: 0.5
   pauseLerpSpeed: 0.2
+  levelFinishDelaySeconds: 3

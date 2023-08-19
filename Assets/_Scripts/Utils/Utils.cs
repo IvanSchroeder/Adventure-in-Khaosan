@@ -378,6 +378,11 @@ namespace ExtensionMethods {
 			return randomIndex;
 		}
 
+		public static T GetElement<T>(this IList<T> list, int i) {
+			var element = list.ElementAt(i);
+			return element;
+		}
+
 		public static T GetFirstElement<T>(this IList<T> list) {
 			var firstElement = list[list.GetFirstIndex()];
 			return firstElement;

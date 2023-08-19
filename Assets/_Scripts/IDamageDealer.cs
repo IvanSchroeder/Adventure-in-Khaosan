@@ -9,4 +9,5 @@ public interface IDamageDealer {
     LayerMask DamageablesLayers { get; set; }
     int DamageDealerLayer { get; set; }
     float DamageAmount { get; set; }
+    IntSO DamageInHearts { get; set; }
 }

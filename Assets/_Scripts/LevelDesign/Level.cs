@@ -14,12 +14,19 @@ public class Level : ScriptableObject {
     public int levelID;
     public int levelNumber;
     public GameObject worldMap;
-    public bool enableInfiniteLives = false;
     public List<BoolSO> AbilitiesToEnableList;
     public List<BoolSO> AbilitiesToDisableList;
     // public List<CoinItem> CoinItems;
     // public List<FoodItem> FoodItemsList;
     // public List<Enemy> EnemiesList;
+
+    [Space(20)]
+
+    [Header("Level Debug Parameters")]
+    [Space(5)]
+    public bool resetLevelStatus;
+    public bool enableInfiniteLives = false;
+    public bool enableLevelTimer = true;
 
     [Space(20)]
 
@@ -47,19 +54,37 @@ public class Level : ScriptableObject {
     [Header("Check Parameters")]
     public float personalBestTime = 0f;
     public bool wasHit = false;
+    public bool recordBeaten = false;
 
     public void InitLevel() {
+        totalCoinsAmount = 0;
+        totalEnemiesAmount = 0;
         wasHit = false;
+        recordBeaten = false;
+    }
+
+    public void OnEnable() {
+        if (resetLevelStatus) {
+            noHitFinished = false;
+            collectedAllCoins = false;
+            collectedAllDishes = false;
+            killedAllEnemies = false;
+            finishedInRecordTime = false;
+            personalBestTime = 0f;
+            isFinished = false;
+            isFullyCompleted = false;
+        }
     }
     
     public void CheckCompletion(float currentTimer, int coinsCollected) {
-        CheckRecordTime(currentTimer);
+        if (enableLevelTimer) CheckRecordTime(currentTimer);
         if (!noHitFinished && !wasHit) noHitFinished = true;
         if (!collectedAllCoins && coinsCollected == totalCoinsAmount) collectedAllCoins = true;
     }
 
     public void CheckRecordTime(float currentTimer) {
         if ((currentTimer < personalBestTime) || (personalBestTime == 0f)) {
+            recordBeaten = true;
             personalBestTime = currentTimer;
             Debug.Log($"New personal best time! ({personalBestTime})");
 
@@ -68,6 +93,10 @@ public class Level : ScriptableObject {
                 Debug.Log($"Finished in record time! ({personalBestTime})");
             }
         }
+    }
+
+    public bool GetRecordStatus() {
+        return recordBeaten;
     }
 
     public void SetHitStatus() => wasHit = true;

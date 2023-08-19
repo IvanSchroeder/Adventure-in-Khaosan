@@ -291,6 +291,8 @@ public class PlayerData : EntityData {
         wallJumpDirectionOffAngle = wallJumpAngle.AngleFloatToVector2();
         wallHopDirectionOffAngle = wallHopAngle.AngleFloatToVector2();
         deathJumpDirectionOffAngle = deathJumpAngle.AngleFloatToVector2();
+
+        if (startingHearts > maxHearts) startingHearts = maxHearts;
     }
 
     public override void OnEnable() {
