@@ -24,6 +24,7 @@ public class UIManager : MonoBehaviour {
     public CanvasGroup PauseMenuGroup;
     public CanvasGroup GameOverMenuGroup;
     public CanvasGroup LevelCompletedMenuGroup;
+    public CanvasGroup SceneTransitionGroup;
     [Space(3f)]
     public TMP_Text CoinsText;
     public GameObject LevelTimerPanel;
@@ -110,7 +111,7 @@ public class UIManager : MonoBehaviour {
     private void SetPanelMenuUI(CanvasGroup group, bool enabled, bool instantFade = false, bool displace = false, float displacement = 0f, bool instantDisplacement = false) {
         group.DOFade(enabled == true ? 1f : 0f, instantFade == true ? 0f : panelFadeSpeed).SetUpdate(true);
         if (displace)
-            group.GetComponentInChildren<RectTransform>().DOMoveY(displacement, instantDisplacement == true ? 0f : panelFadeSpeed).SetUpdate(true);
+            group.GetComponentInChildren<RectTransform>().DOLocalMoveY(displacement, instantDisplacement == true ? 0f : panelFadeSpeed).SetUpdate(true);
 
         group.blocksRaycasts = enabled;
     }
@@ -237,6 +238,19 @@ public class UIManager : MonoBehaviour {
 
             yield return new WaitForSecondsRealtime(panelFadeSpeed);
             OnPauseAnimationCompleted?.Invoke(false);
+        }
+
+        yield return null;
+    }
+
+    public IEnumerator ScreenFadeRoutine(bool fadeIn, Action actionToDo) {
+        
+
+        if (fadeIn) {
+            
+        }
+        else {
+
         }
 
         yield return null;
