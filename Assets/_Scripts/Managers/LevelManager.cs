@@ -5,11 +5,18 @@ using ExtensionMethods;
 using System;
 using System.Linq;
 using DG.Tweening;
+using UnityEngine.SceneManagement;
+
+public enum SceneIndexes {
+    MANAGERS = 0,
+    TITLE_SCREEN = 1,
+    LEVEL = 2,
+}
 
 public enum GameState {
+    None,
     MainMenu,
     Gameplay,
-    Paused
 }
 
 public class LevelManager : MonoBehaviour {
@@ -124,99 +131,72 @@ public class LevelManager : MonoBehaviour {
 
         coinsCollectedCount.Value = 0;
         coinsInLevelCount = 0;
+
+        secondsInLoadingScreen = new WaitForSecondsRealtime(secondsToWaitInLoadingScreen);
+        secondsAfterLevelSpawn = new WaitForSecondsRealtime(secondsToWaitAfterLevelSpawn);
     }
 
     private void Start() {
         if (WorldMapManagerInstance.IsNull()) WorldMapManagerInstance = WorldMapManager.instance;
 
-        CurrentGameState = GameState.Gameplay;
+        CurrentGameState = GameState.None;
 
-        switch (CurrentGameState) {
-            case GameState.Gameplay:
-                LoadLevelData();
-            break;
-            case GameState.MainMenu:
-            break;
-            case GameState.Paused:
-            break;
-        }
+        StartCoroutine(InitializeGameSession(ChangeGameState(GameState.MainMenu)));
     }
 
-    private void ChangeGameState(GameState state) {
-        if (CurrentGameState == state) return;
-
-        CurrentGameState = state;
-        OnGameStateChanged?.Invoke(CurrentGameState);
-    }
+    // public void ChangeScene(IEnumerator )
 
     private void Update() {
         if (isInGameplay && enableTimer) {
             currentTimer.Value += Time.deltaTime;
         }
-    }
 
-    private void SetCurrentCheckpoint(object sender, Checkpoint checkpoint) {
-        currentCheckpoint = checkpoint;
-
-        if (currentCheckpoint.isFinalCheckpoint) {
-            FinishLevel();
+        if (Input.GetKeyDown(KeyCode.KeypadEnter)) {
+            PauseEditor();
+        }
+        // else if (Input.GetKeyDown(KeyCode.G)) {
+        //     StartCoroutine(LoadScene((int)SceneIndexes.LEVEL, true, (int)SceneIndexes.TITLE_SCREEN, ChangeGameState(GameState.Gameplay)));
+        // }
+        else if (Input.GetKeyDown(KeyCode.M)) {
+            BackToMainMenu();
         }
     }
 
-    public void LoadLevelData() {
-        currentLevel = selectedLevel;
-        selectedLevel = null;
-
-        EnableAbilities();
-        DisableAbilities();
-
-        LoadLevel();
+    public void ExitGame() {
+        Application.Quit();
+        
+        #if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+        #endif
     }
 
-    public void SaveLevelData() {
-
+    public void PauseEditor() {
+        #if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPaused = UnityEditor.EditorApplication.isPaused.Toggle();
+        #endif
     }
 
-    public void LoadLevel() {
-        if (levelHandlerCoroutine.IsNotNull()) {
-            StopCoroutine(levelHandlerCoroutine);
-            levelHandlerCoroutine = null;
-        }
+    public void StartGame(Level levelToSelect) {
+        // currentLevel = levelToSelect;
+        selectedLevel = levelToSelect;
 
-        levelHandlerCoroutine = StartCoroutine(LoadLevelRoutine());
+        StartCoroutine(LoadGameplayScene(true, (int)SceneIndexes.TITLE_SCREEN, ChangeGameState(GameState.Gameplay)));
     }
 
-    public void FinishLevel() {
-        if (levelHandlerCoroutine.IsNotNull()) {
-            StopCoroutine(levelHandlerCoroutine);
-            levelHandlerCoroutine = null;
-        }
-
-        levelHandlerCoroutine = StartCoroutine(LevelFinishRoutine());
+    public void BackToMainMenu() {
+        StartCoroutine(LoadMainMenuScene(true, (int)SceneIndexes.LEVEL, ChangeGameState(GameState.MainMenu)));
     }
 
-    public void PauseLevel(bool pause) {
-        ChangeGameState(GameState.Paused);
-        if (pause)
-            SetTimeScale(0f);
-    }
-
-    public void UnpauseLevel(bool pause) {
-        ChangeGameState(GameState.Gameplay);
-        if (!pause)
-            SetTimeScale(1f);
-    }
-
-    public void SetTimeScale(float scale, bool instant = false) {
-        DOTween.To(() => Time.timeScale, x => Time.timeScale = x, scale, instant == false ? pauseLerpSpeed : 0f).SetUpdate(true);
-    }
 
     public void RestartLevel() {
         // corutina?
         startedLevel = false;
-        currentTimer.Value = 0f;
-        enableTimer = false;
         isInGameplay = false;
+        enableTimer = false;
+        currentTimer.Value = 0f;
+        if (currentLevel.IsNotNull()) currentLevel.totalCoinsAmount = 0;
+
+        selectedLevel = currentLevel;
 
         Debug.Log($"Show restart menu UI");
     }
@@ -228,6 +208,242 @@ public class LevelManager : MonoBehaviour {
         }
 
         levelHandlerCoroutine = StartCoroutine(GameOverRoutine());
+    }
+
+    public void PauseLevel(bool pause) {
+        if (pause)
+            SetTimeScale(0f);
+    }
+
+    public void UnpauseLevel(bool pause) {
+        if (!pause)
+            SetTimeScale(1f);
+    }
+
+    [SerializeField] private Canvas loadingScreenCanvas;
+    [SerializeField] private CanvasGroup loadingScreenCanvasGroup;
+    [SerializeField] private float secondsToWaitInLoadingScreen;
+    [SerializeField] private float fadeInSeconds = 1f;
+    [SerializeField] private float fadeOutSeconds = 1f;
+
+    private WaitForSecondsRealtime secondsInLoadingScreen;
+
+    public static event Action OnGameSessionInitialized;
+    public static event Action OnMainMenuLoadStart;
+    public static event Action OnMainMenuLoadEnd;
+    public static event Action OnGameplayScreenLoadStart;
+    public static event Action OnGameplayScreenLoadEnd;
+    public static event Action OnLevelSelectionScreenStart;
+    public static event Action OnLevelSelectionScreenEnd;
+
+    private IEnumerator ChangeGameState(GameState state) {
+        if (CurrentGameState != state) {
+            CurrentGameState = state;
+            OnGameStateChanged?.Invoke(CurrentGameState);
+
+            switch (CurrentGameState) {
+                case GameState.Gameplay:
+                    yield return StartCoroutine(LoadLevelScreenRoutine());
+                break;
+                case GameState.MainMenu:
+                    yield return StartCoroutine(LoadMainMenuScreenRoutine());
+                break;
+            }
+
+            yield return null;
+        }
+        else yield return null;
+    }
+
+    private IEnumerator InitializeGameSession(IEnumerator midLoadRoutine = null, IEnumerator endLoadRoutine = null) {
+        int sceneToLoad = (int)SceneIndexes.TITLE_SCREEN;
+        Debug.Log($"Loading {SceneManager.GetSceneByBuildIndex(sceneToLoad)} scene");
+
+        loadingScreenCanvasGroup.alpha = 1f;
+        AsyncOperation loadingOperation = SceneManager.LoadSceneAsync(sceneToLoad, LoadSceneMode.Additive);
+
+        while (!loadingOperation.isDone) {
+            yield return null;
+        }
+
+        Debug.Log($"Waiting for {secondsToWaitInLoadingScreen} seconds");
+        yield return secondsInLoadingScreen;
+
+        Time.timeScale = 1f;
+
+        OnGameSessionInitialized?.Invoke();
+
+        if (midLoadRoutine != null) yield return StartCoroutine(midLoadRoutine);
+
+        yield return StartCoroutine(ScreenFade(loadingScreenCanvasGroup, 0f, fadeOutSeconds));
+
+        if (endLoadRoutine != null) yield return StartCoroutine(endLoadRoutine);
+
+        Debug.Log($"Finished loading {SceneManager.GetSceneByBuildIndex(sceneToLoad)} scene");
+    }
+
+    private IEnumerator LoadMainMenuScene(bool unloadCurrentScene = false, int sceneToUnload = default, IEnumerator midLoadRoutine = null, IEnumerator endLoadRoutine = null) {
+        int sceneToLoad = (int)SceneIndexes.TITLE_SCREEN;
+        Debug.Log($"Loading {SceneManager.GetSceneByBuildIndex(sceneToLoad)} scene");
+
+        yield return StartCoroutine(ScreenFade(loadingScreenCanvasGroup, 1f, fadeInSeconds));
+        OnMainMenuLoadStart?.Invoke();
+        AsyncOperation loadingOperation = SceneManager.LoadSceneAsync(sceneToLoad, LoadSceneMode.Additive);
+
+        while (!loadingOperation.isDone) {
+            yield return null;
+        }
+
+        if (unloadCurrentScene) {
+            AsyncOperation unloadingOperation = SceneManager.UnloadSceneAsync(sceneToUnload);
+
+            while (!unloadingOperation.isDone) {
+                yield return null;
+            }
+        }
+
+        Debug.Log($"Waiting for {secondsToWaitInLoadingScreen} seconds");
+        OnMainMenuLoadEnd?.Invoke();
+        yield return secondsInLoadingScreen;
+
+        Time.timeScale = 1f;
+
+        if (midLoadRoutine != null) yield return StartCoroutine(midLoadRoutine);
+        
+        yield return StartCoroutine(ScreenFade(loadingScreenCanvasGroup, 0f, fadeOutSeconds));
+        if (endLoadRoutine != null) yield return StartCoroutine(endLoadRoutine);
+
+        Debug.Log($"Finished loading {SceneManager.GetSceneByBuildIndex(sceneToLoad)} scene");
+    }
+
+    private IEnumerator LoadGameplayScene(bool unloadCurrentScene = false, int sceneToUnload = default, IEnumerator midLoadRoutine = null, IEnumerator endLoadRoutine = null) {
+        int sceneToLoad = (int)SceneIndexes.LEVEL;
+        Debug.Log($"Loading {SceneManager.GetSceneByBuildIndex(sceneToLoad)} scene");
+
+        yield return StartCoroutine(ScreenFade(loadingScreenCanvasGroup, 1f, fadeInSeconds));
+        OnGameplayScreenLoadStart?.Invoke();
+        AsyncOperation loadingOperation = SceneManager.LoadSceneAsync(sceneToLoad, LoadSceneMode.Additive);
+
+        while (!loadingOperation.isDone) {
+            yield return null;
+        }
+
+        if (unloadCurrentScene) {
+            AsyncOperation unloadingOperation = SceneManager.UnloadSceneAsync(sceneToUnload);
+
+            while (!unloadingOperation.isDone) {
+                yield return null;
+            }
+        }
+
+        Debug.Log($"Waiting for {secondsToWaitInLoadingScreen} seconds");
+        OnGameplayScreenLoadEnd?.Invoke();
+        yield return secondsInLoadingScreen;
+
+        Time.timeScale = 1f;
+
+        if (midLoadRoutine != null) yield return StartCoroutine(midLoadRoutine);
+        
+        yield return StartCoroutine(ScreenFade(loadingScreenCanvasGroup, 0f, fadeOutSeconds));
+        if (endLoadRoutine != null) yield return StartCoroutine(endLoadRoutine);
+
+        Debug.Log($"Finished loading {SceneManager.GetSceneByBuildIndex(sceneToLoad)} scene");
+    }
+
+    private void SetCurrentCheckpoint(object sender, Checkpoint checkpoint) {
+        currentCheckpoint = checkpoint;
+
+        if (currentCheckpoint.isFinalCheckpoint) {
+            FinishLevel();
+        }
+    }
+
+    public void SaveLevelData() {
+
+    }
+
+    public IEnumerator LoadLevel() {
+        if (levelHandlerCoroutine.IsNotNull()) {
+            StopCoroutine(levelHandlerCoroutine);
+            levelHandlerCoroutine = null;
+        }
+
+        yield return StartCoroutine(LoadLevelScreenRoutine());
+    }
+
+    public void FinishLevel() {
+        if (levelHandlerCoroutine.IsNotNull()) {
+            StopCoroutine(levelHandlerCoroutine);
+            levelHandlerCoroutine = null;
+        }
+
+        levelHandlerCoroutine = StartCoroutine(LevelFinishRoutine());
+    }
+
+    public IEnumerator LoadMainMenuScreenRoutine() {
+        // currentLevel = null;
+        // selectedLevel = null;
+        // selectedWorld = null;
+
+        startedLevel = false;
+        isInGameplay = false;
+        enableTimer = false;
+        currentTimer.Value = 0f;
+        if (currentLevel.IsNotNull()) currentLevel.totalCoinsAmount = 0;
+
+        DeleteLevelStructure();
+
+        yield return null;
+    }
+
+    [SerializeField] private float secondsToWaitAfterLevelSpawn;
+    private WaitForSecondsRealtime secondsAfterLevelSpawn;
+
+    public IEnumerator LoadLevelScreenRoutine() {
+        currentLevel = selectedLevel;
+        selectedLevel = null;
+
+        EnableAbilities();
+        DisableAbilities();
+
+        SpawnLevelStructure();
+
+        yield return secondsAfterLevelSpawn;
+
+        EnableCheckpoints();
+        startedLevel = true;
+        isInGameplay = true;
+        enableTimer = true;
+        currentLevel.totalCoinsAmount = coinsInLevelCount;
+        OnLevelLoaded?.Invoke();
+
+        yield return null;
+    }
+    public IEnumerator LevelFinishRoutine() {
+        enableTimer = false;
+        currentLevel.CheckCompletion(currentTimer.Value, coinsCollectedCount.Value);
+
+        // yield return levelFinishDelay;
+        
+        if (currentLevel.enableLevelTimer) {
+            bool record = currentLevel.GetRecordStatus();
+            OnNewTimeRecord?.Invoke(record);
+        }
+        // show level checks in the panel, also changing colors when breaking records and etc...
+        isInGameplay = false;
+        OnLevelFinished?.Invoke();
+
+        yield return null;
+    }
+
+    private IEnumerator RestartLevelRoutine() {
+        yield return StartCoroutine(ScreenFade(loadingScreenCanvasGroup, 1f, fadeOutSeconds));
+
+        yield return null;
+    }
+
+    public void SetTimeScale(float scale, bool instant = false) {
+        DOTween.To(() => Time.timeScale, x => Time.timeScale = x, scale, instant == false ? pauseLerpSpeed : 0f).SetUpdate(true);
     }
 
     public void SpawnLevelStructure() {
@@ -245,6 +461,16 @@ public class LevelManager : MonoBehaviour {
         startingCheckpoint = CheckpointsList.GetFirstElement();
         currentCheckpoint = startingCheckpoint;
         lastCheckpoint = CheckpointsList.GetLastElement();
+    }
+
+    public void DeleteLevelStructure() {
+        CheckpointsList = new List<Checkpoint>();
+
+        startingCheckpoint = null;
+        currentCheckpoint = null;
+        lastCheckpoint = null;
+
+        LevelStructure?.gameObject?.Destroy();
     }
 
     public void SpawnPlayer() {
@@ -273,6 +499,51 @@ public class LevelManager : MonoBehaviour {
         Debug.Log($"Respawned player");
     }
 
+    public void KillPlayer() {
+        if (PlayerInstance.IsNotNull()) {
+            
+        }
+    }
+
+    private IEnumerator ScreenFade(CanvasGroup canvasGroup, float targetAlpha, float duration = 1f) {
+        float elapsedTime = 0f;
+        float percentageComplete = elapsedTime / duration;
+        float startValue = canvasGroup.alpha;
+
+        while (elapsedTime < duration) {
+            canvasGroup.alpha = Mathf.Lerp(startValue, targetAlpha, percentageComplete);
+            elapsedTime += Time.unscaledDeltaTime;
+            percentageComplete = elapsedTime / duration;
+
+            yield return Utils.waitForEndOfFrame;
+        }
+
+        canvasGroup.alpha = targetAlpha;
+    }
+
+    public IEnumerator GameOverRoutine() {
+        enableTimer = false;
+
+        yield return levelFinishDelay;
+
+        isInGameplay = false;
+        OnGameOver?.Invoke();
+
+        yield return null;
+        // send event to scene manager to enable scene transition
+    }
+
+    public IEnumerator RespawnPlayerRoutine() {
+        PlayerInstance.PlayerSprite.enabled = false;
+
+        yield return new WaitForSeconds(playerRespawnTimer);
+
+        PlayerInstance.PlayerSprite.enabled = true;
+        SpawnPlayer();
+
+        yield return null;
+    }
+
     private void CheckPlayerHit(object sender, OnEntityDamagedEventArgs args) {
         if (!currentLevel.wasHit) currentLevel.SetHitStatus();
     }
@@ -299,7 +570,7 @@ public class LevelManager : MonoBehaviour {
 
     private void EnableCheckpoints() {
         startingCheckpoint.isStartingCheckpoint = true;
-        lastCheckpoint.isFinalCheckpoint = true;
+        lastCheckpoint.isFinalCheckpoint = true; 
 
         startingCheckpoint.InteractableSystem.RequiresInput = false;
     }
@@ -331,61 +602,5 @@ public class LevelManager : MonoBehaviour {
             if (EnabledAbilitiesList.Find(ability => ability)) EnabledAbilitiesList.Remove(ability as BoolSO);
             DisabledAbilitiesList.Add(ability as BoolSO);
         }
-    }
-
-    public IEnumerator LoadLevelRoutine() {
-        SpawnLevelStructure();
-        // send event to UI manager to enable scene transition
-        yield return new WaitForSecondsRealtime(3f);
-        EnableCheckpoints();
-        startedLevel = true;
-        isInGameplay = true;
-        enableTimer = true;
-        currentLevel.totalCoinsAmount = coinsInLevelCount;
-        OnLevelLoaded?.Invoke();
-        yield return null;
-    }
-    public IEnumerator LevelFinishRoutine() {
-        enableTimer = false;
-        currentLevel.CheckCompletion(currentTimer.Value, coinsCollectedCount.Value);
-
-        yield return levelFinishDelay;
-        
-        if (currentLevel.enableLevelTimer) {
-            bool record = currentLevel.GetRecordStatus();
-            OnNewTimeRecord?.Invoke(record);
-        }
-        // show level checks in the panel, also changing colors when breaking records and etc...
-        isInGameplay = false;
-        OnLevelFinished?.Invoke();
-
-        yield return null;
-    }
-
-    public IEnumerator GameOverRoutine() {
-        enableTimer = false;
-
-        yield return levelFinishDelay;
-
-        isInGameplay = false;
-        OnGameOver?.Invoke();
-
-        yield return null;
-        // send event to scene manager to enable scene transition
-    }
-
-    public IEnumerator RespawnPlayerRoutine() {
-        // if (PlayerInstance.IsNotNull()) {
-        //     PlayerInstance.gameObject.Destroy();
-        // }
-
-        PlayerInstance.PlayerSprite.enabled = false;
-
-        yield return new WaitForSeconds(playerRespawnTimer);
-
-        PlayerInstance.PlayerSprite.enabled = true;
-        SpawnPlayer();
-
-        yield return null;
     }
 }

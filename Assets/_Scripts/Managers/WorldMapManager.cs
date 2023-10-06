@@ -24,10 +24,12 @@ public class WorldMapManager : MonoBehaviour {
 
     private void OnEnable() {
         LevelManager.OnLevelLoaded += LoadWorldMap;
+        LevelManager.OnMainMenuLoadStart += ResetWorldMap;
     }
 
     private void OnDisable() {
         LevelManager.OnLevelLoaded -= LoadWorldMap;
+        LevelManager.OnMainMenuLoadStart -= ResetWorldMap;
     }
 
     private void Awake() {
@@ -43,6 +45,12 @@ public class WorldMapManager : MonoBehaviour {
 
     private void Start() {
         if (LevelManagerInstance.IsNull()) LevelManagerInstance = LevelManager.instance;
+    }
+
+    public void ResetWorldMap() {
+        groundFillTiles = new Dictionary<Vector3, WorldTile>();
+        platformTiles = new Dictionary<Vector3, WorldTile>();
+        spikesTiles = new Dictionary<Vector3, WorldTile>();
     }
 
     public void LoadWorldMap() {

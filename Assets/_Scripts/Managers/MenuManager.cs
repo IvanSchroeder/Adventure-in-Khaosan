@@ -4,17 +4,35 @@ using UnityEngine;
 using ExtensionMethods;
 using UnityEngine.SceneManagement;
 
+
+
 public class MenuManager : MonoBehaviour {
-    void Update() {
+    public static MenuManager instance;
+
+    private void Awake() {
+        if (instance == null) {
+            instance = this;
+        }
+        else if (instance != this) {
+            Destroy(gameObject);
+        }
+    }
+
+    private void Update() {
         if (Input.GetKeyDown(KeyCode.Escape)) {
             ExitGame();
         }
-        else if (Input.GetKeyDown(KeyCode.R)) {
-            RestartLevel();
-        }
+        // else if (Input.GetKeyDown(KeyCode.R)) {
+        //     RestartLevel();
+        // }
         else if (Input.GetKeyDown(KeyCode.KeypadEnter)) {
             PauseEditor();
         }
+    }
+
+    public void LoadGame() {
+        SceneManager.UnloadSceneAsync((int)SceneIndexes.TITLE_SCREEN);
+        SceneManager.LoadSceneAsync((int)SceneIndexes.LEVEL, LoadSceneMode.Additive);
     }
 
     public void ExitGame() {

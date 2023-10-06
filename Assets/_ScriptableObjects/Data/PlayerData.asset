@@ -17,23 +17,23 @@ MonoBehaviour:
   interactedFlash: {fileID: 11400000, guid: fc38e4012282de94bae91f56827ca71a, type: 2}
   currentVelocity: {x: 0, y: 0}
   currentColliderConfiguration:
-    <Offset>k__BackingField: {x: 0, y: 0.75}
-    <Size>k__BackingField: {x: 1, y: 1.5}
-  facingDirection: 1
-  currentLives: 0
+    <Offset>k__BackingField: {x: 0, y: 0.375}
+    <Size>k__BackingField: {x: 1, y: 0.75}
+  facingDirection: 0
+  currentLives: 1
   currentHealth: 0
   currentHearts: 0
-  currentLayer: Player
+  currentLayer: IgnorePlatforms
   currentGravityScale: 5
   currentFallSpeed: 30
-  amountOfJumpsLeft: 1
+  amountOfJumpsLeft: 0
   slopeDownAngle: 0
   slopeSideAngle: 0
   damagedBy:
     serializedVersion: 2
     m_Bits: 4352
   healthType: 1
-  maxLives: 1
+  maxLives: 3
   maxHearts: 3
   startingHearts: 3
   maxHealth: 100
@@ -43,11 +43,11 @@ MonoBehaviour:
   deadOnGroundTime: 1
   isGrounded: 1
   isOnSolidGround: 1
-  isOnPlatform: 0
-  isIgnoringPlatforms: 0
+  isOnPlatform: 1
+  isIgnoringPlatforms: 1
   isOnSlope: 0
   isAirborne: 0
-  isIdle: 1
+  isIdle: 0
   isMoving: 0
   isRunning: 0
   isRunningAtMaxSpeed: 0
@@ -57,15 +57,15 @@ MonoBehaviour:
   isCrouching: 0
   isGroundSliding: 0
   stopSlide: 0
-  isJumping: 0
+  isJumping: 1
   isAscending: 0
   isFalling: 0
   isFastFalling: 0
   isTouchingCeiling: 0
   isTouchingWall: 0
-  isTouchingBackWall: 0
+  isTouchingBackWall: 1
   hasTouchedWall: 0
-  hasTouchedWallBack: 0
+  hasTouchedWallBack: 1
   isTouchingLedge: 0
   isWallSliding: 0
   isWallGrabing: 0
@@ -74,14 +74,14 @@ MonoBehaviour:
   isHanging: 0
   isClimbing: 0
   isDamaged: 0
-  isDead: 0
-  isDeadOnGround: 0
+  isDead: 1
+  isDeadOnGround: 1
   isInvulnerable: 1
   isAnimationFinished: 0
   isAbilityDone: 0
   isExitingState: 0
   hasCoyoteTime: 0
-  hasWallJumpCoyoteTime: 0
+  hasWallJumpCoyoteTime: 1
   hasGroundSlideTime: 1
   CanMove: {fileID: 11400000, guid: 9d07fb32c4a7fa94b8988ef3f3d8cb02, type: 2}
   CanJump: {fileID: 11400000, guid: 72685af96d158444f9993153f7b7e2ff, type: 2}

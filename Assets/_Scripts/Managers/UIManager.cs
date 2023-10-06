@@ -20,6 +20,11 @@ public class UIManager : MonoBehaviour {
     public CanvasGroup MainMenuGroup;
     public CanvasGroup InGameGroup;
     [Space(3f)]
+    public CanvasGroup TitleScreenMenuGroup;
+    public CanvasGroup LevelSelectMenuGroup;
+    public CanvasGroup GlosaryMenuGroup;
+    public CanvasGroup SettingsMenuGroup;
+    [Space(3f)]
     public CanvasGroup GameplayGUIGroup;
     public CanvasGroup PauseMenuGroup;
     public CanvasGroup GameOverMenuGroup;
@@ -61,6 +66,11 @@ public class UIManager : MonoBehaviour {
         LevelManager.OnNewTimeRecord += UpdateCompletedTimer;
         LevelManager.OnGameOver += ShowGameOverUI;
 
+        LevelManager.OnGameSessionInitialized += InitializeMainMenuUI;
+        LevelManager.OnMainMenuLoadEnd += InitializeMainMenuUI;
+        LevelManager.OnMainMenuLoadEnd += DeleteHearts;
+        LevelManager.OnGameplayScreenLoadEnd += InitializeGameplayUI;
+
         Player.OnPlayerDamaged += ReduceHearts;
     }
 
@@ -73,6 +83,11 @@ public class UIManager : MonoBehaviour {
         LevelManager.OnLevelFinished -= ShowLevelFinishUI;
         LevelManager.OnNewTimeRecord -= UpdateCompletedTimer;
         LevelManager.OnGameOver -= ShowGameOverUI;
+
+        LevelManager.OnGameSessionInitialized -= InitializeMainMenuUI;
+        LevelManager.OnMainMenuLoadEnd -= InitializeMainMenuUI;
+        LevelManager.OnMainMenuLoadEnd += DeleteHearts;
+        LevelManager.OnGameplayScreenLoadEnd -= InitializeGameplayUI;
 
         Player.OnPlayerDamaged -= ReduceHearts;
     }
@@ -88,15 +103,44 @@ public class UIManager : MonoBehaviour {
 
     private void Start() {
         heartRestoreDelay = new WaitForSecondsRealtime(heartRestoreDelaySeconds);
-
-        Init();
     }
 
-    private void Init(){
+    private CanvasGroup currentScreen;
+    private CanvasGroup lastScreen;
+
+    public void ChangeScreen(CanvasGroup screenToChange) {
+        if (currentScreen == screenToChange) return;
+
+        lastScreen = currentScreen;
+
+        if (lastScreen.IsNotNull()) SetPanelMenuUI(lastScreen, false);
+
+        currentScreen = screenToChange;
+
+        if (currentScreen.IsNotNull()) SetPanelMenuUI(currentScreen, true);
+    }
+
+    private void InitializeMainMenuUI() {
+        SetPanelMenuUI(MainMenuGroup, true, true);
+        SetPanelMenuUI(InGameGroup, false, true);
+
+        lastScreen = null;
+
+        ChangeScreen(TitleScreenMenuGroup);
+
+        SetPanelMenuUI(LevelSelectMenuGroup, false, true);
+        SetPanelMenuUI(GlosaryMenuGroup, false, true);
+        SetPanelMenuUI(SettingsMenuGroup, false, true);
+    }
+
+    private void InitializeGameplayUI() {
         SetPanelMenuUI(MainMenuGroup, false);
         SetPanelMenuUI(InGameGroup, true, true);
 
-        SetPanelMenuUI(GameplayGUIGroup, true, true);
+        lastScreen = null;
+
+        ChangeScreen(GameplayGUIGroup);
+
         SetPanelMenuUI(PauseMenuGroup, false, false, true, InGamePanelYOffset, true);
         SetPanelMenuUI(GameOverMenuGroup, false, false, true, InGamePanelYOffset, true);
         SetPanelMenuUI(LevelCompletedMenuGroup, false, false, true, InGamePanelYOffset, true);
@@ -127,18 +171,18 @@ public class UIManager : MonoBehaviour {
 
     public void EnablePlayerResources() {
         InitializeHearts();
-        ShowTimerPanel();
+        ShowTimerPanel(LevelManager.instance.currentLevel.enableLevelTimer);
     }
 
-    public void ShowTimerPanel() {
-        if (LevelManager.instance.currentLevel.enableLevelTimer) {
-            LevelTimerPanel.gameObject.SetActive(true);
-            CompletedTimer.gameObject.SetActive(true);
+    public void DeleteHearts() {
+        foreach (PlayerHeart heart in PlayerHeartsList) {
+            heart.gameObject.Destroy();
         }
-        else {
-            LevelTimerPanel.gameObject.SetActive(false);
-            CompletedTimer.gameObject.SetActive(false);
-        }
+    }
+
+    public void ShowTimerPanel(bool enableTimer) {
+        LevelTimerPanel.gameObject.SetActive(enableTimer);
+        CompletedTimer.gameObject.SetActive(enableTimer);
     }
 
     private void ShowLevelFinishUI() {
@@ -183,6 +227,8 @@ public class UIManager : MonoBehaviour {
     }
 
     public void InitializeHearts() {
+        PlayerHeartsList = new List<PlayerHeart>();
+
         for (int i = 0; i < PlayerData.maxHearts; i++) {
             GameObject slot = Instantiate(HeartSlotPrefab, HeartsGroupContainer.transform.position, Quaternion.identity);
             slot.name = $"HeartSlot_0{i}";

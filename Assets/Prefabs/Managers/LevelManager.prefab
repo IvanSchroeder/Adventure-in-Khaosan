@@ -53,7 +53,7 @@ MonoBehaviour:
   selectedWorld: {fileID: 0}
   currentWorld: {fileID: 0}
   lastUnlockedWorld: {fileID: 0}
-  selectedLevel: {fileID: 11400000, guid: dad3a79780a913741bce5a9e815cf4b1, type: 2}
+  selectedLevel: {fileID: 11400000, guid: 34fa5415f4b6bcb45bdb50c50f7f6850, type: 2}
   currentLevel: {fileID: 0}
   lastUnlockedLevel: {fileID: 0}
   CoinsList: []
@@ -70,3 +70,9 @@ MonoBehaviour:
   playerRespawnTimer: 0.5
   pauseLerpSpeed: 0.2
   levelFinishDelaySeconds: 3
+  loadingScreenCanvas: {fileID: 0}
+  loadingScreenCanvasGroup: {fileID: 0}
+  secondsToWaitInLoadingScreen: 0
+  fadeInSeconds: 1
+  fadeOutSeconds: 0.5
+  secondsToWaitAfterLevelSpawn: 0
