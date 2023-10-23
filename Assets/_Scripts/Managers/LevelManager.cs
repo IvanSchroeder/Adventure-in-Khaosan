@@ -187,7 +187,6 @@ public class LevelManager : MonoBehaviour {
         StartCoroutine(LoadMainMenuScene(true, (int)SceneIndexes.LEVEL, ChangeGameState(GameState.MainMenu)));
     }
 
-
     public void RestartLevel() {
         // corutina?
         startedLevel = false;
@@ -220,7 +219,6 @@ public class LevelManager : MonoBehaviour {
             SetTimeScale(1f);
     }
 
-    [SerializeField] private Canvas loadingScreenCanvas;
     [SerializeField] private CanvasGroup loadingScreenCanvasGroup;
     [SerializeField] private float secondsToWaitInLoadingScreen;
     [SerializeField] private float fadeInSeconds = 1f;
@@ -259,7 +257,7 @@ public class LevelManager : MonoBehaviour {
         int sceneToLoad = (int)SceneIndexes.TITLE_SCREEN;
         Debug.Log($"Loading {SceneManager.GetSceneByBuildIndex(sceneToLoad)} scene");
 
-        loadingScreenCanvasGroup.alpha = 1f;
+        yield return StartCoroutine(ScreenFade(loadingScreenCanvasGroup, 1f, fadeInSeconds));
         AsyncOperation loadingOperation = SceneManager.LoadSceneAsync(sceneToLoad, LoadSceneMode.Additive);
 
         while (!loadingOperation.isDone) {
@@ -392,6 +390,7 @@ public class LevelManager : MonoBehaviour {
         if (currentLevel.IsNotNull()) currentLevel.totalCoinsAmount = 0;
 
         DeleteLevelStructure();
+        KillPlayer();
 
         yield return null;
     }
@@ -501,7 +500,7 @@ public class LevelManager : MonoBehaviour {
 
     public void KillPlayer() {
         if (PlayerInstance.IsNotNull()) {
-            
+            PlayerInstance.gameObject.Destroy();
         }
     }
 
