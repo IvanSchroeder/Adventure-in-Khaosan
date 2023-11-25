@@ -25,11 +25,13 @@ public class WorldMapManager : MonoBehaviour {
     private void OnEnable() {
         LevelManager.OnLevelLoaded += LoadWorldMap;
         LevelManager.OnMainMenuLoadStart += ResetWorldMap;
+        LevelManager.OnLevelRestart += ResetWorldMap;
     }
 
     private void OnDisable() {
         LevelManager.OnLevelLoaded -= LoadWorldMap;
         LevelManager.OnMainMenuLoadStart -= ResetWorldMap;
+        LevelManager.OnLevelRestart -= ResetWorldMap;
     }
 
     private void Awake() {

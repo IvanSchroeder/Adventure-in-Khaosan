@@ -17,6 +17,7 @@ public enum GameState {
     None,
     MainMenu,
     Gameplay,
+    Restarting
 }
 
 public class LevelManager : MonoBehaviour {
@@ -177,7 +178,6 @@ public class LevelManager : MonoBehaviour {
     }
 
     public void StartGame(Level levelToSelect) {
-        // currentLevel = levelToSelect;
         selectedLevel = levelToSelect;
 
         StartCoroutine(LoadGameplayScene(true, (int)SceneIndexes.TITLE_SCREEN, ChangeGameState(GameState.Gameplay)));
@@ -197,7 +197,9 @@ public class LevelManager : MonoBehaviour {
 
         selectedLevel = currentLevel;
 
-        Debug.Log($"Show restart menu UI");
+        OnLevelRestart?.Invoke();
+
+        StartCoroutine(RestartGameplayScene(ChangeGameState(GameState.Restarting)));
     }
 
     public void GameOver() {
@@ -246,6 +248,11 @@ public class LevelManager : MonoBehaviour {
                 case GameState.MainMenu:
                     yield return StartCoroutine(LoadMainMenuScreenRoutine());
                 break;
+                case GameState.Restarting:
+                    yield return StartCoroutine(LoadLevelScreenRoutine());
+                    CurrentGameState = GameState.Gameplay;
+                break;
+
             }
 
             yield return null;
@@ -257,7 +264,7 @@ public class LevelManager : MonoBehaviour {
         int sceneToLoad = (int)SceneIndexes.TITLE_SCREEN;
         Debug.Log($"Loading {SceneManager.GetSceneByBuildIndex(sceneToLoad)} scene");
 
-        yield return StartCoroutine(ScreenFade(loadingScreenCanvasGroup, 1f, fadeInSeconds));
+        loadingScreenCanvasGroup.alpha = 1f;
         AsyncOperation loadingOperation = SceneManager.LoadSceneAsync(sceneToLoad, LoadSceneMode.Additive);
 
         while (!loadingOperation.isDone) {
@@ -282,7 +289,6 @@ public class LevelManager : MonoBehaviour {
 
     private IEnumerator LoadMainMenuScene(bool unloadCurrentScene = false, int sceneToUnload = default, IEnumerator midLoadRoutine = null, IEnumerator endLoadRoutine = null) {
         int sceneToLoad = (int)SceneIndexes.TITLE_SCREEN;
-        Debug.Log($"Loading {SceneManager.GetSceneByBuildIndex(sceneToLoad)} scene");
 
         yield return StartCoroutine(ScreenFade(loadingScreenCanvasGroup, 1f, fadeInSeconds));
         OnMainMenuLoadStart?.Invoke();
@@ -300,7 +306,6 @@ public class LevelManager : MonoBehaviour {
             }
         }
 
-        Debug.Log($"Waiting for {secondsToWaitInLoadingScreen} seconds");
         OnMainMenuLoadEnd?.Invoke();
         yield return secondsInLoadingScreen;
 
@@ -310,13 +315,10 @@ public class LevelManager : MonoBehaviour {
         
         yield return StartCoroutine(ScreenFade(loadingScreenCanvasGroup, 0f, fadeOutSeconds));
         if (endLoadRoutine != null) yield return StartCoroutine(endLoadRoutine);
-
-        Debug.Log($"Finished loading {SceneManager.GetSceneByBuildIndex(sceneToLoad)} scene");
     }
 
     private IEnumerator LoadGameplayScene(bool unloadCurrentScene = false, int sceneToUnload = default, IEnumerator midLoadRoutine = null, IEnumerator endLoadRoutine = null) {
         int sceneToLoad = (int)SceneIndexes.LEVEL;
-        Debug.Log($"Loading {SceneManager.GetSceneByBuildIndex(sceneToLoad)} scene");
 
         yield return StartCoroutine(ScreenFade(loadingScreenCanvasGroup, 1f, fadeInSeconds));
         OnGameplayScreenLoadStart?.Invoke();
@@ -334,18 +336,34 @@ public class LevelManager : MonoBehaviour {
             }
         }
 
-        Debug.Log($"Waiting for {secondsToWaitInLoadingScreen} seconds");
-        OnGameplayScreenLoadEnd?.Invoke();
         yield return secondsInLoadingScreen;
 
         Time.timeScale = 1f;
 
-        if (midLoadRoutine != null) yield return StartCoroutine(midLoadRoutine);
-        
-        yield return StartCoroutine(ScreenFade(loadingScreenCanvasGroup, 0f, fadeOutSeconds));
-        if (endLoadRoutine != null) yield return StartCoroutine(endLoadRoutine);
+        OnGameplayScreenLoadEnd?.Invoke();
 
-        Debug.Log($"Finished loading {SceneManager.GetSceneByBuildIndex(sceneToLoad)} scene");
+        if (midLoadRoutine != null) yield return StartCoroutine(midLoadRoutine);
+
+        yield return StartCoroutine(ScreenFade(loadingScreenCanvasGroup, 0f, fadeOutSeconds));
+
+        if (endLoadRoutine != null) yield return StartCoroutine(endLoadRoutine);
+    }
+
+    private IEnumerator RestartGameplayScene(IEnumerator midLoadRoutine = null, IEnumerator endLoadRoutine = null) {
+        yield return StartCoroutine(ScreenFade(loadingScreenCanvasGroup, 1f, fadeInSeconds));
+        KillPlayer();
+        DeleteLevelStructure();
+        yield return secondsInLoadingScreen;
+
+        Time.timeScale = 1f;
+
+        OnGameplayScreenLoadEnd?.Invoke();
+
+        if (midLoadRoutine != null) yield return StartCoroutine(midLoadRoutine);
+
+        yield return StartCoroutine(ScreenFade(loadingScreenCanvasGroup, 0f, fadeOutSeconds));
+
+        if (endLoadRoutine != null) yield return StartCoroutine(endLoadRoutine);
     }
 
     private void SetCurrentCheckpoint(object sender, Checkpoint checkpoint) {
@@ -358,15 +376,6 @@ public class LevelManager : MonoBehaviour {
 
     public void SaveLevelData() {
 
-    }
-
-    public IEnumerator LoadLevel() {
-        if (levelHandlerCoroutine.IsNotNull()) {
-            StopCoroutine(levelHandlerCoroutine);
-            levelHandlerCoroutine = null;
-        }
-
-        yield return StartCoroutine(LoadLevelScreenRoutine());
     }
 
     public void FinishLevel() {
@@ -399,6 +408,8 @@ public class LevelManager : MonoBehaviour {
     private WaitForSecondsRealtime secondsAfterLevelSpawn;
 
     public IEnumerator LoadLevelScreenRoutine() {
+        yield return new WaitForSecondsRealtime(2f);
+
         currentLevel = selectedLevel;
         selectedLevel = null;
 
@@ -407,6 +418,8 @@ public class LevelManager : MonoBehaviour {
 
         SpawnLevelStructure();
 
+        OnLevelLoaded?.Invoke();
+
         yield return secondsAfterLevelSpawn;
 
         EnableCheckpoints();
@@ -414,7 +427,6 @@ public class LevelManager : MonoBehaviour {
         isInGameplay = true;
         enableTimer = true;
         currentLevel.totalCoinsAmount = coinsInLevelCount;
-        OnLevelLoaded?.Invoke();
 
         yield return null;
     }
@@ -422,21 +434,15 @@ public class LevelManager : MonoBehaviour {
         enableTimer = false;
         currentLevel.CheckCompletion(currentTimer.Value, coinsCollectedCount.Value);
 
-        // yield return levelFinishDelay;
+        yield return levelFinishDelay;
         
         if (currentLevel.enableLevelTimer) {
             bool record = currentLevel.GetRecordStatus();
             OnNewTimeRecord?.Invoke(record);
         }
-        // show level checks in the panel, also changing colors when breaking records and etc...
+
         isInGameplay = false;
         OnLevelFinished?.Invoke();
-
-        yield return null;
-    }
-
-    private IEnumerator RestartLevelRoutine() {
-        yield return StartCoroutine(ScreenFade(loadingScreenCanvasGroup, 1f, fadeOutSeconds));
 
         yield return null;
     }

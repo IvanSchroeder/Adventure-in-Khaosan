@@ -130,6 +130,30 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 100603533, guid: 282249c94ded7594ea4e2ac5a30a2048, type: 3}
+      propertyPath: cam
+      value: 
+      objectReference: {fileID: 2037447781}
+    - target: {fileID: 306907303, guid: 282249c94ded7594ea4e2ac5a30a2048, type: 3}
+      propertyPath: cam
+      value: 
+      objectReference: {fileID: 2037447781}
+    - target: {fileID: 750725464, guid: 282249c94ded7594ea4e2ac5a30a2048, type: 3}
+      propertyPath: cam
+      value: 
+      objectReference: {fileID: 2037447781}
+    - target: {fileID: 1460899949, guid: 282249c94ded7594ea4e2ac5a30a2048, type: 3}
+      propertyPath: cam
+      value: 
+      objectReference: {fileID: 2037447781}
+    - target: {fileID: 1723549405, guid: 282249c94ded7594ea4e2ac5a30a2048, type: 3}
+      propertyPath: cam
+      value: 
+      objectReference: {fileID: 2037447781}
+    - target: {fileID: 2101609710, guid: 282249c94ded7594ea4e2ac5a30a2048, type: 3}
+      propertyPath: cam
+      value: 
+      objectReference: {fileID: 2037447781}
     - target: {fileID: 1942963087630208918, guid: 282249c94ded7594ea4e2ac5a30a2048, type: 3}
       propertyPath: m_Camera
       value: 
@@ -146,22 +170,6 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 2037447781}
-    - target: {fileID: 2742933196494744803, guid: 282249c94ded7594ea4e2ac5a30a2048, type: 3}
-      propertyPath: m_Colors.m_NormalColor.b
-      value: 0.36320752
-      objectReference: {fileID: 0}
-    - target: {fileID: 2742933196494744803, guid: 282249c94ded7594ea4e2ac5a30a2048, type: 3}
-      propertyPath: m_Colors.m_NormalColor.g
-      value: 0.36320752
-      objectReference: {fileID: 0}
-    - target: {fileID: 2742933196494744803, guid: 282249c94ded7594ea4e2ac5a30a2048, type: 3}
-      propertyPath: m_Colors.m_NormalColor.r
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2742933196494744803, guid: 282249c94ded7594ea4e2ac5a30a2048, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: BackToMainMenu
-      objectReference: {fileID: 0}
     - target: {fileID: 3744443320692586972, guid: 282249c94ded7594ea4e2ac5a30a2048, type: 3}
       propertyPath: m_Name
       value: Managers
@@ -218,18 +226,10 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 2037447781}
-    - target: {fileID: 4210364026962163128, guid: 282249c94ded7594ea4e2ac5a30a2048, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5864647315612310117, guid: 282249c94ded7594ea4e2ac5a30a2048, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5898734941036034557, guid: 282249c94ded7594ea4e2ac5a30a2048, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
+    - target: {fileID: 4188633677802228241, guid: 282249c94ded7594ea4e2ac5a30a2048, type: 3}
+      propertyPath: m_Camera
+      value: 
+      objectReference: {fileID: 2037447781}
     - target: {fileID: 6474571333896856581, guid: 282249c94ded7594ea4e2ac5a30a2048, type: 3}
       propertyPath: m_Camera
       value: 
@@ -238,10 +238,6 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 2037447781}
-    - target: {fileID: 6964018969067550582, guid: 282249c94ded7594ea4e2ac5a30a2048, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 8523955889178666209, guid: 282249c94ded7594ea4e2ac5a30a2048, type: 3}
       propertyPath: m_Camera
       value: 
@@ -454,11 +450,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4227159007971885039, guid: 7b88790e7aeb2514ca0bf7452257cec8, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.4999995
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4227159007971885039, guid: 7b88790e7aeb2514ca0bf7452257cec8, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.1500002
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4227159007971885039, guid: 7b88790e7aeb2514ca0bf7452257cec8, type: 3}
       propertyPath: m_LocalPosition.z

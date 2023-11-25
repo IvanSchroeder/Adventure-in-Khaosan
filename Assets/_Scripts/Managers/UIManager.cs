@@ -14,6 +14,9 @@ public class UIManager : MonoBehaviour {
     public IntSO CoinCounter;
     public FloatSO LevelTimer;
 
+    public GameObject titleScreenBackground;
+    public GameObject currentLevelBackground;
+
     public GameObject HeartSlotPrefab;
     public GameObject HeartsGroupContainer;
     [Space(3f)]
@@ -68,7 +71,6 @@ public class UIManager : MonoBehaviour {
 
         LevelManager.OnGameSessionInitialized += InitializeMainMenuUI;
         LevelManager.OnMainMenuLoadEnd += InitializeMainMenuUI;
-        LevelManager.OnMainMenuLoadEnd += DeleteHearts;
         LevelManager.OnGameplayScreenLoadEnd += InitializeGameplayUI;
 
         Player.OnPlayerDamaged += ReduceHearts;
@@ -86,7 +88,6 @@ public class UIManager : MonoBehaviour {
 
         LevelManager.OnGameSessionInitialized -= InitializeMainMenuUI;
         LevelManager.OnMainMenuLoadEnd -= InitializeMainMenuUI;
-        LevelManager.OnMainMenuLoadEnd += DeleteHearts;
         LevelManager.OnGameplayScreenLoadEnd -= InitializeGameplayUI;
 
         Player.OnPlayerDamaged -= ReduceHearts;
@@ -109,7 +110,7 @@ public class UIManager : MonoBehaviour {
     private CanvasGroup lastScreen;
 
     public void ChangeScreen(CanvasGroup screenToChange) {
-        if (currentScreen == screenToChange) return;
+        // if (currentScreen == screenToChange) return;
 
         lastScreen = currentScreen;
 
@@ -124,6 +125,9 @@ public class UIManager : MonoBehaviour {
         SetPanelMenuUI(MainMenuGroup, true, true);
         SetPanelMenuUI(InGameGroup, false, true);
 
+        titleScreenBackground.SetActive(true);
+        currentLevelBackground.SetActive(false);
+
         lastScreen = null;
 
         ChangeScreen(TitleScreenMenuGroup);
@@ -131,11 +135,16 @@ public class UIManager : MonoBehaviour {
         SetPanelMenuUI(LevelSelectMenuGroup, false, true);
         SetPanelMenuUI(GlosaryMenuGroup, false, true);
         SetPanelMenuUI(SettingsMenuGroup, false, true);
+
+        KillHearts();
     }
 
     private void InitializeGameplayUI() {
         SetPanelMenuUI(MainMenuGroup, false);
         SetPanelMenuUI(InGameGroup, true, true);
+
+        titleScreenBackground.SetActive(false);
+        currentLevelBackground.SetActive(true);
 
         lastScreen = null;
 
@@ -172,12 +181,6 @@ public class UIManager : MonoBehaviour {
     public void EnablePlayerResources() {
         InitializeHearts();
         ShowTimerPanel(LevelManager.instance.currentLevel.enableLevelTimer);
-    }
-
-    public void DeleteHearts() {
-        foreach (PlayerHeart heart in PlayerHeartsList) {
-            heart.gameObject.Destroy();
-        }
     }
 
     public void ShowTimerPanel(bool enableTimer) {
@@ -229,6 +232,8 @@ public class UIManager : MonoBehaviour {
     public void InitializeHearts() {
         PlayerHeartsList = new List<PlayerHeart>();
 
+        KillHearts();
+
         for (int i = 0; i < PlayerData.maxHearts; i++) {
             GameObject slot = Instantiate(HeartSlotPrefab, HeartsGroupContainer.transform.position, Quaternion.identity);
             slot.name = $"HeartSlot_0{i}";
@@ -242,6 +247,10 @@ public class UIManager : MonoBehaviour {
 
             heart.DisableSprite();
         }
+    }
+
+    public void KillHearts() {
+        HeartsGroupContainer.transform.DestroyChildren();
     }
 
     public void RestoreStartingHearts() {
