@@ -37,7 +37,15 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
-    m_Floats: []
+    m_Floats:
+    - _AddScroll: 1
+    - _AddScrollToParallax: 0
+    - _AutoScroll: 0
+    - _EnableAutomaticScroll: 1
+    - _HorizontalScrollSpeed: 1
+    - _ShaderFactor: 100
     m_Colors:
+    - _ScrollDirection: {r: 1, g: 0, b: 0, a: 0}
+    - _TravelPosition: {r: 0, g: 0, b: 0, a: 0}
     - _travelPosition: {r: 0.030659853, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []

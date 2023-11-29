@@ -16,6 +16,7 @@ MonoBehaviour:
   levelID: 1
   levelNumber: 1
   worldMap: {fileID: 7912036136065168777, guid: 2b959bcdb39ec704da212c0982832fe9, type: 3}
+  levelBackground: {fileID: 0}
   AbilitiesToEnableList:
   - {fileID: 11400000, guid: 9d07fb32c4a7fa94b8988ef3f3d8cb02, type: 2}
   - {fileID: 11400000, guid: cb9a5bcc8c2680b4598db308d8495103, type: 2}
@@ -45,5 +46,5 @@ MonoBehaviour:
   totalEnemiesAmount: 0
   baseRecordTime: 60
   personalBestTime: 0
-  wasHit: 1
+  wasHit: 0
   recordBeaten: 1

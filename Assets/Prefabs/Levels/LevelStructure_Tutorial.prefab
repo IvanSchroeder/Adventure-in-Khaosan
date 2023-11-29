@@ -94260,7 +94260,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3280843593238520412, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_fontSize
-      value: 0.45
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 3280843593238520412, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_fontSizeBase
@@ -94353,7 +94353,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3280843593238520412, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_fontSize
-      value: 0.5
+      value: 0.45
       objectReference: {fileID: 0}
     - target: {fileID: 3950113998280107552, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_LocalRotation.w
@@ -94578,7 +94578,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3280843593238520412, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_fontSize
-      value: 0.5
+      value: 0.45
       objectReference: {fileID: 0}
     - target: {fileID: 3950113998280107553, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_FlipX
@@ -95227,7 +95227,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3280843593238520412, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_fontSize
-      value: 0.5
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 3950113998280107553, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_FlipX
@@ -95326,6 +95326,10 @@ PrefabInstance:
         (Manten <style="Bold">[S]</style>
         y aprieta <style="Bold">[Espacio]</style>)'
       objectReference: {fileID: 0}
+    - target: {fileID: 3280843593238520412, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
+      propertyPath: m_fontSize
+      value: 0.45
+      objectReference: {fileID: 0}
     - target: {fileID: 3950113998280107553, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_FlipX
       value: 0
@@ -95401,7 +95405,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3280843593238520412, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_fontSize
-      value: 0.5
+      value: 0.45
       objectReference: {fileID: 0}
     - target: {fileID: 3950113998280107553, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_FlipX
@@ -95647,7 +95651,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3280843593238520412, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_fontSize
-      value: 0.45
+      value: 0.35
       objectReference: {fileID: 0}
     - target: {fileID: 3950113998280107553, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_FlipX
@@ -95995,6 +95999,10 @@ PrefabInstance:
       propertyPath: m_text
       value: Algunos objetos son <style="Bold">coleccionables</style>
       objectReference: {fileID: 0}
+    - target: {fileID: 3280843593238520412, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
+      propertyPath: m_fontSize
+      value: 0.45
+      objectReference: {fileID: 0}
     - target: {fileID: 3950113998280107553, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_FlipX
       value: 0
@@ -96081,7 +96089,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3280843593238520412, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_fontSize
-      value: 0.4
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 3280843593238520412, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_fontColor.b
@@ -96191,7 +96199,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3280843593238520412, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_fontSize
-      value: 0.5
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 3950113998280107553, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_FlipX
@@ -96335,6 +96343,10 @@ PrefabInstance:
 
         (Manten
         <style="Bold">[Shift]</style> para correr)'
+      objectReference: {fileID: 0}
+    - target: {fileID: 3280843593238520412, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
+      propertyPath: m_fontSize
+      value: 0.45
       objectReference: {fileID: 0}
     - target: {fileID: 3950113998280107553, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_FlipX

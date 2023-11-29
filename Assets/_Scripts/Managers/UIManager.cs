@@ -15,6 +15,7 @@ public class UIManager : MonoBehaviour {
     public FloatSO LevelTimer;
 
     public GameObject titleScreenBackground;
+    public GameObject backgroundCanvas;
     public GameObject currentLevelBackground;
 
     public GameObject HeartSlotPrefab;
@@ -121,12 +122,18 @@ public class UIManager : MonoBehaviour {
         if (currentScreen.IsNotNull()) SetPanelMenuUI(currentScreen, true);
     }
 
+    public void CreateLevelBackground() {
+        titleScreenBackground.SetActive(false);
+        currentLevelBackground = Instantiate(LevelManager.instance.currentLevel.levelBackground, default, default, backgroundCanvas.transform);
+        currentLevelBackground.SetActive(true);
+    }
+
     private void InitializeMainMenuUI() {
         SetPanelMenuUI(MainMenuGroup, true, true);
         SetPanelMenuUI(InGameGroup, false, true);
 
-        titleScreenBackground.SetActive(true);
-        currentLevelBackground.SetActive(false);
+        // titleScreenBackground.SetActive(true);
+        // currentLevelBackground?.Destroy();
 
         lastScreen = null;
 
@@ -143,8 +150,7 @@ public class UIManager : MonoBehaviour {
         SetPanelMenuUI(MainMenuGroup, false);
         SetPanelMenuUI(InGameGroup, true, true);
 
-        titleScreenBackground.SetActive(false);
-        currentLevelBackground.SetActive(true);
+        // CreateLevelBackground();
 
         lastScreen = null;
 
@@ -331,6 +337,7 @@ public class UIManager : MonoBehaviour {
                 else continue;
             }
         }
+
         else {
             for (int i = PlayerHeartsList.Count - 1; i >= 0; i--) {
                 if (PlayerHeartsList.GetElement(i).heartState == HeartState.Idle) {
@@ -343,7 +350,6 @@ public class UIManager : MonoBehaviour {
                         PlayerHeartsList.GetElement(i - j).SetHeartState(HeartState.Broken);                
                         yield return heartRestoreDelay;
                     }
-
                     break;
                 }
                 else continue;

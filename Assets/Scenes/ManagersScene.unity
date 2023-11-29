@@ -130,30 +130,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 100603533, guid: 282249c94ded7594ea4e2ac5a30a2048, type: 3}
-      propertyPath: cam
-      value: 
-      objectReference: {fileID: 2037447781}
-    - target: {fileID: 306907303, guid: 282249c94ded7594ea4e2ac5a30a2048, type: 3}
-      propertyPath: cam
-      value: 
-      objectReference: {fileID: 2037447781}
-    - target: {fileID: 750725464, guid: 282249c94ded7594ea4e2ac5a30a2048, type: 3}
-      propertyPath: cam
-      value: 
-      objectReference: {fileID: 2037447781}
-    - target: {fileID: 1460899949, guid: 282249c94ded7594ea4e2ac5a30a2048, type: 3}
-      propertyPath: cam
-      value: 
-      objectReference: {fileID: 2037447781}
-    - target: {fileID: 1723549405, guid: 282249c94ded7594ea4e2ac5a30a2048, type: 3}
-      propertyPath: cam
-      value: 
-      objectReference: {fileID: 2037447781}
-    - target: {fileID: 2101609710, guid: 282249c94ded7594ea4e2ac5a30a2048, type: 3}
-      propertyPath: cam
-      value: 
-      objectReference: {fileID: 2037447781}
+    - target: {fileID: 1507696596, guid: 282249c94ded7594ea4e2ac5a30a2048, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1942963087630208918, guid: 282249c94ded7594ea4e2ac5a30a2048, type: 3}
       propertyPath: m_Camera
       value: 
@@ -170,6 +150,10 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 2037447781}
+    - target: {fileID: 3184107723724163507, guid: 282249c94ded7594ea4e2ac5a30a2048, type: 3}
+      propertyPath: m_text
+      value: 'TIEMPO: 02:36.80'
+      objectReference: {fileID: 0}
     - target: {fileID: 3744443320692586972, guid: 282249c94ded7594ea4e2ac5a30a2048, type: 3}
       propertyPath: m_Name
       value: Managers
@@ -226,7 +210,7 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 2037447781}
-    - target: {fileID: 4188633677802228241, guid: 282249c94ded7594ea4e2ac5a30a2048, type: 3}
+    - target: {fileID: 4188633677135035081, guid: 282249c94ded7594ea4e2ac5a30a2048, type: 3}
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 2037447781}
@@ -238,6 +222,14 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 2037447781}
+    - target: {fileID: 7825315676376977811, guid: 282249c94ded7594ea4e2ac5a30a2048, type: 3}
+      propertyPath: m_Name
+      value: Button_Back
+      objectReference: {fileID: 0}
+    - target: {fileID: 7828323540111594886, guid: 282249c94ded7594ea4e2ac5a30a2048, type: 3}
+      propertyPath: m_PixelsPerUnitMultiplier
+      value: 0.1
+      objectReference: {fileID: 0}
     - target: {fileID: 8523955889178666209, guid: 282249c94ded7594ea4e2ac5a30a2048, type: 3}
       propertyPath: m_Camera
       value: 

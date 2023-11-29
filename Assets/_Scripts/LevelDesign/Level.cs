@@ -14,6 +14,7 @@ public class Level : ScriptableObject {
     public int levelID;
     public int levelNumber;
     public GameObject worldMap;
+    public GameObject levelBackground;
     public List<BoolSO> AbilitiesToEnableList;
     public List<BoolSO> AbilitiesToDisableList;
     // public List<CoinItem> CoinItems;
