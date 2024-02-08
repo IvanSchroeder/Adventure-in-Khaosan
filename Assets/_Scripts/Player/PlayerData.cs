@@ -67,26 +67,6 @@ public class PlayerData : EntityData {
     public BoolSO CanLedgeClimb;
     public BoolSO CanAttack;
 
-    // [Space(20)]
-
-    // [Header("--- References ---")]
-    // [Space(5)]
-    // public PhysicsMaterial2D noFrictionMaterial;
-    // public PhysicsMaterial2D fullFrictionMaterial;
-
-    // [Space(20)]
-
-    // [Header("--- Health Parameters ---")]
-    // [Space(5)]
-    // public HealthType healthType = HealthType.Hearts;
-    // public int maxLives;
-    // public float maxHealth;
-    // public int maxHearts;
-    // public float invulnerabilitySeconds;
-    // public float minKnockbackTime;
-    // public float maxKnockbackTime;
-    // public float deadOnGroundTime;
-
     [Space(20)]
 
     [Header("--- Movement Parameters ---")]
@@ -246,7 +226,6 @@ public class PlayerData : EntityData {
     [Space(5)]
     [Header("Ground")]
     [Space(3)]
-    // public Vector2 groundCheckSize;
     public Vector2 groundCheckOffset;
     public float groundCheckDistance;
     public float slopeCheckDistance;
@@ -260,7 +239,6 @@ public class PlayerData : EntityData {
     [Space(5)]
     [Header("Walls")]
     [Space(3)]
-    // public Vector2 wallCheckSize;
     public Vector2 wallCheckOffset;
     public float wallCheckDistance;
     public Vector2 ledgeCheckOffset;
@@ -269,7 +247,6 @@ public class PlayerData : EntityData {
     [Space(5)]
     [Header("Ceiling")]
     [Space(3)]
-    // public Vector2 ceilingCheckSize;
     public Vector2 ceilingCheckOffset;
     public float ceilingCheckDistance;
     public Vector2 cornerInnerCheckOffset;
@@ -309,72 +286,7 @@ public class PlayerData : EntityData {
         currentLayer = "Player";
         currentFallSpeed = defaultFallSpeed;
         currentGravityScale = defaultGravityScale;
-        // cumulatedGroundSlideTime = 0f;
-        // cumulatedGroundSlideCooldown = groundSlideDelay;
-        // cumulatedKnockbackTime = 0f;
-        // cumulatedWallJumpCoyoteTime = 0f;
         amountOfJumpsLeft = amountOfJumps;
-
-        // xInput = 0;
-        // lastXInput = 0;
-        // yInput = 0;
-        // jumpInput = false;
-        // jumpInputStop = false;
-        // jumpInputHold = false;
-        // attackInput = false;
-        // attackInputHold = false;
-        // attackInputStop = false;
-        // interactInput = false;
-        // interactInputHold = false;
-        // interactInputStop = false;
-        // crouchInput = false;
-        // crouchInputHold = false;
-        // crouchInputStop = false;
-        // unplatformInput = false;
-        // grabInput = false;
-
-        // isGrounded = false;
-        // isOnSolidGround = false;
-        // isOnPlatform = false;
-        // isIgnoringPlatforms = false;
-        // isOnSlope = false;
-        // isIdle = true;
-        // isMoving = false;
-        // isRunning = false;
-        // isRunningAtMaxSpeed = false;
-        // isChangingDirections = false;
-        // isSprinting = false;
-        // isSprintingAtMaxSpeed = false;
-        // isCrouching = false;
-        // isGroundSliding = false;
-        // stopSlide = false;
-        // isAirborne = false;
-        // isJumping = false;
-        // isAscending = false;
-        // isFalling = false;
-        // isFastFalling = false;
-        // isTouchingCeiling = false;
-        // isTouchingWall = false;
-        // isTouchingBackWall = false;
-        // hasTouchedWall = false;
-        // hasTouchedWallBack = false;
-        // isTouchingLedge = false;
-        // isWallSliding = false;
-        // isWallGrabing = false;
-        // isWallClimbing = false;
-        // isWallJumping = false;
-        // isHanging = false;
-        // isClimbing = false;
-        // isDamaged = false;
-        // isDead = false;
-        // isDeadOnGround = false;
-        // isInvulnerable = false;
-        // isAnimationFinished = false;
-        // isAbilityDone = false;
-        // isExitingState = false;
-        // hasCoyoteTime = false;
-        // hasWallJumpCoyoteTime = false;
-        // hasGroundSlideTime = false;
 
         maxRunSpeedThreshold = Mathf.Lerp(0f, runSpeed, maxRunSpeedThresholdMult);
         maxSprintSpeedThreshold = Mathf.Lerp(runSpeed, sprintSpeed, maxSprintSpeedThresholdMult);

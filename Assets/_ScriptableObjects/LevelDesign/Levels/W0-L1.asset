@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b5b160b42cd77545b85f6b96d9d58fc, type: 3}
   m_Name: W0-L1
   m_EditorClassIdentifier: 
-  levelName: Vertical Test
+  levelName: Comienzos
   levelID: 1
   levelNumber: 1
   worldMap: {fileID: 7912036136065168777, guid: 2b959bcdb39ec704da212c0982832fe9, type: 3}
-  levelBackground: {fileID: 0}
+  levelBackground: {fileID: 2491108658111614198, guid: d84d6ea1ccb994541b70f4762e5d63bc, type: 3}
   AbilitiesToEnableList:
   - {fileID: 11400000, guid: 9d07fb32c4a7fa94b8988ef3f3d8cb02, type: 2}
   - {fileID: 11400000, guid: cb9a5bcc8c2680b4598db308d8495103, type: 2}
@@ -47,4 +47,4 @@ MonoBehaviour:
   baseRecordTime: 60
   personalBestTime: 0
   wasHit: 0
-  recordBeaten: 1
+  recordBeaten: 0

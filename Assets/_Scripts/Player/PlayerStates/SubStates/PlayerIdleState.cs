@@ -5,7 +5,7 @@ using ExtensionMethods;
 using System;
 
 public class PlayerIdleState : PlayerGroundedState {
-    public PlayerIdleState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
+    public PlayerIdleState(Player player, StateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
     }
 
     public override void Enter() {
@@ -38,11 +38,6 @@ public class PlayerIdleState : PlayerGroundedState {
 
         if (isExitingState) return;
 
-        // if (playerData.canJump && jumpInput && player.JumpState.CanJump() && !isTouchingCeiling && !isIgnoringPlatforms) {
-        //     // bullet jump maybe? for a longer horizontal jump
-        //     coyoteTime = false;
-        //     stateMachine.ChangeState(player.JumpState);
-        // }
         if (playerData.CanCrouch.Value && yInput == -1)
             if (xInput == 0)
                 stateMachine.ChangeState(player.CrouchIdleState);

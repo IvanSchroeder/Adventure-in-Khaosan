@@ -71,6 +71,7 @@ public class LevelManager : MonoBehaviour {
     public static Action OnGameUnpaused;
     public static Action OnGameOver;
     public static Action OnPlayerSpawn;
+    public static Action OnAllCoinsCollected;
     public static Action<GameState> OnGameStateChanged;
 
     private void OnValidate() {
@@ -539,11 +540,11 @@ public class LevelManager : MonoBehaviour {
     }
 
     public IEnumerator RespawnPlayerRoutine() {
-        PlayerInstance.PlayerSprite.enabled = false;
+        PlayerInstance.Sprite.enabled = false;
 
         yield return new WaitForSeconds(playerRespawnTimer);
 
-        PlayerInstance.PlayerSprite.enabled = true;
+        PlayerInstance.Sprite.enabled = true;
         SpawnPlayer();
 
         yield return null;
@@ -569,6 +570,8 @@ public class LevelManager : MonoBehaviour {
         coinsCollectedCount.Value++;
         
         if (coinsCollectedCount.Value >= currentLevel.totalCoinsAmount) {
+            coinsCollectedCount.Value = currentLevel.totalCoinsAmount;
+            OnAllCoinsCollected?.Invoke();
             Debug.Log($"Collected all coins!");
         }
     }

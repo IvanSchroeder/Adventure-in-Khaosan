@@ -46,6 +46,7 @@ public class UIManager : MonoBehaviour {
     public float InGamePanelYOffset;
     public static Action<bool> OnPause;
     public static Action<bool> OnPauseAnimationCompleted;
+    public Color allCoinsColor;
 
     public float heartRestoreDelaySeconds;
     private WaitForSecondsRealtime heartRestoreDelay;
@@ -69,6 +70,7 @@ public class UIManager : MonoBehaviour {
         LevelManager.OnLevelFinished += ShowLevelFinishUI;
         LevelManager.OnNewTimeRecord += UpdateCompletedTimer;
         LevelManager.OnGameOver += ShowGameOverUI;
+        LevelManager.OnAllCoinsCollected += ChangeCoinTextColor;
 
         LevelManager.OnGameSessionInitialized += InitializeMainMenuUI;
         LevelManager.OnMainMenuLoadEnd += InitializeMainMenuUI;
@@ -86,6 +88,7 @@ public class UIManager : MonoBehaviour {
         LevelManager.OnLevelFinished -= ShowLevelFinishUI;
         LevelManager.OnNewTimeRecord -= UpdateCompletedTimer;
         LevelManager.OnGameOver -= ShowGameOverUI;
+        LevelManager.OnAllCoinsCollected -= ChangeCoinTextColor;
 
         LevelManager.OnGameSessionInitialized -= InitializeMainMenuUI;
         LevelManager.OnMainMenuLoadEnd -= InitializeMainMenuUI;
@@ -123,8 +126,7 @@ public class UIManager : MonoBehaviour {
     }
 
     public void CreateLevelBackground() {
-        titleScreenBackground.SetActive(false);
-        currentLevelBackground = Instantiate(LevelManager.instance.currentLevel.levelBackground, default, default, backgroundCanvas.transform);
+        currentLevelBackground = Instantiate(LevelManager.instance.selectedLevel.levelBackground, default, default, backgroundCanvas.transform);
         currentLevelBackground.SetActive(true);
     }
 
@@ -132,8 +134,8 @@ public class UIManager : MonoBehaviour {
         SetPanelMenuUI(MainMenuGroup, true, true);
         SetPanelMenuUI(InGameGroup, false, true);
 
-        // titleScreenBackground.SetActive(true);
-        // currentLevelBackground?.Destroy();
+        titleScreenBackground.SetActive(true);
+        currentLevelBackground?.Destroy();
 
         lastScreen = null;
 
@@ -150,7 +152,8 @@ public class UIManager : MonoBehaviour {
         SetPanelMenuUI(MainMenuGroup, false);
         SetPanelMenuUI(InGameGroup, true, true);
 
-        // CreateLevelBackground();
+        titleScreenBackground.SetActive(false);
+        CreateLevelBackground();
 
         lastScreen = null;
 
@@ -213,6 +216,10 @@ public class UIManager : MonoBehaviour {
         CoinsText.text = $"{amount.Value}";
     }
 
+    public void ChangeCoinTextColor() {
+        CoinsText.color = allCoinsColor;
+    }
+
     public void UpdateTimerText(ValueSO<float> amount) {
         float minutes = Mathf.FloorToInt(amount.Value / 60);
         float seconds = Mathf.FloorToInt(amount.Value % 60);
@@ -221,13 +228,15 @@ public class UIManager : MonoBehaviour {
         LevelTimerText.text = $"TIEMPO: {string.Format("{0:00}:{1:00}.{2:00}", minutes, seconds, miliseconds)}";
     }
 
+    string completedTimerStyle = "Bold_Gold";
+
     public void UpdateCompletedTimer(bool isRecord) {
         string timer = LevelTimerText.text;
 
         Debug.Log($"Is record {isRecord}");
 
         if (isRecord) {
-            CompletedTimer.text = $"{timer}. <style=\"Bold\">Nuevo Record!</style>";
+            CompletedTimer.text = $"{timer}. <style=\"{completedTimerStyle}\">Nuevo Record!</style>";
         }
         else {
             CompletedTimer.text = $"{timer}";

@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   levelName: Tutorial
   levelID: 0
-  levelNumber: 1
+  levelNumber: 0
   worldMap: {fileID: 2282873368466760177, guid: 42b5a36a20eaca74d97b06ddb364d565, type: 3}
+  levelBackground: {fileID: 2491108658111614198, guid: d84d6ea1ccb994541b70f4762e5d63bc, type: 3}
   AbilitiesToEnableList:
   - {fileID: 11400000, guid: 9d07fb32c4a7fa94b8988ef3f3d8cb02, type: 2}
   AbilitiesToDisableList:
@@ -32,7 +33,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: bb1c808d7efb5e442bee5079cb65936f, type: 2}
   resetLevelStatus: 1
   enableInfiniteLives: 1
-  enableLevelTimer: 1
+  enableLevelTimer: 0
   isUnlocked: 1
   collectedAllCoins: 0
   collectedAllDishes: 0
@@ -45,5 +46,5 @@ MonoBehaviour:
   totalEnemiesAmount: 0
   baseRecordTime: 60
   personalBestTime: 0
-  wasHit: 1
+  wasHit: 0
   recordBeaten: 0

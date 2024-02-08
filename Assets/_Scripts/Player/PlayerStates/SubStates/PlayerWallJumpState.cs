@@ -13,7 +13,7 @@ public class PlayerWallJumpState : PlayerAbilityState {
     protected float usedJumpTime;
     protected float elapsedJumpTime;
 
-    public PlayerWallJumpState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
+    public PlayerWallJumpState(Player player, StateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
     }
 
     public override void Enter() {

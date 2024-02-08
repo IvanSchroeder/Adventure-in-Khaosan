@@ -6,7 +6,7 @@ using ExtensionMethods;
 public class PlayerMoveState : PlayerGroundedState {
     protected float sprintStopTimer;
 
-    public PlayerMoveState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
+    public PlayerMoveState(Player player, StateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
     }
 
     public override void Enter() {

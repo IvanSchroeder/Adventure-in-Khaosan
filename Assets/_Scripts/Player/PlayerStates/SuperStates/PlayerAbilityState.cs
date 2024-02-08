@@ -4,7 +4,7 @@ using UnityEngine;
 using ExtensionMethods;
 
 public class PlayerAbilityState : PlayerState {
-    public PlayerAbilityState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
+    public PlayerAbilityState(Player player, StateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
     }
 
     public override void AnimationFinishTrigger()

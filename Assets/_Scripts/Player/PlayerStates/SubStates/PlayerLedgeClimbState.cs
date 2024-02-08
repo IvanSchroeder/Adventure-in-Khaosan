@@ -14,7 +14,7 @@ public class PlayerLedgeClimbState : PlayerState {
     protected bool hasSpaceFront;
     protected bool hasSpaceUp;
 
-    public PlayerLedgeClimbState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
+    public PlayerLedgeClimbState(Player player, StateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
     }
 
     public override void AnimationFinishTrigger() {

@@ -1392,6 +1392,7 @@ Transform:
   - {fileID: 2282873368321639583}
   - {fileID: 2282873367862094260}
   - {fileID: 2282873368455551436}
+  - {fileID: 3632880275696117394}
   m_Father: {fileID: 2282873368466760182}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -93558,6 +93559,38 @@ CompositeCollider2D:
     m_Paths: []
   m_VertexDistance: 0.0005
   m_OffsetDistance: 0
+--- !u!1 &4347796111073653414
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3632880275696117394}
+  m_Layer: 0
+  m_Name: Entities
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3632880275696117394
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4347796111073653414}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1822761383349259829}
+  m_Father: {fileID: 2282873368375805783}
+  m_RootOrder: 9
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4857084638394649503
 GameObject:
   m_ObjectHideFlags: 0
@@ -94256,11 +94289,11 @@ PrefabInstance:
       value: 'Camina hacia una pared y te deslizaras automaticamente, incluso en
         el aire!
 
-        (Deslizate mas rapido manteniendo <style="Bold">[S]</style>)'
+        (Deslizate mas rapido manteniendo <style="Bold_Gold">[S]</style>)'
       objectReference: {fileID: 0}
     - target: {fileID: 3280843593238520412, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_fontSize
-      value: 0.4
+      value: 0.45
       objectReference: {fileID: 0}
     - target: {fileID: 3280843593238520412, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_fontSizeBase
@@ -94344,7 +94377,7 @@ PrefabInstance:
       propertyPath: m_text
       value: 'Prueba agarrandote de las cornisas.
 
-        (Manten <style="Bold">[Espacio]</style>
+        (Manten <style="Bold_Gold">[Espacio]</style>
         para saltar hacia arriba)'
       objectReference: {fileID: 0}
     - target: {fileID: 3280843593238520412, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
@@ -94353,7 +94386,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3280843593238520412, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_fontSize
-      value: 0.45
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 3950113998280107552, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_LocalRotation.w
@@ -94503,7 +94536,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3280843593238520412, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_text
-      value: Algunas platarformas son <style="Bold">atravesables</style>
+      value: Algunas platarformas son <style="Bold_Gold">atravesables</style>
       objectReference: {fileID: 0}
     - target: {fileID: 3950113998280107553, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_FlipX
@@ -94573,12 +94606,12 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3280843593238520412, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_text
-      value: 'Consejo: manten <style="Bold">[Espacio]</style> sin apretar <style="Bold">[W]</style>
-        o <style="Bold">[S]</style> para saltar horizontalmente'
+      value: 'Consejo: manten <style="Bold_Gold">[Espacio]</style> + <style="Bold_Gold">[S]</style>
+        para saltar horizontalmente'
       objectReference: {fileID: 0}
     - target: {fileID: 3280843593238520412, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_fontSize
-      value: 0.45
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 3950113998280107553, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_FlipX
@@ -94659,7 +94692,7 @@ PrefabInstance:
       value: 'Puedes caer mas rapido mientras estes en el aire.
 
         (Manten
-        <style="Bold">[S]</style>)'
+        <style="Bold_Gold">[S]</style>)'
       objectReference: {fileID: 0}
     - target: {fileID: 3280843593238520412, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_fontSize
@@ -94735,7 +94768,7 @@ PrefabInstance:
       propertyPath: m_text
       value: 'Acercate al carro para activarlo.
 
-        (Apreta <style="Bold">[W]</style>
+        (Apreta <style="Bold_Gold">[W]</style>
         para interactuar)'
       objectReference: {fileID: 0}
     - target: {fileID: 3280843593238520412, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
@@ -94998,7 +95031,7 @@ PrefabInstance:
       propertyPath: m_text
       value: 'Puedes seguir atravesando en el aire!
 
-        (Manten <style="Bold">[S]</style>)'
+        (Manten <style="Bold_Gold">[S]</style>)'
       objectReference: {fileID: 0}
     - target: {fileID: 3280843593238520412, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_fontSize
@@ -95063,6 +95096,68 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3950113998298252087, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
   m_PrefabInstance: {fileID: 3134182784331598237}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &3521065952857122338
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 3632880275696117394}
+    m_Modifications:
+    - target: {fileID: 2996838815014873108, guid: 2cc55b8babba01e4d8e7acc129c62cb9, type: 3}
+      propertyPath: m_Name
+      value: ScorpionEnemy
+      objectReference: {fileID: 0}
+    - target: {fileID: 2996838815014873111, guid: 2cc55b8babba01e4d8e7acc129c62cb9, type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2996838815014873111, guid: 2cc55b8babba01e4d8e7acc129c62cb9, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 45
+      objectReference: {fileID: 0}
+    - target: {fileID: 2996838815014873111, guid: 2cc55b8babba01e4d8e7acc129c62cb9, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2996838815014873111, guid: 2cc55b8babba01e4d8e7acc129c62cb9, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2996838815014873111, guid: 2cc55b8babba01e4d8e7acc129c62cb9, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2996838815014873111, guid: 2cc55b8babba01e4d8e7acc129c62cb9, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2996838815014873111, guid: 2cc55b8babba01e4d8e7acc129c62cb9, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2996838815014873111, guid: 2cc55b8babba01e4d8e7acc129c62cb9, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2996838815014873111, guid: 2cc55b8babba01e4d8e7acc129c62cb9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2996838815014873111, guid: 2cc55b8babba01e4d8e7acc129c62cb9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2996838815014873111, guid: 2cc55b8babba01e4d8e7acc129c62cb9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2cc55b8babba01e4d8e7acc129c62cb9, type: 3}
+--- !u!4 &1822761383349259829 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2996838815014873111, guid: 2cc55b8babba01e4d8e7acc129c62cb9, type: 3}
+  m_PrefabInstance: {fileID: 3521065952857122338}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &3756182406008943775
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -95074,7 +95169,7 @@ PrefabInstance:
       propertyPath: m_text
       value: 'Agachate para traspasar obstaculos bajos.
 
-        (Manten <style="Bold">[S]</style>)'
+        (Manten <style="Bold_Gold">[S]</style>)'
       objectReference: {fileID: 0}
     - target: {fileID: 3950113998298252080, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_Name
@@ -95150,7 +95245,7 @@ PrefabInstance:
       propertyPath: m_text
       value: 'Controla la altura para un salto largo o corto.
 
-        (Manten <style="Bold">[Espacio]</style>)'
+        (Manten <style="Bold_Gold">[Espacio]</style>)'
       objectReference: {fileID: 0}
     - target: {fileID: 3280843593238520412, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_fontSize
@@ -95220,14 +95315,14 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3280843593238520412, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_text
-      value: 'Salta por las paredes manteniendo <style="Bold">[Espacio]</style>.
+      value: 'Salta por las paredes manteniendo <style="Bold_Gold">[Espacio]</style>.
 
         (Puedes
-        controlar la direccion con <style="Bold">[W]</style> o <style="Bold">[S]</style>)'
+        controlar la direccion con <style="Bold_Gold">[W]</style> o <style="Bold_Gold">[S]</style>)'
       objectReference: {fileID: 0}
     - target: {fileID: 3280843593238520412, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_fontSize
-      value: 0.4
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 3950113998280107553, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_FlipX
@@ -95323,12 +95418,12 @@ PrefabInstance:
       propertyPath: m_text
       value: 'Salta a traves de las plataformas.
 
-        (Manten <style="Bold">[S]</style>
-        y aprieta <style="Bold">[Espacio]</style>)'
+        (Manten <style="Bold_Gold">[S]</style>
+        y aprieta <style="Bold_Gold">[Espacio]</style>)'
       objectReference: {fileID: 0}
     - target: {fileID: 3280843593238520412, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_fontSize
-      value: 0.45
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 3950113998280107553, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_FlipX
@@ -95400,12 +95495,12 @@ PrefabInstance:
       propertyPath: m_text
       value: 'Puedes trepar las cornisas.
 
-        (Apreta <style="Bold">[A]</style>
-        o <style="Bold">[D]</style> en la misma direccion)'
+        (Apreta <style="Bold_Gold">[A]</style>
+        o <style="Bold_Gold">[D]</style> en la misma direccion)'
       objectReference: {fileID: 0}
     - target: {fileID: 3280843593238520412, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_fontSize
-      value: 0.45
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 3950113998280107553, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_FlipX
@@ -95487,11 +95582,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3280843593238520412, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_text
-      value: Salta con <style="Bold">[Espacio]</style>
+      value: Salta con <style="Bold_Gold">[Espacio]</style>
       objectReference: {fileID: 0}
     - target: {fileID: 3950113998298252080, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_Name
-      value: TutorialSign
+      value: TutorialSign_00
       objectReference: {fileID: 0}
     - target: {fileID: 3950113998298252086, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: <UnlocksAbility>k__BackingField
@@ -95641,17 +95736,17 @@ PrefabInstance:
       propertyPath: m_text
       value: 'Manten apretado
 
-        <style="Bold">[A]</style> o <style="Bold">[D]</style>
-        + <style="Bold">[Espacio]</style>
+        <style="Bold_Gold">[A]</style> o <style="Bold_Gold">[D]</style>
+        + <style="Bold_Gold">[Espacio]</style>
 
         para empujarte de la cornisa.
 
         (Apreta
-        <style="Bold">[S]</style> para soltarte)'
+        <style="Bold_Gold">[S]</style> para soltarte)'
       objectReference: {fileID: 0}
     - target: {fileID: 3280843593238520412, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_fontSize
-      value: 0.35
+      value: 0.45
       objectReference: {fileID: 0}
     - target: {fileID: 3950113998280107553, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_FlipX
@@ -95751,7 +95846,7 @@ PrefabInstance:
       propertyPath: m_text
       value: 'Bienvenido al tutorial!
 
-        Por favor, lee <style="Bold">atentamente</style>
+        Por favor, lee <style="Bold_Gold">atentamente</style>
         los carteles'
       objectReference: {fileID: 0}
     - target: {fileID: 3950113998298252080, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
@@ -95810,6 +95905,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5122788260580587040, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
+      propertyPath: m_Texture
+      value: 
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
 --- !u!4 &8973842563966023793 stripped
@@ -95826,7 +95925,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3280843593238520412, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_text
-      value: Bien hecho! Coordina tus movimientos y evita los <style="Bold">pinchos</style>!
+      value: Bien hecho! Coordina tus movimientos y evita los <style="Bold_Gold">pinchos</style>!
       objectReference: {fileID: 0}
     - target: {fileID: 3280843593238520412, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_isRightToLeft
@@ -95918,7 +96017,7 @@ PrefabInstance:
       propertyPath: m_text
       value: 'Este es el ultimo punto.
 
-        Acercate a el para <style="Bold">terminar</style>
+        Acercate a el para <style="Bold_Gold">terminar</style>
         con el nivel!'
       objectReference: {fileID: 0}
     - target: {fileID: 3950113998280107553, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
@@ -95997,11 +96096,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3280843593238520412, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_text
-      value: Algunos objetos son <style="Bold">coleccionables</style>
+      value: Algunos objetos son <style="Bold_Gold">coleccionables</style>
       objectReference: {fileID: 0}
     - target: {fileID: 3280843593238520412, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_fontSize
-      value: 0.45
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 3950113998280107553, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_FlipX
@@ -96082,14 +96181,14 @@ PrefabInstance:
       value: 'Sabias que puedes deslizarte en el suelo?
 
         Toma carrera y apreta
-        <style="Bold">[S]</style>.
+        <style="Bold_Gold">[S]</style>.
 
-        (Puedes cancelarlo con <style="Bold">[W]</style>
-        o <style="Bold">corriendo</style> en direccion contraria)'
+        (Puedes cancelarlo con <style="Bold_Gold">[W]</style>
+        o <style="Bold_Gold">corriendo</style> en direccion contraria)'
       objectReference: {fileID: 0}
     - target: {fileID: 3280843593238520412, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_fontSize
-      value: 0.3
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 3280843593238520412, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_fontColor.b
@@ -96191,15 +96290,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3280843593238520412, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_text
-      value: 'Manten <style="Bold">[A]</style> o <style="Bold">[D]</style> hacia
-        una pared para agarrarte.
+      value: 'Manten <style="Bold_Gold">[A]</style> o <style="Bold_Gold">[D]</style>
+        hacia una pared para agarrarte.
 
-        (Manten <style="Bold">[W]</style> o <style="Bold">[S]</style>
-        para escalarla verticalmente)'
+        (Manten <style="Bold_Gold">[W]</style>
+        o <style="Bold_Gold">[S]</style> para escalarla verticalmente)'
       objectReference: {fileID: 0}
     - target: {fileID: 3280843593238520412, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_fontSize
-      value: 0.4
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 3950113998280107553, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_FlipX
@@ -96342,11 +96441,11 @@ PrefabInstance:
       value: 'Tambien puedes correr! Prueba con ambas a la vez!
 
         (Manten
-        <style="Bold">[Shift]</style> para correr)'
+        <style="Bold_Gold">[Shift]</style> para correr)'
       objectReference: {fileID: 0}
     - target: {fileID: 3280843593238520412, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_fontSize
-      value: 0.45
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 3950113998280107553, guid: 5efe21fc1895f9d44b333783a131a3a5, type: 3}
       propertyPath: m_FlipX

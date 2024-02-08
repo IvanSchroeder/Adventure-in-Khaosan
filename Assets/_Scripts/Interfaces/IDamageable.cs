@@ -30,26 +30,4 @@ public interface IDamageable {
     SpriteManager SpriteManager { get; set; }
 
     void Damage(object sender, OnEntityDamagedEventArgs entityDamagedArgs);
-
-    // LayerMask DamagedBy { get; set; }
-    // SpriteFlashConfiguration DamagedFlash { get; set; }
-    // SpriteFlashConfiguration InvulnerableFlash { get; set; }
-    // HealthType HealthType { get; set; }
-    // bool IsRespawneable { get; set; }
-    // bool CanRespawn { get; set; }
-    // int CurrentLives { get; set; }
-    // int MaxLives { get; set; }
-    // float MaxHealth { get; set; }
-    // float CurrentHealth { get; set; }
-    // int MaxHearts { get; set; }
-    // int CurrentHearts { get; set; }
-    // bool IsDead { get; set; }
-    // bool IsInvulnerable { get; set; }
-    // float InvulnerabilitySeconds { get; set; }
-
-    // void InitializeHealth();
-    // bool IsDamagedBy(int layer);
-    // void Damage(OnEntityDamagedEventArgs eventArgs);
-    // void SetInvulnerability(object sender, OnEntityDamagedEventArgs eventArgs);
-    // void Heal(float amount);
 }

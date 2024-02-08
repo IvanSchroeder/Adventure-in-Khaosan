@@ -4,7 +4,7 @@ using UnityEngine;
 using ExtensionMethods;
 
 public class PlayerJumpState : PlayerAbilityState {
-    public PlayerJumpState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
+    public PlayerJumpState(Player player, StateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
         amountOfJumpsLeft = playerData.amountOfJumps;
     }
 

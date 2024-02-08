@@ -16,7 +16,6 @@ public struct ColliderConfiguration {
 }
 
 public class Player : Entity, IDamageable, IInteractor {
-    public PlayerStateMachine StateMachine { get; private set; }
     public PlayerIdleState IdleState { get; private set; }
     public PlayerMoveState MoveState { get; private set; }
     public PlayerCrouchIdleState CrouchIdleState { get; private set; }
@@ -33,20 +32,9 @@ public class Player : Entity, IDamageable, IInteractor {
     public PlayerKnockbackState KnockbackState { get; private set; }
     public PlayerDeathState DeathState { get; private set; }
 
-    [Header("States")]
-    [Space(5f)]
-    private PlayerState CurrentState;
-    private PlayerState PreviousState;
-    public string CurrentStateName;
-    public string PreviousStateName;
-
     [Space(10f), Header("General"), Space(5f)]
     public List<BoolSO> PlayerAbilitiesList;
     public PlayerData playerData;
-    [field: SerializeField] public Rigidbody2D Rb { get; private set; }
-    [field: SerializeField] public BoxCollider2D MovementCollider { get; private set; }
-    [field: SerializeField] public Animator Anim { get; private set; }
-    [field: SerializeField] public SpriteRenderer PlayerSprite { get; private set; }
     [field: SerializeField] public CameraTarget CameraTarget { get; private set; }
 
     [field: SerializeField, Space(10f), Header("Damageable"), Space(5f)] public BoxCollider2D HitboxTrigger { get; set; }
@@ -67,8 +55,6 @@ public class Player : Entity, IDamageable, IInteractor {
     private float velocityX;
     private float velocityY;
     private Vector2 velocityXY;
-    public Vector2 CurrentVelocity { get; private set; }
-    public int FacingDirection { get; private set; } = 1;
 
     [HideInInspector] public Vector2 detectedPos;
     [HideInInspector] public Vector2 cornerPos;
@@ -90,16 +76,8 @@ public class Player : Entity, IDamageable, IInteractor {
     public Action OnPlayerDeathEnd;
     public Action OnLivesDepleted;
 
-    private void UpdateCurrentState(PlayerState current, PlayerState previous) {
-        CurrentState = current;
-        PreviousState = previous;
-
-        CurrentStateName = $"{CurrentState.ToString()}";
-        if (PreviousState.IsNull()) PreviousStateName = "";
-        else PreviousStateName = $"{PreviousState.ToString()}";
-    }
-
-    private void OnEnable() {
+    protected override void OnEnable() {
+        base.OnEnable();
         LevelManager.OnPlayerSpawn += RespawnPlayer;
         LevelManager.OnLevelFinished += StandOnCheckpoint;
 
@@ -109,11 +87,10 @@ public class Player : Entity, IDamageable, IInteractor {
 
         OnEntityDamaged += HealthSystem.ReduceHealth;
         OnInvulnerability += HealthSystem.SetInvulnerability;
-
-        StateMachine.OnStateChange += UpdateCurrentState;
     }
 
-    private void OnDisable() {
+    protected override void OnDisable() {
+        base.OnDisable();
         LevelManager.OnPlayerSpawn -= RespawnPlayer;
         LevelManager.OnLevelFinished -= StandOnCheckpoint;
         
@@ -123,28 +100,24 @@ public class Player : Entity, IDamageable, IInteractor {
 
         OnEntityDamaged -= HealthSystem.ReduceHealth;
         OnInvulnerability -= HealthSystem.SetInvulnerability;
-
-        StateMachine.OnStateChange -= UpdateCurrentState;
     }
 
-    private void Awake() {
-        StateMachine = new PlayerStateMachine();
+    protected override void Awake() {
+        StateMachine = new StateMachine();
+        if (Rb.IsNull()) Rb = this.GetComponent<Rigidbody2D>();
+        if (Anim.IsNull()) Anim = GetComponentInChildren<Animator>();
+        if (Sprite.IsNull()) Sprite = GetComponentInChildren<SpriteRenderer>();
+        if (MovementCollider.IsNull()) MovementCollider = GetComponent<BoxCollider2D>();
 
-        // IdleState = PlayerState.CreateInstance<PlayerIdleState>(this, StateMachine, playerData, "idle");
-        // MoveState = PlayerState.CreateInstance<PlayerMoveState>(this, StateMachine, playerData, "move");
-        // CrouchIdleState = PlayerState.CreateInstance<PlayerCrouchIdleState>(this, StateMachine, playerData, "crouchIdle");
-        // CrouchMoveState = PlayerState.CreateInstance<PlayerCrouchMoveState>(this, StateMachine, playerData, "crouchMove");
-        // GroundSlideState = PlayerState.CreateInstance<PlayerGroundSlideState>(this, StateMachine, playerData, "groundSlide");
-        // JumpState = PlayerState.CreateInstance<PlayerJumpState>(this, StateMachine, playerData, "airborne");
-        // AirborneState = PlayerState.CreateInstance<PlayerAirborneState>(this, StateMachine, playerData, "airborne");
-        // LandState = PlayerState.CreateInstance<PlayerLandState>(this, StateMachine, playerData, "land");
-        // WallSlideState = PlayerState.CreateInstance<PlayerWallSlideState>(this, StateMachine, playerData, "wallSlide");
-        // WallGrabState = PlayerState.CreateInstance<PlayerWallGrabState>(this, StateMachine, playerData, "wallGrab");
-        // WallClimbState = PlayerState.CreateInstance<PlayerWallClimbState>(this, StateMachine, playerData, "wallClimb");
-        // WallJumpState = PlayerState.CreateInstance<PlayerWallJumpState>(this, StateMachine, playerData, "roll");
-        // LedgeClimbState = PlayerState.CreateInstance<PlayerLedgeClimbState>(this, StateMachine, playerData, "ledgeClimbState");
-        // KnockbackState = PlayerState.CreateInstance<PlayerKnockbackState>(this, StateMachine, playerData, "damaged");
-        // DeathState = PlayerState.CreateInstance<PlayerDeathState>(this, StateMachine, playerData, "dead");
+        if (InputHandler.IsNull()) InputHandler = GetComponent<PlayerInputHandler>();
+        if (CameraTarget.IsNull()) CameraTarget = GetComponentInChildren<CameraTarget>();
+
+        if (HealthSystem.IsNull()) HealthSystem = GetComponentInChildren<HealthSystem>();
+        if (HitboxTrigger.IsNull()) HitboxTrigger = HealthSystem.GetComponent<BoxCollider2D>();
+        if (SpriteManager.IsNull()) SpriteManager = Sprite.GetComponent<SpriteManager>();
+
+        if (InteractorSystem.IsNull()) InteractorSystem = this.GetComponentInHierarchy<InteractorSystem>();
+        if (InteractorTrigger.IsNull()) InteractorTrigger = InteractorSystem.GetComponent<BoxCollider2D>();
 
         IdleState = new PlayerIdleState(this, StateMachine, playerData, "idle");
         MoveState = new PlayerMoveState(this, StateMachine, playerData, "move");
@@ -161,31 +134,10 @@ public class Player : Entity, IDamageable, IInteractor {
         LedgeClimbState = new PlayerLedgeClimbState(this, StateMachine, playerData, "ledgeClimbState");
         KnockbackState = new PlayerKnockbackState(this, StateMachine, playerData, "damaged");
         DeathState = new PlayerDeathState(this, StateMachine, playerData, "dead");
-
-        InitComponents();
-
-        CurrentState = null;
-        PreviousState = null;
-    }
-
-    private void InitComponents() {
-        if (Anim == null) Anim = GetComponentInChildren<Animator>();
-        if (PlayerSprite == null) PlayerSprite = GetComponentInChildren<SpriteRenderer>();
-        if (InputHandler == null) InputHandler = GetComponent<PlayerInputHandler>();
-        if (Rb == null) Rb = GetComponent<Rigidbody2D>();
-        if (MovementCollider == null) MovementCollider = GetComponent<BoxCollider2D>();
-        if (CameraTarget == null) CameraTarget = GetComponentInChildren<CameraTarget>();
-
-        if (HealthSystem == null) HealthSystem = GetComponentInChildren<HealthSystem>();
-        if (HitboxTrigger == null) HitboxTrigger = HealthSystem.GetComponent<BoxCollider2D>();
-        if (SpriteManager == null) SpriteManager = PlayerSprite.GetComponent<SpriteManager>();
-
-        if (InteractorSystem == null) InteractorSystem = this.GetComponentInHierarchy<InteractorSystem>();
-        if (InteractorTrigger == null) InteractorTrigger = InteractorSystem.GetComponent<BoxCollider2D>();
     }
 
     public void RespawnPlayer() {
-        if (CurrentState == null) StateMachine.Initialize(IdleState);
+        if (StateMachine.CurrentState == null) StateMachine.Initialize(IdleState);
         else StateMachine.ChangeState(IdleState);
 
         JumpState.ResetAmountOfJumpsLeft();
@@ -195,7 +147,7 @@ public class Player : Entity, IDamageable, IInteractor {
         FacingDirection = 1;
         Rb.gravityScale = playerData.defaultGravityScale;
         CheckFacingDirection(FacingDirection);
-        PlayerSprite.flipX = false;
+        Sprite.flipX = false;
         CameraTarget.transform.SetParent(CameraTarget.CameraCenter);
         CameraTarget.transform.localPosition = Vector3.zero;
 
@@ -206,20 +158,19 @@ public class Player : Entity, IDamageable, IInteractor {
         OnInvulnerability?.Invoke();
     }
 
-    private void Update() {
-        CurrentVelocity = Rb.velocity;
-        StateMachine.CurrentState.LogicUpdate();
+    protected override void Update() {
+        base.Update();
     }
     
-    private void FixedUpdate() {
-        StateMachine.CurrentState.PhysicsUpdate();
+    protected override void FixedUpdate() {
+        base.FixedUpdate();
 
         Debug.DrawRay(MidPoint.position, playerData.wallHopDirectionOffAngle * playerData.wallHopSpeed, Color.cyan);
         Debug.DrawRay(MidPoint.position, playerData.wallJumpDirectionOffAngle * playerData.wallJumpSpeed, Color.magenta);
         Debug.DrawRay(MidPoint.position, playerData.deathJumpDirectionOffAngle * playerData.deathJumpSpeed, Color.red);
     }
 
-    public void Damage(object sender, OnEntityDamagedEventArgs entityDamagedArgs) {
+    public override void Damage(object sender, OnEntityDamagedEventArgs entityDamagedArgs) {
         lastContactPoint = entityDamagedArgs.ContactPoint;
         OnEntityDamaged?.Invoke(sender, entityDamagedArgs);
         OnPlayerDamaged?.Invoke(entityDamagedArgs);
@@ -252,7 +203,7 @@ public class Player : Entity, IDamageable, IInteractor {
         OnPlayerDeathEnd?.Invoke();
     }
 
-    public void SetVelocityX(float velocity, float accelAmount = 30f, bool lerpVelocity = false) {
+    public override void SetVelocityX(float velocity, float accelAmount = 30f, bool lerpVelocity = false) {
         if (lerpVelocity)
             velocityX = Mathf.MoveTowards(velocityX, velocity, accelAmount * Time.deltaTime);
         else
@@ -262,7 +213,7 @@ public class Player : Entity, IDamageable, IInteractor {
         Rb.velocity = CurrentVelocity;
     }
 
-    public void SetVelocityY(float velocity, float accelAmount = 30f, bool lerpVelocity = false) {
+    public override void SetVelocityY(float velocity, float accelAmount = 30f, bool lerpVelocity = false) {
         if (lerpVelocity)
             velocityY = Mathf.MoveTowards(velocityY, velocity, accelAmount * Time.deltaTime);
         else
@@ -272,17 +223,7 @@ public class Player : Entity, IDamageable, IInteractor {
         Rb.velocity = CurrentVelocity;
     }
 
-    public void SetVelocityYOnGround(float velocity, float accelAmount = 30f, bool lerpVelocity = false) {
-        if (lerpVelocity)
-            velocityY = Mathf.MoveTowards(velocityY, velocity, accelAmount * Time.deltaTime);
-        else
-            velocityY = velocity;
-
-        CurrentVelocity = CurrentVelocity.SetXY(CurrentVelocity.x, velocityY.Clamp(-playerData.maxHorizontalSpeed, playerData.maxHorizontalSpeed));
-        Rb.velocity = CurrentVelocity;
-    }
-
-    public void SetVelocity(float velocity, Vector2 angle, int direction, bool resetCurrentVelocity = true) {
+    public override void SetVelocity(float velocity, Vector2 angle, int direction, bool resetCurrentVelocity = true) {
         if (resetCurrentVelocity) {
             CurrentVelocity = new Vector2(0f, 0f);
             Rb.velocity = new Vector2(0f, 0f);
@@ -294,53 +235,44 @@ public class Player : Entity, IDamageable, IInteractor {
         Rb.velocity = CurrentVelocity;
     }
 
-    public void CheckFacingDirection(int direction) {
-        if (direction != 0 && direction != FacingDirection) {
-            Flip();
-        }
-
-        if (FacingDirection == 1) PlayerSprite.flipX = false;
-        else if (FacingDirection == -1) PlayerSprite.flipX = true;
-    }
-
-    public bool CheckGround(LayerMask mask) {
+    public override bool CheckGround(LayerMask mask) {
         return Physics2D.Raycast(GroundPoint.position.ToVector2() + (Vector2.right * playerData.groundCheckOffset.x) + (Vector2.up * playerData.groundCheckOffset.y), Vector2.down, playerData.groundCheckDistance, mask)
             || Physics2D.Raycast(GroundPoint.position.ToVector2() + (Vector2.left * playerData.groundCheckOffset.x) + (Vector2.up * playerData.groundCheckOffset.y), Vector2.down, playerData.groundCheckDistance, mask)
             || Physics2D.Raycast(GroundPoint.position.ToVector2() + (Vector2.up * playerData.groundCheckOffset.y), Vector2.down, playerData.groundCheckDistance, mask);
     }
 
-    public bool CheckCeiling() {
+    public override bool CheckCeiling() {
         return Physics2D.Raycast(CeilingPoint.position.ToVector2() + (Vector2.right * playerData.ceilingCheckOffset) + (Vector2.down * playerData.ceilingCheckOffset.y), Vector2.up, playerData.ceilingCheckDistance, playerData.solidsLayer)
             || Physics2D.Raycast(CeilingPoint.position.ToVector2() + (Vector2.left * playerData.ceilingCheckOffset) + (Vector2.down * playerData.ceilingCheckOffset.y), Vector2.up, playerData.ceilingCheckDistance, playerData.solidsLayer)
             || Physics2D.Raycast(CeilingPoint.position.ToVector2() + (Vector2.down * playerData.ceilingCheckOffset.y), Vector2.up, playerData.ceilingCheckDistance, playerData.solidsLayer);
     }
 
-    public bool CheckWall() {
+    public override bool CheckWall() {
         return Physics2D.Raycast(WallPoint.position.ToVector2() + (Vector2.up * playerData.wallCheckOffset.y), Vector2.right * FacingDirection, playerData.wallCheckDistance, playerData.wallLayer);
     }
 
-    public bool CheckBackWall() {
+    public override bool CheckBackWall() {
         return Physics2D.Raycast(WallPoint.position.ToVector2() + (Vector2.up * playerData.wallCheckOffset.y), Vector2.right * -FacingDirection, playerData.wallCheckDistance, playerData.wallLayer);
     }
 
-    public bool CheckLedge() {
+    public override bool CheckLedge() {
         return Physics2D.Raycast(LedgePoint.position.ToVector2() + (Vector2.up * playerData.ledgeCheckOffset.y), Vector2.right * FacingDirection, playerData.ledgeCheckDistance, playerData.wallLayer);
     }
 
-    public bool CheckLedgeFoot() {
+    public override bool CheckLedgeFoot() {
         return Physics2D.Raycast(GroundPoint.position.ToVector2(), Vector2.right * FacingDirection, playerData.ledgeCheckDistance, playerData.wallLayer);
     }
 
-    public bool CheckChangingDirections() {
+    public override bool CheckChangingDirections() {
         return ((InputHandler.NormInputX != 0 && InputHandler.NormInputX.Sign() != CurrentVelocity.x.Sign())
             || (InputHandler.NormInputX == 0 && FacingDirection.Sign() != CurrentVelocity.x.Sign())) && CurrentVelocity.x != 0;
     }
 
-    public bool CheckFalling() {
+    public override bool CheckFalling() {
         return CurrentVelocity.y <= playerData.fallThreshold && !playerData.isGrounded;
     }
 
-    public bool CheckAscending() {
+    public override bool CheckAscending() {
         return CurrentVelocity.y > 0.0f && !playerData.isGrounded;
     }
 
@@ -380,16 +312,6 @@ public class Player : Entity, IDamageable, IInteractor {
         return correctLedge;
     }
 
-    private void AnimationTrigger() => StateMachine.CurrentState.AnimationTrigger();
-
-    private void AnimationFinishTrigger() => StateMachine.CurrentState.AnimationFinishTrigger();
-
-    private void Flip() {
-        FacingDirection *= -1;
-        if (FacingDirection == 1) PlayerSprite.flipX = false;
-        else if (FacingDirection == -1) PlayerSprite.flipX = true;
-    }
-
     public void SetColliderParameters(BoxCollider2D collider, ColliderConfiguration colliderConfig, bool changeCeilingPoint = false) {
         collider.offset = colliderConfig.Offset;
         collider.size = colliderConfig.Size;
@@ -403,6 +325,8 @@ public class Player : Entity, IDamageable, IInteractor {
         SetVelocityX(0f);
         SetVelocityY(0f);
 
+        InputHandler.LockGameplayInputs();
+
         HitboxTrigger.enabled = false;
         InteractorTrigger.enabled = false;
 
@@ -413,6 +337,8 @@ public class Player : Entity, IDamageable, IInteractor {
             transform.position = LevelManager.instance.currentCheckpoint.BasepointTransform.position;
         }
     }
+
+    #region --- Ground Detection and Correction ---
 
     public void CorrectHeadCorner(float currentYVelocity) {
         float newPos = 0f;
@@ -439,7 +365,7 @@ public class Player : Entity, IDamageable, IInteractor {
         }
 
         SetVelocityY(playerData.jumpHeight);
-    }
+    }  
 
     public void CorrectFootLedge(float currentXVelocity) {
         float newPos = 0f;
@@ -501,6 +427,8 @@ public class Player : Entity, IDamageable, IInteractor {
             Debug.DrawRay(WallPoint.position.ToVector2(), Vector2.right * direction * playerData.wallCheckDistance, Color.red, 3f);
         return wallHit;
     }
+
+    #endregion
 
     private void OnDrawGizmos() {
         if (!drawGizmos) return;

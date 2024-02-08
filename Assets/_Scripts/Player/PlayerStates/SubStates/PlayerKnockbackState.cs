@@ -4,7 +4,7 @@ using UnityEngine;
 using ExtensionMethods;
 
 public class PlayerKnockbackState : PlayerState {
-    public PlayerKnockbackState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
+    public PlayerKnockbackState(Player player, StateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
     }
 
     public override void Enter() {

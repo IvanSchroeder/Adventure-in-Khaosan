@@ -2576,6 +2576,12 @@ namespace ExtensionMethods {
 	/// Extensions for numerical values.
 	/// </summary>
 	#region ===== Numericals =====
+		public static T CoinFlip<T>(T i, T f) {
+			float rand = Random.Range(0, 2);
+            
+			return rand.ToInt() < 1 ? i : f;
+		}
+
 		public static int Sign(this float f) => MathF.Sign(f);
 		public static int Sign(this int f) => MathF.Sign(f);
 

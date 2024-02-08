@@ -8,7 +8,7 @@ public class PlayerGroundedState : PlayerState {
     protected float elapsedTimeSinceStandup;
     protected bool standUp;
 
-    public PlayerGroundedState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
+    public PlayerGroundedState(Player player, StateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
     }
 
     public override void Enter() {

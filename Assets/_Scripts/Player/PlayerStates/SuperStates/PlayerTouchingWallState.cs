@@ -7,7 +7,7 @@ public class PlayerTouchingWallState : PlayerState {
     protected float wallHitX;
     protected RaycastHit2D wallHit;
 
-    public PlayerTouchingWallState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
+    public PlayerTouchingWallState(Player player, StateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
     }
 
     public override void AnimationFinishTrigger()

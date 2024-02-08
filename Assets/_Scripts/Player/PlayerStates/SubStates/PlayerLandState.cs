@@ -6,7 +6,7 @@ using ExtensionMethods;
 public class PlayerLandState : PlayerGroundedState {
     protected Vector2 targetLandPosition;
 
-    public PlayerLandState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
+    public PlayerLandState(Player player, StateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
     }
 
     public override void Enter() {

@@ -4,7 +4,7 @@ using UnityEngine;
 using ExtensionMethods;
 
 public class PlayerAirborneState : PlayerState {
-    public PlayerAirborneState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
+    public PlayerAirborneState(Player player, StateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
     }
 
     public override void Enter() {

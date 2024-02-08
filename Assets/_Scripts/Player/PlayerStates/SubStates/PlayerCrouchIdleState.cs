@@ -6,7 +6,7 @@ using ExtensionMethods;
 public class PlayerCrouchIdleState : PlayerGroundedState {
     protected float cameraOffsetDelay = 1f;
 
-    public PlayerCrouchIdleState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
+    public PlayerCrouchIdleState(Player player, StateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
     }
 
     public override void Enter() {

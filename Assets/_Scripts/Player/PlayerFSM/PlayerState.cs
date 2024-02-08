@@ -6,51 +6,49 @@ using UnityEngine.Tilemaps;
 using System;
 
 [Serializable]
-public class PlayerState {
+public class PlayerState : State {
     protected static Player player;
-    protected static PlayerStateMachine stateMachine;
     protected static PlayerData playerData;
 
-    protected static bool isGrounded;
-    protected static bool isOnSolidGround;
-    protected static bool isOnSlope;
-    protected static bool isOnPlatform;
-    protected static bool isIgnoringPlatforms;
-    protected static bool isAirborne;
-    protected static bool isIdle;
-    protected static bool isMoving;
-    protected static bool isRunning;
-    protected static bool isRunningAtMaxSpeed;
+    public static bool isGrounded { get; protected set; }
+    public static bool isOnSolidGround { get; protected set; }
+    public static bool isOnSlope { get; protected set; }
+    public static bool isOnPlatform { get; protected set; }
+    public static bool isIgnoringPlatforms { get; protected set; }
+    public static bool isAirborne { get; protected set; }
+    public static bool isIdle { get; protected set; }
+    public static bool isMoving { get; protected set; }
+    public static bool isRunning { get; protected set; }
+    public static bool isRunningAtMaxSpeed { get; protected set; }
+    public static bool isChangingDirections { get; protected set; }
+    public static bool isJumping { get; protected set; }
+    public static bool isAscending { get; protected set; }
+    public static bool isFalling { get; protected set; }
+    public static bool isTouchingCeiling { get; protected set; }
+    public static bool isTouchingWall { get; protected set; }
+    public static bool isTouchingBackWall { get; protected set; }
+    public static bool hasTouchedWall { get; protected set; }
+    public static bool hasTouchedWallBack { get; protected set; }
+    public static bool isTouchingLedge { get; protected set; }
+    public static bool isTouchingLedgeWithFoot { get; protected set; }
+    public static bool isDamaged { get; protected set; }
+    public static bool isDead { get; protected set; }
+    public static bool isInvulnerable { get; protected set; }
+    public static bool isAbilityDone { get; protected set; }
+
     protected static bool isSprinting;
     protected static bool isSprintingAtMaxSpeed;
-    protected static bool isChangingDirections;
     protected static bool isCrouching;
     protected static bool isGroundSliding;
     protected static bool stopSlide;
-    protected static bool isJumping;
-    protected static bool isAscending;
-    protected static bool isFalling;
     protected static bool isFastFalling;
-    protected static bool isTouchingCeiling;
-    protected static bool isTouchingWall;
-    protected static bool isTouchingBackWall;
-    protected static bool hasTouchedWall;
-    protected static bool hasTouchedWallBack;
-    protected static bool isTouchingLedge;
-    protected static bool isTouchingLedgeWithFoot;
     protected static bool isWallSliding;
     protected static bool isWallGrabing;
     protected static bool isWallClimbing;
     protected static bool isWallJumping;
     protected static bool isHanging;
     protected static bool isClimbing;
-    protected static bool isDamaged;
-    protected static bool isDead;
     protected static bool isDeadOnGround;
-    protected static bool isInvulnerable;
-    protected static bool isAnimationFinished;
-    protected static bool isExitingState;
-    protected static bool isAbilityDone;
     protected static bool coyoteTime;
     protected static bool wallJumpCoyoteTime;
     protected static bool groundSlideTime;
@@ -75,7 +73,6 @@ public class PlayerState {
     protected static bool grabInput;
 
     protected static int amountOfJumpsLeft;
-    protected static float startTime;
     protected static float cumulatedJumpCoyoteTime;
     protected static float cumulatedWallJumpCoyoteTime;
     protected static float cumulatedKnockbackTime;
@@ -92,45 +89,41 @@ public class PlayerState {
     protected static bool hasBouncedOffWall;
     protected static bool hasBouncedOffCeiling;
 
-    private string animBoolName;
-
-    public PlayerState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) {
+    public PlayerState(Player player, StateMachine stateMachine, PlayerData playerData, string animBoolName) {
         Init(player, stateMachine, playerData, animBoolName);
         isDead = false;
         isDeadOnGround = false;
     }
 
-    public void Init(Player pl, PlayerStateMachine sM, PlayerData pD, string animBoolName) {
-        player = pl;
+    public void Init(Player pl, StateMachine sM, PlayerData pD, string animBoolName) {
+        entity = pl;
         stateMachine = sM;
         playerData = pD;
         this.animBoolName = animBoolName;
+
+        player = pl;
     }
 
-    public virtual void Enter() {
+    public override void Enter() {
+        base.Enter();
         CheckInputs();
         CheckHorizontalMovement();
         CheckVerticalMovement();
         UpdatePlayerStates();
         UpdateAnimator();
-        player.Anim.SetBool(animBoolName, true);
-        startTime = Time.time;
-        isAnimationFinished = false;
-        isExitingState = false;
     }
 
-    public virtual void Exit() {
+    public override void Exit() {
+        base.Exit();
         CheckInputs();
         CheckRaycasts();
         CheckHorizontalMovement();
         CheckVerticalMovement();
         UpdatePlayerStates();
         UpdateAnimator();
-        player.Anim.SetBool(animBoolName, false);
-        isExitingState = true;
     }
 
-    public virtual void LogicUpdate() {
+    public override void LogicUpdate() {
         CheckInputs();
         CheckHorizontalMovement();
         CheckVerticalMovement();
@@ -150,13 +143,13 @@ public class PlayerState {
         }
     }
 
-    public virtual void PhysicsUpdate() {
+    public override void PhysicsUpdate() {
         CheckRaycasts();
     }
 
-    public virtual void AnimationTrigger() { }
+    public override void AnimationTrigger() { }
 
-    public virtual void AnimationFinishTrigger() => isAnimationFinished = true;
+    public override void AnimationFinishTrigger() => isAnimationFinished = true;
 
     public void CheckHorizontalMovement() {
         if (!isGroundSliding && cumulatedGroundSlideCooldown < playerData.groundSlideDelay) cumulatedGroundSlideCooldown += Time.deltaTime;
@@ -226,24 +219,6 @@ public class PlayerState {
     }
 
     public void UpdatePlayerStates() {
-        // playerData.xInput = xInput;
-        // playerData.lastXInput = lastXInput;
-        // playerData.yInput = yInput;
-        // playerData.jumpInput = jumpInput;
-        // playerData.jumpInputStop = jumpInputStop;
-        // playerData.jumpInputHold = jumpInputHold;
-        // playerData.attackInput = attackInput;
-        // playerData.attackInputHold = attackInputHold;
-        // playerData.attackInputStop = attackInputStop;
-        // playerData.grabInput = grabInput;
-        // playerData.crouchInput = crouchInput;
-        // playerData.crouchInputHold = crouchInputHold;
-        // playerData.crouchInputStop = crouchInputStop;
-        // playerData.interactInput = interactInput;
-        // playerData.interactInputHold = interactInputHold;
-        // playerData.interactInputStop = interactInputStop;
-        // playerData.unplatformInput = unplatformInput;
-
         playerData.currentVelocity = player.CurrentVelocity;
         playerData.facingDirection = player.FacingDirection == 1 ? Direction.Right : Direction.Left;
         playerData.currentGravityScale = player.Rb.gravityScale;
@@ -285,7 +260,6 @@ public class PlayerState {
         playerData.hasTouchedWall = hasTouchedWall;
         playerData.hasTouchedWallBack = hasTouchedWallBack;
         playerData.isTouchingLedge = isTouchingLedge;
-        // playerData.isTouchingLedgeWithFoot = isTouchingLedgeWithFoot;
         playerData.isWallSliding = isWallSliding;
         playerData.isWallGrabing = isWallGrabing;
         playerData.isWallClimbing = isWallClimbing;

@@ -24,5 +24,4 @@ public class PlayerStateMachine {
         CurrentState.Enter();
         OnStateChange?.Invoke(CurrentState, PreviousState);
     }
-
 }

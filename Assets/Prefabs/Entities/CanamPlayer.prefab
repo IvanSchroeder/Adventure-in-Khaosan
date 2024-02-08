@@ -219,8 +219,8 @@ TrailRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1407808905
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_Time: 0.2
   m_Parameters:
@@ -366,7 +366,7 @@ GameObject:
   - component: {fileID: 3125253531432767930}
   - component: {fileID: 3125253531432767931}
   m_Layer: 9
-  m_Name: Player
+  m_Name: CanamPlayer
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -603,14 +603,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   entityData: {fileID: 11400000, guid: 82651798b0a1f594e9210ad3f643c9b0, type: 2}
-  CurrentStateName: 
-  PreviousStateName: 
-  PlayerAbilitiesList: []
-  playerData: {fileID: 11400000, guid: 82651798b0a1f594e9210ad3f643c9b0, type: 2}
   <Rb>k__BackingField: {fileID: 3125253531432767930}
   <MovementCollider>k__BackingField: {fileID: 3125253531432767931}
   <Anim>k__BackingField: {fileID: 3643447841544891557}
-  <PlayerSprite>k__BackingField: {fileID: 7174821088211015114}
+  <Sprite>k__BackingField: {fileID: 7174821088211015114}
+  <CurrentVelocity>k__BackingField: {x: 0, y: 0}
+  <FacingDirection>k__BackingField: 1
+  PlayerAbilitiesList: []
+  playerData: {fileID: 11400000, guid: 82651798b0a1f594e9210ad3f643c9b0, type: 2}
   <CameraTarget>k__BackingField: {fileID: 5762768655862755544}
   <HitboxTrigger>k__BackingField: {fileID: 5362580700939068921}
   <HealthSystem>k__BackingField: {fileID: 5509863583808375652}

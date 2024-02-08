@@ -100,7 +100,6 @@ public class HealthSystem : MonoBehaviour {
     public void ReduceHealth(object sender, OnEntityDamagedEventArgs entityDamagedEventArgs) {
         if (IsInvulnerable || IsDead || !IsDamagedBy(entityDamagedEventArgs.DamageDealerSource.DamageDealerLayer)) return;
 
-
         switch (HealthType) {
             case HealthType.Numerical:
                 if (entityDamagedEventArgs.DamageAmount == 0f) return;

@@ -4,7 +4,7 @@ using UnityEngine;
 using ExtensionMethods;
 
 public class PlayerCrouchMoveState : PlayerGroundedState {
-    public PlayerCrouchMoveState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
+    public PlayerCrouchMoveState(Player player, StateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
     }
 
     public override void Enter() {

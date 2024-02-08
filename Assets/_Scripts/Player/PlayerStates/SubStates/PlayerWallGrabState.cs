@@ -7,7 +7,7 @@ public class PlayerWallGrabState : PlayerTouchingWallState {
     protected float elapsedGrabTime;
     protected bool stopGrabbing;
 
-    public PlayerWallGrabState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
+    public PlayerWallGrabState(Player player, StateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
     }
 
     public override void AnimationFinishTrigger()

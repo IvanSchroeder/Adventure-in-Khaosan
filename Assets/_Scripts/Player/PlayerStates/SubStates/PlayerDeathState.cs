@@ -13,7 +13,7 @@ public class PlayerDeathState : PlayerState {
     protected float currentBounceYSpeed;
     protected float lastBounceYSpeed;
 
-    public PlayerDeathState(Player player, PlayerStateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
+    public PlayerDeathState(Player player, StateMachine stateMachine, PlayerData playerData, string animBoolName) : base(player, stateMachine, playerData, animBoolName) {
     }
 
     public override void AnimationTrigger() {

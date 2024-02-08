@@ -40,12 +40,13 @@ Material:
     m_Floats:
     - _AddScroll: 1
     - _AddScrollToParallax: 0
-    - _AutoScroll: 0
+    - _AutoScroll: 1
+    - _AutoScrollSpeed: 10
     - _EnableAutomaticScroll: 1
     - _HorizontalScrollSpeed: 1
     - _ShaderFactor: 100
     m_Colors:
-    - _ScrollDirection: {r: 1, g: 0, b: 0, a: 0}
+    - _ScrollDirection: {r: 1, g: 1, b: 0, a: 0}
     - _TravelPosition: {r: 0, g: 0, b: 0, a: 0}
     - _travelPosition: {r: 0.030659853, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
