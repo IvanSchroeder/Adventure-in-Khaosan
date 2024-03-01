@@ -145,8 +145,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 512
   <DamageDealerLayer>k__BackingField: 0
-  <DamageAmount>k__BackingField: 5
-  <DamageInHearts>k__BackingField: {fileID: 11400000, guid: c33e7bc293f2f754185f728ac1c18a41, type: 2}
+  <DamageAmount>k__BackingField: 1
+  <DamageInHearts>k__BackingField: {fileID: 11400000, guid: 228aef07f87ae024fb80bcd02569ad2a, type: 2}
   drawGizmos: 1
 --- !u!95 &2996838815014873099
 Animator:

@@ -12,4 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6e70580b2e392643aab25b861f85f8f, type: 3}
   m_Name: Enemy Idle - Still Idle
   m_EditorClassIdentifier: 
-  randomFaceDirectionRange: 1
+  idleTimerRange: 1
+  randomFaceDirectionRange: 1.5

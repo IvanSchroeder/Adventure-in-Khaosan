@@ -109,6 +109,13 @@ MonoBehaviour:
   <CurrentAmountIndex>k__BackingField: 0
   <CurrentAlphaIndex>k__BackingField: 0
   <CurrentAmountOfFlashes>k__BackingField: 0
+  canCreateAfterImage: 0
+  enableAfterImage: 0
+  afterImageInterval: 0
+  afterImageDecayDelay: 0
+  afterImageDecaySpeed: 0
+  afterImageStartingAlpha: 0
+  afterImageColor: 0
 --- !u!1 &2090419418535101418
 GameObject:
   m_ObjectHideFlags: 0
@@ -120,7 +127,7 @@ GameObject:
   - component: {fileID: 2090419418535101412}
   - component: {fileID: 4460029417438282358}
   - component: {fileID: 2090419418535101413}
-  m_Layer: 0
+  m_Layer: 17
   m_Name: KhaosCoin
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -264,6 +271,7 @@ MonoBehaviour:
   <IsToggable>k__BackingField: 0
   <HasDelay>k__BackingField: 0
   <InteractionStopDelay>k__BackingField: 0
+  <ShouldOutline>k__BackingField: 1
 --- !u!61 &1487400908714518547
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -274,7 +282,7 @@ BoxCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}

@@ -17,6 +17,7 @@ public class Level : ScriptableObject {
     public GameObject levelBackground;
     public List<BoolSO> AbilitiesToEnableList;
     public List<BoolSO> AbilitiesToDisableList;
+    public FoodItemData FoodObjective;
     // public List<CoinItem> CoinItems;
     // public List<FoodItem> FoodItemsList;
     // public List<Enemy> EnemiesList;
@@ -81,6 +82,8 @@ public class Level : ScriptableObject {
         if (enableLevelTimer) CheckRecordTime(currentTimer);
         if (!noHitFinished && !wasHit) noHitFinished = true;
         if (!collectedAllCoins && coinsCollected == totalCoinsAmount) collectedAllCoins = true;
+
+        FoodObjective.CheckUnlockStatus();
     }
 
     public void CheckRecordTime(float currentTimer) {

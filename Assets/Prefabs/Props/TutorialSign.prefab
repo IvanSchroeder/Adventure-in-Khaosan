@@ -399,8 +399,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -185507137
-  m_SortingLayer: 4
+  m_SortingLayerID: -1407808905
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 1119901717, guid: 1a6d3a49b00d9f744a11f2ec8760d9a1, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -428,9 +428,6 @@ MonoBehaviour:
   <HealthSystem>k__BackingField: {fileID: 0}
   <InteractableSystem>k__BackingField: {fileID: 3950113998975318465}
   <CurrentFlashConfiguration>k__BackingField: {fileID: 11400000, guid: 5e6d9f4b629caba4293723bcc964e8b8, type: 2}
-  <DamagedFlash>k__BackingField: {fileID: 0}
-  <InvulnerabilityFlash>k__BackingField: {fileID: 0}
-  <InteractedFlash>k__BackingField: {fileID: 11400000, guid: 41df279f16178fe4b909d5706d33a676, type: 2}
   <DefaultFlashColor>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
   <CurrentFlashColor>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
   <CurrentAlphaAmount>k__BackingField: 1
@@ -440,6 +437,13 @@ MonoBehaviour:
   <CurrentAmountIndex>k__BackingField: 0
   <CurrentAlphaIndex>k__BackingField: 0
   <CurrentAmountOfFlashes>k__BackingField: 0
+  canCreateAfterImage: 0
+  enableAfterImage: 0
+  afterImageInterval: 0
+  afterImageDecayDelay: 0
+  afterImageDecaySpeed: 0
+  afterImageStartingAlpha: 0
+  afterImageColor: 0
 --- !u!1 &3950113998298252080
 GameObject:
   m_ObjectHideFlags: 0
@@ -523,8 +527,6 @@ MonoBehaviour:
   <UnlocksAbility>k__BackingField: 0
   <AbilityToUnlock>k__BackingField: {fileID: 0}
   isActive: 0
-  lines: []
-  textSpeed: 0
 --- !u!1 &3950113998975318476
 GameObject:
   m_ObjectHideFlags: 0
@@ -581,6 +583,7 @@ MonoBehaviour:
   <IsToggable>k__BackingField: 0
   <HasDelay>k__BackingField: 1
   <InteractionStopDelay>k__BackingField: 0.5
+  <ShouldOutline>k__BackingField: 1
 --- !u!61 &3950113998975318466
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -667,7 +670,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.7169812, g: 0.41958454, b: 0.24012107, a: 0.5019608}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.5019608}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

@@ -21,9 +21,9 @@ TagManager:
   - Damageable
   - Interactor
   - Interactable
-  - 
-  - 
-  - 
+  - NPC
+  - Other
+  - InvisibleCollision
   - 
   - 
   - 

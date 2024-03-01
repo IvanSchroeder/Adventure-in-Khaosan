@@ -1705,16 +1705,24 @@ namespace ExtensionMethods {
 			}
 		}
 
-		public static void GlobalReset(this Transform trns) {
+		public static void LocalPositionReset(this Transform trns) {
+			trns.localPosition = Vector3.zero;
+		}
+
+		public static void GlobalPositionReset(this Transform trns) {
 			trns.position = Vector3.zero;
-			trns.rotation = Quaternion.identity;
-			// Cant set global scale directly
-			trns.localScale = Vector3.one;
 		}
 
 		public static void LocalReset(this Transform trns) {
-			trns.localPosition = Vector3.zero;
+			trns.LocalPositionReset();
 			trns.localRotation = Quaternion.identity;
+			trns.localScale = Vector3.one;
+		}
+
+		public static void GlobalReset(this Transform trns) {
+			trns.GlobalPositionReset();
+			trns.rotation = Quaternion.identity;
+			// Cant set global scale directly
 			trns.localScale = Vector3.one;
 		}
 	#endregion

@@ -61,7 +61,7 @@ Material:
     - _CastShadows: 0
     - _Cull: 2
     - _DstBlend: 10
-    - _Pixelate: 0
+    - _Pixelate: 1
     - _QueueControl: 0
     - _QueueOffset: 0
     - _SrcBlend: 5

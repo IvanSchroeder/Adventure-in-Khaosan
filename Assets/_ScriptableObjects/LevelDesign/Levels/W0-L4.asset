@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b5b160b42cd77545b85f6b96d9d58fc, type: 3}
+  m_Name: W0-L4
+  m_EditorClassIdentifier: 
+  levelName: Tutorial
+  levelID: 0
+  levelNumber: 0
+  worldMap: {fileID: 2282873368466760177, guid: 42b5a36a20eaca74d97b06ddb364d565, type: 3}
+  levelBackground: {fileID: 2491108658111614198, guid: d84d6ea1ccb994541b70f4762e5d63bc, type: 3}
+  AbilitiesToEnableList:
+  - {fileID: 11400000, guid: 9d07fb32c4a7fa94b8988ef3f3d8cb02, type: 2}
+  - {fileID: 11400000, guid: cb9a5bcc8c2680b4598db308d8495103, type: 2}
+  - {fileID: 11400000, guid: 960913a60fb85fc47bde7285a4816a84, type: 2}
+  - {fileID: 11400000, guid: 28b3fb9cda5cb1949a0562099e411ecb, type: 2}
+  - {fileID: 11400000, guid: 72685af96d158444f9993153f7b7e2ff, type: 2}
+  - {fileID: 11400000, guid: 5eaa47b95ac681140af2ccf86a46582d, type: 2}
+  - {fileID: 11400000, guid: b66cd3fd886b96549abe71c8e3558784, type: 2}
+  - {fileID: 11400000, guid: 5f70c527ff1248b4f9729650344f64ce, type: 2}
+  - {fileID: 11400000, guid: 4dd8bd050ab8bff489d809d0a878d4b3, type: 2}
+  - {fileID: 11400000, guid: 23c36e8ca242fd94c86dd67dad05beb0, type: 2}
+  - {fileID: 11400000, guid: fe90c649b2c0252438e67dbbec7f4861, type: 2}
+  - {fileID: 11400000, guid: bb1c808d7efb5e442bee5079cb65936f, type: 2}
+  AbilitiesToDisableList: []
+  FoodObjective: {fileID: 11400000, guid: e8615276233765042968b73de69d6a9b, type: 2}
+  resetLevelStatus: 1
+  enableInfiniteLives: 1
+  enableLevelTimer: 0
+  isUnlocked: 1
+  collectedAllCoins: 1
+  collectedAllDishes: 0
+  killedAllEnemies: 0
+  noHitFinished: 0
+  finishedInRecordTime: 0
+  isFinished: 0
+  isFullyCompleted: 0
+  totalCoinsAmount: 43
+  totalEnemiesAmount: 0
+  baseRecordTime: 60
+  personalBestTime: 0
+  wasHit: 0
+  recordBeaten: 0

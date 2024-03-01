@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8c3107bab064284b9dfae561c40433b, type: 3}
+  m_Name: FoodItem_MushroomsData
+  m_EditorClassIdentifier: 
+  foodName: Champi
+  foodDescription: Esto es un champi.
+  foodUISprite: {fileID: 2095938551, guid: 1842b75deab35df42973b467e24505fa, type: 3}
+  attachedLevel: {fileID: 11400000, guid: 34fa5415f4b6bcb45bdb50c50f7f6850, type: 2}
+  firstTimeUnlocked: 0

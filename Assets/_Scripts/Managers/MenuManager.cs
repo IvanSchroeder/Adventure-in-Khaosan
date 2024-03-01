@@ -4,8 +4,6 @@ using UnityEngine;
 using ExtensionMethods;
 using UnityEngine.SceneManagement;
 
-
-
 public class MenuManager : MonoBehaviour {
     public static MenuManager instance;
 

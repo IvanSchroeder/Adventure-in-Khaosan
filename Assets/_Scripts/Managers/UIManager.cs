@@ -1,56 +1,81 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using ExtensionMethods;
 using System;
+using ExtensionMethods;
 using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
 
 public class UIManager : MonoBehaviour {
+    [Header("General References")]
+    [Space(5)]
     public static UIManager instance;
     public PlayerData PlayerData;
     public List<PlayerHeart> PlayerHeartsList;
     public IntSO CoinCounter;
+    public IntSO MusicVolume;
+    public IntSO SFXVolume;
     public FloatSO LevelTimer;
 
+    [Space(20)]
+
+    [Header("Background References")]
+    [Space(5)]
     public GameObject titleScreenBackground;
     public GameObject backgroundCanvas;
     public GameObject currentLevelBackground;
 
+    [Space(20)]
+
+    [Header("Hearts")]
+    [Space(5)]
     public GameObject HeartSlotPrefab;
     public GameObject HeartsGroupContainer;
-    [Space(3f)]
+
+    [Space(20)]
+
+    [Header("Canvas Groups")]
+    [Space(5)]
     public CanvasGroup MainMenuGroup;
     public CanvasGroup InGameGroup;
-    [Space(3f)]
+    [Space(5)]
     public CanvasGroup TitleScreenMenuGroup;
     public CanvasGroup LevelSelectMenuGroup;
     public CanvasGroup GlosaryMenuGroup;
     public CanvasGroup SettingsMenuGroup;
-    [Space(3f)]
+    [Space(5)]
     public CanvasGroup GameplayGUIGroup;
     public CanvasGroup PauseMenuGroup;
     public CanvasGroup GameOverMenuGroup;
     public CanvasGroup LevelCompletedMenuGroup;
     public CanvasGroup SceneTransitionGroup;
-    [Space(3f)]
+
+    [Space(20)]
+
+    [Header("Texts")]
+    [Space(5)]
     public TMP_Text CoinsText;
     public GameObject LevelTimerPanel;
     public TMP_Text LevelTimerText;
     public TMP_Text VersionText;
-    public TMP_Text CompletedTimer;
+    public TMP_Text CompletedTimerText;
+    public TMP_Text MusicVolumeText;
+    public TMP_Text SFXVolumeText;
     private string currentVersion;
 
+    [Space(20)]
+
+    [Header("Other Values")]
+    [Space(5)]
     public float panelFadeSpeed;
     public float InGamePanelYOffset;
-    public static Action<bool> OnPause;
-    public static Action<bool> OnPauseAnimationCompleted;
     public Color allCoinsColor;
 
+    public static Action<bool> OnPause;
+    public static Action<bool> OnPauseAnimationCompleted;
     public float heartRestoreDelaySeconds;
     private WaitForSecondsRealtime heartRestoreDelay;
-
     private Coroutine gamePausedCoroutine;
     private Coroutine heartRestorationCoroutine;
 
@@ -77,6 +102,7 @@ public class UIManager : MonoBehaviour {
         LevelManager.OnGameplayScreenLoadEnd += InitializeGameplayUI;
 
         Player.OnPlayerDamaged += ReduceHearts;
+        Player.OnPlayerHealed += RestoreHearts;
     }
 
     private void OnDisable() {
@@ -95,6 +121,7 @@ public class UIManager : MonoBehaviour {
         LevelManager.OnGameplayScreenLoadEnd -= InitializeGameplayUI;
 
         Player.OnPlayerDamaged -= ReduceHearts;
+        Player.OnPlayerHealed -= RestoreHearts;
     }
 
     private void Awake() {
@@ -126,8 +153,9 @@ public class UIManager : MonoBehaviour {
     }
 
     public void CreateLevelBackground() {
-        currentLevelBackground = Instantiate(LevelManager.instance.selectedLevel.levelBackground, default, default, backgroundCanvas.transform);
+        currentLevelBackground = Instantiate(LevelManager.instance.selectedLevel.levelBackground, Vector3.zero, default, backgroundCanvas.transform);
         currentLevelBackground.SetActive(true);
+        currentLevelBackground.transform.LocalPositionReset();
     }
 
     private void InitializeMainMenuUI() {
@@ -135,7 +163,7 @@ public class UIManager : MonoBehaviour {
         SetPanelMenuUI(InGameGroup, false, true);
 
         titleScreenBackground.SetActive(true);
-        currentLevelBackground?.Destroy();
+        currentLevelBackground.Destroy();
 
         lastScreen = null;
 
@@ -167,7 +195,7 @@ public class UIManager : MonoBehaviour {
         UpdateVersionText(currentVersion);
 
         LevelTimerPanel.gameObject.SetActive(false);
-        CompletedTimer.gameObject.SetActive(false);
+        CompletedTimerText.gameObject.SetActive(false);
     }
 
     private void SetPanelMenuUI(CanvasGroup group, bool enabled, bool instantFade = false, bool displace = false, float displacement = 0f, bool instantDisplacement = false) {
@@ -194,7 +222,7 @@ public class UIManager : MonoBehaviour {
 
     public void ShowTimerPanel(bool enableTimer) {
         LevelTimerPanel.gameObject.SetActive(enableTimer);
-        CompletedTimer.gameObject.SetActive(enableTimer);
+        CompletedTimerText.gameObject.SetActive(enableTimer);
     }
 
     private void ShowLevelFinishUI() {
@@ -236,12 +264,30 @@ public class UIManager : MonoBehaviour {
         Debug.Log($"Is record {isRecord}");
 
         if (isRecord) {
-            CompletedTimer.text = $"{timer}. <style=\"{completedTimerStyle}\">Nuevo Record!</style>";
+            CompletedTimerText.text = $"{timer}. <style=\"{completedTimerStyle}\">Nuevo Record!</style>";
         }
         else {
-            CompletedTimer.text = $"{timer}";
+            CompletedTimerText.text = $"{timer}";
         }
 
+    }
+
+    public void UpdateMusicVolumeSlider(ValueSO<int> volume) {
+        MusicVolumeText.text = $"{volume.Value}";
+    }
+
+    public void UpdateSFXVolumeSlider(ValueSO<int> volume) {
+        SFXVolumeText.text = $"{volume.Value}";
+    }
+
+    public void UpdateMusicVolumeSlider(int volume) {
+        MusicVolumeText.text = $"{volume}";
+        MusicVolume.Value = volume;
+    }
+
+    public void UpdateSFXVolumeSlider(int volume) {
+        SFXVolumeText.text = $"{volume}";
+        SFXVolume.Value = volume;
     }
 
     public void InitializeHearts() {
@@ -301,13 +347,19 @@ public class UIManager : MonoBehaviour {
 
             SetPanelMenuUI(GameplayGUIGroup, false, true);
             SetPanelMenuUI(PauseMenuGroup, true, false, true, 0f, false);
+
+            AudioManager.instance.PlaySFX("PauseOn");
+            AudioManager.instance.TogglePauseMusic(false);
         }
         else {
             SetPanelMenuUI(GameplayGUIGroup, true, true);
             SetPanelMenuUI(PauseMenuGroup, false, false, true, InGamePanelYOffset, false);
 
+            AudioManager.instance.PlaySFX("PauseOff");
+
             yield return new WaitForSecondsRealtime(panelFadeSpeed);
             OnPauseAnimationCompleted?.Invoke(false);
+            AudioManager.instance.TogglePauseMusic(true);
         }
 
         yield return null;
@@ -343,10 +395,10 @@ public class UIManager : MonoBehaviour {
 
                     break;
                 }
+
                 else continue;
             }
         }
-
         else {
             for (int i = PlayerHeartsList.Count - 1; i >= 0; i--) {
                 if (PlayerHeartsList.GetElement(i).heartState == HeartState.Idle) {

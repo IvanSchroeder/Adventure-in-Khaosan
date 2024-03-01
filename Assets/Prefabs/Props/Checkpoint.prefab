@@ -46,7 +46,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <InteractedFlash>k__BackingField: {fileID: 11400000, guid: 5e6d9f4b629caba4293723bcc964e8b8, type: 2}
-  <RequiresInput>k__BackingField: 1
+  <RequiresInput>k__BackingField: 0
   <FlashesOnInteract>k__BackingField: 1
   <FlashesOnInteractStop>k__BackingField: 0
   <OneTimeIntectarion>k__BackingField: 1
@@ -55,6 +55,7 @@ MonoBehaviour:
   <IsToggable>k__BackingField: 0
   <HasDelay>k__BackingField: 0
   <InteractionStopDelay>k__BackingField: 0
+  <ShouldOutline>k__BackingField: 1
 --- !u!61 &4964172299964983953
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -136,7 +137,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9098463959747971589}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 2, z: 0}
+  m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -293,9 +294,9 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 1301517053
-  m_SortingLayer: 2
-  m_SortingOrder: 0
+  m_SortingLayerID: -1407808905
+  m_SortingLayer: 3
+  m_SortingOrder: 1
   m_Sprite: {fileID: -256488695, guid: 63384136f21a6de429da2a91920b2c5d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -322,9 +323,6 @@ MonoBehaviour:
   <HealthSystem>k__BackingField: {fileID: 0}
   <InteractableSystem>k__BackingField: {fileID: 5593726000987461281}
   <CurrentFlashConfiguration>k__BackingField: {fileID: 11400000, guid: fc38e4012282de94bae91f56827ca71a, type: 2}
-  <DamagedFlash>k__BackingField: {fileID: 0}
-  <InvulnerabilityFlash>k__BackingField: {fileID: 0}
-  <InteractedFlash>k__BackingField: {fileID: 11400000, guid: 5e6d9f4b629caba4293723bcc964e8b8, type: 2}
   <DefaultFlashColor>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
   <CurrentFlashColor>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
   <CurrentAlphaAmount>k__BackingField: 1
@@ -334,3 +332,10 @@ MonoBehaviour:
   <CurrentAmountIndex>k__BackingField: 0
   <CurrentAlphaIndex>k__BackingField: 0
   <CurrentAmountOfFlashes>k__BackingField: 0
+  canCreateAfterImage: 0
+  enableAfterImage: 0
+  afterImageInterval: 0
+  afterImageDecayDelay: 0
+  afterImageDecaySpeed: 0
+  afterImageStartingAlpha: 0
+  afterImageColor: 0

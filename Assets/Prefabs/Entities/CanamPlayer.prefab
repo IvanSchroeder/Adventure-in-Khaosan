@@ -73,7 +73,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1407808905
   m_SortingLayer: 3
-  m_SortingOrder: 1
+  m_SortingOrder: 3
   m_Sprite: {fileID: -1178371387, guid: 206262f7f8cb1654f941885b8c24d87d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -390,6 +390,7 @@ Transform:
   - {fileID: 3125253530266267751}
   - {fileID: 4896041828834241169}
   - {fileID: 5666071910508457419}
+  - {fileID: 4965306416525158242}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -623,6 +624,9 @@ MonoBehaviour:
   <CeilingPoint>k__BackingField: {fileID: 3125253530865429025}
   <WallPoint>k__BackingField: {fileID: 3125253531543866480}
   <LedgePoint>k__BackingField: {fileID: 3125253530585205663}
+  DustParticleSystemPrefab: {fileID: 679288542059364893, guid: 4094a3e834f49f84a820efaf48e75e0c, type: 3}
+  DustBurstParticleSystemPrefab: {fileID: 8055054622780480940, guid: 949b90496b1331e4bae554292bc7a6ce, type: 3}
+  DustParticleSystem: {fileID: 4965306416525158245}
   detectedPos: {x: 0, y: 0}
   cornerPos: {x: 0, y: 0}
   startPos: {x: 0, y: 0}
@@ -962,7 +966,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0.75}
+  m_Offset: {x: 0, y: 0.9}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.25}
@@ -973,7 +977,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1.5}
+  m_Size: {x: 1, y: 1.8}
   m_EdgeRadius: 0
 --- !u!1 &9067804555370436997
 GameObject:
@@ -1048,3 +1052,70 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <CanInteract>k__BackingField: 1
   InteractablesList: []
+--- !u!1001 &5585904673891689850
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 3125253531432767924}
+    m_Modifications:
+    - target: {fileID: 679288542059364888, guid: 4094a3e834f49f84a820efaf48e75e0c, type: 3}
+      propertyPath: m_RootOrder
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 679288542059364888, guid: 4094a3e834f49f84a820efaf48e75e0c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 679288542059364888, guid: 4094a3e834f49f84a820efaf48e75e0c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 679288542059364888, guid: 4094a3e834f49f84a820efaf48e75e0c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 679288542059364888, guid: 4094a3e834f49f84a820efaf48e75e0c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 679288542059364888, guid: 4094a3e834f49f84a820efaf48e75e0c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 679288542059364888, guid: 4094a3e834f49f84a820efaf48e75e0c, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 679288542059364888, guid: 4094a3e834f49f84a820efaf48e75e0c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 679288542059364888, guid: 4094a3e834f49f84a820efaf48e75e0c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 679288542059364888, guid: 4094a3e834f49f84a820efaf48e75e0c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 679288542059364888, guid: 4094a3e834f49f84a820efaf48e75e0c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 679288542059364893, guid: 4094a3e834f49f84a820efaf48e75e0c, type: 3}
+      propertyPath: m_Name
+      value: DustPS
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 4094a3e834f49f84a820efaf48e75e0c, type: 3}
+--- !u!4 &4965306416525158242 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 679288542059364888, guid: 4094a3e834f49f84a820efaf48e75e0c, type: 3}
+  m_PrefabInstance: {fileID: 5585904673891689850}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &4965306416525158245 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 679288542059364895, guid: 4094a3e834f49f84a820efaf48e75e0c, type: 3}
+  m_PrefabInstance: {fileID: 5585904673891689850}
+  m_PrefabAsset: {fileID: 0}

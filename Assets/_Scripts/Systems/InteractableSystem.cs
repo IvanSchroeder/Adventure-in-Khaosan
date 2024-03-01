@@ -17,6 +17,7 @@ public class InteractableSystem : MonoBehaviour {
     [field: SerializeField] public bool IsToggable { get; set; }
     [field: SerializeField] public bool HasDelay { get; set; }
     [field: SerializeField] public float InteractionStopDelay { get; set; }
+    [field: SerializeField] public bool ShouldOutline { get; set; } = true;
 
     public EventHandler<OnEntityInteractedEventArgs> OnInteracted;
     public EventHandler<OnEntityInteractedEventArgs> OnInteractionStop;
@@ -37,6 +38,7 @@ public class InteractableSystem : MonoBehaviour {
         if (OneTimeIntectarion) IsInteractable = false;
         WasInteracted = true;
 
+        entityInteracted.InteractableSystemSource = this;
         entityInteracted.IsInteracted = IsInteractable;
         entityInteracted.ShouldFlash = FlashesOnInteract;
         entityInteracted.CurrentFlash = InteractedFlash;
@@ -68,6 +70,8 @@ public class InteractableSystem : MonoBehaviour {
     }
 
     public void SetInteractionState(OnEntityInteractedEventArgs entityInteracted, bool enable) {
+        if (!ShouldOutline) return;
+
         entityInteracted.ActiveOutline = enable;
 
         OnInteractionState?.Invoke(this, entityInteracted);

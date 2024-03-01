@@ -17,16 +17,17 @@ MonoBehaviour:
   interactedFlash: {fileID: 11400000, guid: fc38e4012282de94bae91f56827ca71a, type: 2}
   currentVelocity: {x: 0, y: 0}
   currentColliderConfiguration:
-    <Offset>k__BackingField: {x: 0, y: 0.375}
-    <Size>k__BackingField: {x: 1, y: 0.75}
-  facingDirection: 0
-  currentLives: 1
+    <Offset>k__BackingField: {x: 0, y: 0.75}
+    <Size>k__BackingField: {x: 1, y: 1.8}
+  facingDirection: 1
+  currentLives: 0
   currentHealth: 0
-  currentHearts: 0
-  currentLayer: IgnorePlatforms
+  currentHearts: 1
+  isMaxHealth: 0
+  currentLayer: Player
   currentGravityScale: 5
   currentFallSpeed: 30
-  amountOfJumpsLeft: 0
+  amountOfJumpsLeft: 1
   slopeDownAngle: 0
   slopeSideAngle: 0
   damagedBy:
@@ -43,29 +44,29 @@ MonoBehaviour:
   deadOnGroundTime: 1
   isGrounded: 1
   isOnSolidGround: 1
-  isOnPlatform: 1
-  isIgnoringPlatforms: 1
+  isOnPlatform: 0
+  isIgnoringPlatforms: 0
   isOnSlope: 0
   isAirborne: 0
-  isIdle: 0
+  isIdle: 1
   isMoving: 0
   isRunning: 0
   isRunningAtMaxSpeed: 0
   isChangingDirections: 0
-  isSprinting: 0
-  isSprintingAtMaxSpeed: 0
+  isSprinting: 1
+  isSprintingAtMaxSpeed: 1
   isCrouching: 0
   isGroundSliding: 0
   stopSlide: 0
-  isJumping: 1
+  isJumping: 0
   isAscending: 0
   isFalling: 0
   isFastFalling: 0
   isTouchingCeiling: 0
   isTouchingWall: 0
-  isTouchingBackWall: 1
+  isTouchingBackWall: 0
   hasTouchedWall: 0
-  hasTouchedWallBack: 1
+  hasTouchedWallBack: 0
   isTouchingLedge: 0
   isWallSliding: 0
   isWallGrabing: 0
@@ -74,14 +75,14 @@ MonoBehaviour:
   isHanging: 0
   isClimbing: 0
   isDamaged: 0
-  isDead: 1
-  isDeadOnGround: 1
+  isDead: 0
+  isDeadOnGround: 0
   isInvulnerable: 1
   isAnimationFinished: 0
   isAbilityDone: 0
   isExitingState: 0
   hasCoyoteTime: 0
-  hasWallJumpCoyoteTime: 1
+  hasWallJumpCoyoteTime: 0
   hasGroundSlideTime: 1
   CanMove: {fileID: 11400000, guid: 9d07fb32c4a7fa94b8988ef3f3d8cb02, type: 2}
   CanJump: {fileID: 11400000, guid: 72685af96d158444f9993153f7b7e2ff, type: 2}
@@ -147,14 +148,14 @@ MonoBehaviour:
   airDecceleration: 50
   collisionEnableDelay: 0.2
   standingColliderConfig:
-    <Offset>k__BackingField: {x: 0, y: 0.75}
-    <Size>k__BackingField: {x: 1, y: 1.5}
+    <Offset>k__BackingField: {x: 0, y: 0.9}
+    <Size>k__BackingField: {x: 1, y: 1.8}
   crouchColliderConfig:
-    <Offset>k__BackingField: {x: 0, y: 0.375}
-    <Size>k__BackingField: {x: 1, y: 0.75}
+    <Offset>k__BackingField: {x: 0, y: 0.4}
+    <Size>k__BackingField: {x: 1, y: 0.8}
   walledColliderConfig:
-    <Offset>k__BackingField: {x: 0.123, y: 0.375}
-    <Size>k__BackingField: {x: 1, y: 0.75}
+    <Offset>k__BackingField: {x: 0.123, y: 0.4}
+    <Size>k__BackingField: {x: 1, y: 0.8}
   rollColliderConfig:
     <Offset>k__BackingField: {x: 0, y: 1}
     <Size>k__BackingField: {x: 1, y: 1}

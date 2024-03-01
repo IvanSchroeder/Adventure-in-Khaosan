@@ -46,7 +46,7 @@ public class SpriteManager : MonoBehaviour {
 
     private Material[] _materials;
     private SpriteRenderer[] _spriteRenderers;
-    private SpriteRenderer spriteRenderer;
+    private Renderer spriteRenderer;
 
     private Coroutine spriteFlashCoroutine;
     private WaitForSeconds flashStartDelay;
@@ -83,7 +83,7 @@ public class SpriteManager : MonoBehaviour {
 
     private void Start() {
         // if (RelatedEntity.IsNull() && this.HasComponentInHierarchy<Entity>()) RelatedEntity = this.GetComponentInHierarchy<Entity>();
-        if (spriteRenderer == null) spriteRenderer = this.GetComponentInHierarchy<SpriteRenderer>();
+        if (spriteRenderer == null) spriteRenderer = this.GetComponentInHierarchy<Renderer>();
 
         if (Damageable.IsNull()) Damageable = this.GetComponentInHierarchy<IDamageable>();
         if (Interactable.IsNull()) Interactable = this.GetComponentInHierarchy<IInteractable>();
@@ -252,19 +252,19 @@ public class SpriteManager : MonoBehaviour {
         // }
     }
 
-    private void SetFlashColor(Color color) {
+    public void SetFlashColor(Color color) {
         for (int i = 0; i < _materials.Length; i++) {
             _materials[i].SetColor(_flashColorID, color);
         }
     }
 
-    private void SetFlashAmount(float amount) {
+    public void SetFlashAmount(float amount) {
         for (int i = 0; i < _materials.Length; i++) {
             _materials[i].SetFloat(_flashAmountID, amount);
         }
     }
 
-    private void SetAlphaAmount(float amount) {
+    public void SetAlphaAmount(float amount) {
         for (int i = 0; i < _materials.Length; i++) {
             _materials[i].SetFloat(_alphaAmountID, amount);
         }

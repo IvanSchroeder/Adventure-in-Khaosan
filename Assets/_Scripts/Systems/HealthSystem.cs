@@ -93,8 +93,21 @@ public class HealthSystem : MonoBehaviour {
         return false;
     }
 
-    public void AddHealth(float amount) {
+    public void AddHealth(int amount) {
+        switch (HealthType) {
+            case HealthType.Numerical:
+            break;
+            case HealthType.Hearts:
+                CurrentHearts += amount;
 
+                if (CurrentHearts >= MaxHearts) {
+                    CurrentHearts = MaxHearts;
+                    EntityData.isMaxHealth = true;
+                }
+
+                EntityData.currentHearts = CurrentHearts;
+            break;
+        }
     }
 
     public void ReduceHealth(object sender, OnEntityDamagedEventArgs entityDamagedEventArgs) {
@@ -105,6 +118,8 @@ public class HealthSystem : MonoBehaviour {
                 if (entityDamagedEventArgs.DamageAmount == 0f) return;
 
                 CurrentHealth -= entityDamagedEventArgs.DamageAmount;
+
+                EntityData.isMaxHealth = false;
 
                 if (CurrentHealth <= 0f) {
                     CurrentHealth = 0f;

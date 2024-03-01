@@ -88,6 +88,10 @@ public class LevelManager : MonoBehaviour {
         Coin.OnCoinCreated += RegisterCoin;
         Coin.OnCoinPickup += RemoveCoin;
 
+        FoodItem.OnItemPickup += FinishLevel;
+
+        Player.OnPlayerDamaged += FrameFreeze;
+
         startingCheckpoint = null;
         currentCheckpoint = null;
         lastCheckpoint = null;
@@ -102,6 +106,10 @@ public class LevelManager : MonoBehaviour {
 
         Coin.OnCoinCreated -= RegisterCoin;
         Coin.OnCoinPickup -= RemoveCoin;
+
+        FoodItem.OnItemPickup -= FinishLevel;
+
+        Player.OnPlayerDamaged -= FrameFreeze;
 
         if (PlayerInstance != null) {
             PlayerInstance.OnEntityDamaged -= CheckPlayerHit;
@@ -136,6 +144,7 @@ public class LevelManager : MonoBehaviour {
 
         secondsInLoadingScreen = new WaitForSecondsRealtime(secondsToWaitInLoadingScreen);
         secondsAfterLevelSpawn = new WaitForSecondsRealtime(secondsToWaitAfterLevelSpawn);
+        freezeWait = new WaitForSecondsRealtime(frameFreezeDuration);
     }
 
     private void Start() {
@@ -272,7 +281,8 @@ public class LevelManager : MonoBehaviour {
             yield return null;
         }
 
-        Debug.Log($"Waiting for {secondsToWaitInLoadingScreen} seconds");
+        AudioManager.instance.StopMusic();
+
         yield return secondsInLoadingScreen;
 
         Time.timeScale = 1f;
@@ -308,6 +318,9 @@ public class LevelManager : MonoBehaviour {
         }
 
         OnMainMenuLoadEnd?.Invoke();
+
+        AudioManager.instance.StopMusic();
+
         yield return secondsInLoadingScreen;
 
         Time.timeScale = 1f;
@@ -337,6 +350,8 @@ public class LevelManager : MonoBehaviour {
             }
         }
 
+        AudioManager.instance.StopMusic();
+
         yield return secondsInLoadingScreen;
 
         Time.timeScale = 1f;
@@ -354,6 +369,9 @@ public class LevelManager : MonoBehaviour {
         yield return StartCoroutine(ScreenFade(loadingScreenCanvasGroup, 1f, fadeInSeconds));
         KillPlayer();
         DeleteLevelStructure();
+
+        AudioManager.instance.StopMusic();
+
         yield return secondsInLoadingScreen;
 
         Time.timeScale = 1f;
@@ -370,16 +388,16 @@ public class LevelManager : MonoBehaviour {
     private void SetCurrentCheckpoint(object sender, Checkpoint checkpoint) {
         currentCheckpoint = checkpoint;
 
-        if (currentCheckpoint.isFinalCheckpoint) {
-            FinishLevel();
-        }
+        // if (currentCheckpoint.isFinalCheckpoint) {
+        //     FinishLevel();
+        // }
     }
 
     public void SaveLevelData() {
 
     }
 
-    public void FinishLevel() {
+    public void FinishLevel(FoodItem foodItem) {
         if (levelHandlerCoroutine.IsNotNull()) {
             StopCoroutine(levelHandlerCoroutine);
             levelHandlerCoroutine = null;
@@ -401,6 +419,8 @@ public class LevelManager : MonoBehaviour {
 
         DeleteLevelStructure();
         KillPlayer();
+
+        AudioManager.instance.PlayMusic("TitleScreen");
 
         yield return null;
     }
@@ -424,13 +444,18 @@ public class LevelManager : MonoBehaviour {
         yield return secondsAfterLevelSpawn;
 
         EnableCheckpoints();
+        OnEntityInteractedEventArgs entityInteracted = new OnEntityInteractedEventArgs();
+        startingCheckpoint.InteractableSystem.Interact(entityInteracted);
         startedLevel = true;
         isInGameplay = true;
         enableTimer = true;
         currentLevel.totalCoinsAmount = coinsInLevelCount;
 
+        AudioManager.instance.PlayMusic("CityLevels");
+
         yield return null;
     }
+    
     public IEnumerator LevelFinishRoutine() {
         enableTimer = false;
         currentLevel.CheckCompletion(currentTimer.Value, coinsCollectedCount.Value);
@@ -446,6 +471,26 @@ public class LevelManager : MonoBehaviour {
         OnLevelFinished?.Invoke();
 
         yield return null;
+    }
+
+    public float frameFreezeDuration = 0.5f;
+    private Coroutine frameFreezeCoroutine;
+    private WaitForSecondsRealtime freezeWait;
+
+    public void FrameFreeze(OnEntityDamagedEventArgs args) {
+        if (frameFreezeCoroutine.IsNotNull()) {
+            SetTimeScale(1f, true);
+            StopCoroutine(frameFreezeCoroutine);
+            frameFreezeCoroutine = null;
+        }
+
+        frameFreezeCoroutine = StartCoroutine(FrameFreezeRoutine());
+    }
+
+    public IEnumerator FrameFreezeRoutine() {
+        SetTimeScale(0f, true);
+        yield return freezeWait;
+        SetTimeScale(1f, true);
     }
 
     public void SetTimeScale(float scale, bool instant = false) {
@@ -570,7 +615,7 @@ public class LevelManager : MonoBehaviour {
         coinsCollectedCount.Value++;
         
         if (coinsCollectedCount.Value >= currentLevel.totalCoinsAmount) {
-            coinsCollectedCount.Value = currentLevel.totalCoinsAmount;
+            // coinsCollectedCount.Value = currentLevel.totalCoinsAmount;
             OnAllCoinsCollected?.Invoke();
             Debug.Log($"Collected all coins!");
         }
