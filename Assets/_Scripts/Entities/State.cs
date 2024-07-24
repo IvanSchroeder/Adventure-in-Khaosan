@@ -7,32 +7,6 @@ public class State {
     protected StateMachine stateMachine;
     protected string animBoolName;
 
-    // public static bool isGrounded { get; protected set; }
-    // public static bool isOnSolidGround { get; protected set; }
-    // public static bool isOnSlope { get; protected set; }
-    // public static bool isOnPlatform { get; protected set; }
-    // public static bool isIgnoringPlatforms { get; protected set; }
-    // public static bool isAirborne { get; protected set; }
-    // public static bool isIdle { get; protected set; }
-    // public static bool isMoving { get; protected set; }
-    // public static bool isRunning { get; protected set; }
-    // public static bool isRunningAtMaxSpeed { get; protected set; }
-    // public static bool isChangingDirections { get; protected set; }
-    // public static bool isJumping { get; protected set; }
-    // public static bool isAscending { get; protected set; }
-    // public static bool isFalling { get; protected set; }
-    // public static bool isTouchingCeiling { get; protected set; }
-    // public static bool isTouchingWall { get; protected set; }
-    // public static bool isTouchingBackWall { get; protected set; }
-    // public static bool hasTouchedWall { get; protected set; }
-    // public static bool hasTouchedWallBack { get; protected set; }
-    // public static bool isTouchingLedge { get; protected set; }
-    // public static bool isTouchingLedgeWithFoot { get; protected set; }
-    // public static bool isDamaged { get; protected set; }
-    // public static bool isDead { get; protected set; }
-    // public static bool isInvulnerable { get; protected set; }
-    // public static bool isAbilityDone { get; protected set; }
-
     public bool isAnimationFinished { get; set; }
     public bool isExitingState { get; set; }
     public float startTime { get; protected set; }

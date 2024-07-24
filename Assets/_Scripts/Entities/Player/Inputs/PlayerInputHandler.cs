@@ -63,8 +63,6 @@ public class PlayerInputHandler : MonoBehaviour {
 
     private void Start() {
         PlayerInputsMaster = new InputMaster();
-        // gameplayMap = PlayerInputsMaster.asset.FindActionMap("Gameplay");
-        // uiMap = PlayerInputsMaster.asset.FindActionMap("UI");
 
         gameplayMap = PlayerInputComponent.actions.FindActionMap("Gameplay");
         uiMap = PlayerInputComponent.actions.FindActionMap("UI");
