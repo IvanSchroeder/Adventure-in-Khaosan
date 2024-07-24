@@ -1,0 +1,109 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44e4bdf4e719be64b8760a23f97ddca3, type: 3}
+  m_Name: ChristianData
+  m_EditorClassIdentifier: 
+  damageFlash: {fileID: 0}
+  invulnerabilityFlash: {fileID: 0}
+  interactedFlash: {fileID: 11400000, guid: fc38e4012282de94bae91f56827ca71a, type: 2}
+  currentVelocity: {x: 0, y: 0}
+  currentColliderConfiguration:
+    <Offset>k__BackingField: {x: 0, y: 0}
+    <Size>k__BackingField: {x: 0, y: 0}
+  facingDirection: 1
+  currentLives: 0
+  currentHealth: 0
+  currentHearts: 0
+  currentLayer: NPC
+  currentGravityScale: 1
+  currentFallSpeed: 0
+  amountOfJumpsLeft: 0
+  slopeDownAngle: 0
+  slopeSideAngle: 0
+  damagedBy:
+    serializedVersion: 2
+    m_Bits: 0
+  healthType: 1
+  maxLives: 99
+  maxHearts: 1
+  startingHearts: 10
+  maxHealth: 100
+  invulnerabilitySeconds: 0
+  minKnockbackTime: 0
+  maxKnockbackTime: 0
+  deadOnGroundTime: 0
+  isGrounded: 1
+  isOnSolidGround: 1
+  isOnSlope: 0
+  isOnPlatform: 0
+  isAirborne: 0
+  isIdle: 1
+  isMoving: 0
+  isChangingDirections: 0
+  isJumping: 0
+  isAscending: 0
+  isFalling: 0
+  isTouchingCeiling: 0
+  isTouchingWall: 0
+  isTouchingBackWall: 0
+  hasTouchedWall: 0
+  hasTouchedWallBack: 0
+  isTouchingLedge: 0
+  isTouchingLedgeWithFoot: 1
+  isInvulnerable: 0
+  isInteracted: 0
+  isNearPlayer: 0
+  maxHorizontalSpeed: 10
+  maxAscendantSpeed: 5
+  defaultFallSpeed: 4
+  moveSpeed: 5
+  lerpVelocity: 1
+  enableFriction: 1
+  frictionAmount: 1
+  runAcceleration: 10
+  runDecceleration: 15
+  runDirectionChangeAcceleration: 30
+  groundCheckOffset: {x: 0.75, y: 0.1}
+  groundCheckDistance: 0.4
+  wallCheckOffset: {x: 0, y: 0.5}
+  wallCheckDistance: 1.5
+  ledgeCheckOffset: {x: 0, y: 1.5}
+  ledgeCheckDistance: 1.5
+  ledgeFootCheckOffset: {x: 0.85, y: 0.1}
+  ledgeFootCheckDistance: 0.4
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 192
+  solidsLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  wallLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  platformLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  doesIdle: 1
+  doesWander: 0
+  doesInteract: 0
+  infiniteIdle: 0
+  infinitePatrol: 0
+  idleTimeRange: 5
+  hasRandomIdle: 0
+  wanderTimeRange: 7.5
+  hasLimitWander: 0
+  wanderLimitRadius: 10
+  canDetectPlayer: 1
+  playerDetectionRange: 6
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 512

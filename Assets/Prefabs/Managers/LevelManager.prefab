@@ -1,0 +1,78 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7834714097376211800
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7834714097376211803}
+  - component: {fileID: 7834714097376211802}
+  m_Layer: 0
+  m_Name: LevelManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7834714097376211803
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7834714097376211800}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7834714097376211802
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7834714097376211800}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4de5e5b7a7bd6084697ccf050da85711, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CurrentGameState: 0
+  <PlayerInstance>k__BackingField: {fileID: 0}
+  EnabledAbilitiesList: []
+  DisabledAbilitiesList: []
+  <PlayerPrefab>k__BackingField: {fileID: 3125253531432767925, guid: bc5fff79c01c98940a192d6e72aca626, type: 3}
+  WorldsList: []
+  selectedWorld: {fileID: 0}
+  currentWorld: {fileID: 0}
+  lastUnlockedWorld: {fileID: 0}
+  selectedLevel: {fileID: 11400000, guid: 34fa5415f4b6bcb45bdb50c50f7f6850, type: 2}
+  currentLevel: {fileID: 0}
+  lastUnlockedLevel: {fileID: 0}
+  CoinsList: []
+  coinsCollectedCount: {fileID: 11400000, guid: c193cc77a8cf9314ead465e4985fe2e1, type: 2}
+  coinsInLevelCount: 0
+  CheckpointsList: []
+  startingCheckpoint: {fileID: 0}
+  currentCheckpoint: {fileID: 0}
+  lastCheckpoint: {fileID: 0}
+  startedLevel: 0
+  isInGameplay: 0
+  enableTimer: 0
+  currentTimer: {fileID: 11400000, guid: ae6d182de68a0b94db50413c77e60b0a, type: 2}
+  playerRespawnTimer: 0.5
+  pauseLerpSpeed: 0.2
+  levelFinishDelaySeconds: 3
+  loadingScreenCanvas: {fileID: 0}
+  loadingScreenCanvasGroup: {fileID: 0}
+  secondsToWaitInLoadingScreen: 0
+  fadeInSeconds: 1
+  fadeOutSeconds: 0.5
+  secondsToWaitAfterLevelSpawn: 0

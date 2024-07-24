@@ -378,6 +378,11 @@ namespace ExtensionMethods {
 			return randomIndex;
 		}
 
+		public static T GetElement<T>(this IList<T> list, int i) {
+			var element = list.ElementAt(i);
+			return element;
+		}
+
 		public static T GetFirstElement<T>(this IList<T> list) {
 			var firstElement = list[list.GetFirstIndex()];
 			return firstElement;
@@ -1700,16 +1705,24 @@ namespace ExtensionMethods {
 			}
 		}
 
-		public static void GlobalReset(this Transform trns) {
+		public static void LocalPositionReset(this Transform trns) {
+			trns.localPosition = Vector3.zero;
+		}
+
+		public static void GlobalPositionReset(this Transform trns) {
 			trns.position = Vector3.zero;
-			trns.rotation = Quaternion.identity;
-			// Cant set global scale directly
-			trns.localScale = Vector3.one;
 		}
 
 		public static void LocalReset(this Transform trns) {
-			trns.localPosition = Vector3.zero;
+			trns.LocalPositionReset();
 			trns.localRotation = Quaternion.identity;
+			trns.localScale = Vector3.one;
+		}
+
+		public static void GlobalReset(this Transform trns) {
+			trns.GlobalPositionReset();
+			trns.rotation = Quaternion.identity;
+			// Cant set global scale directly
 			trns.localScale = Vector3.one;
 		}
 	#endregion
@@ -2364,6 +2377,16 @@ namespace ExtensionMethods {
 			public static Vector3 Clamp(this Vector3 input, Vector3 max, Vector3 min) => input.SetXYZ(input.x.Clamp(max.x, min.x), input.y.Clamp(max.y, min.y), input.z.Clamp(max.z, min.z));
 			public static Vector2 Clamp(this Vector2 input, Vector2 max, Vector2 min) => input.SetXY(input.x.Clamp(max.x, min.x), input.y.Clamp(max.y, min.y));
 
+			public static float LerpTo(this float a, float b, float t) => (b - a) * t + a;
+			public static float SpeedLerpTo(this float a, float b, float speed, float dt) {
+				var v = b - a;
+				var dv = speed * dt;
+				if (dv > v)
+					return b;
+				else
+					return a + v * dv;
+			}
+
 			/// <summary>
 			/// Unity's Vector2.Lerp clamps between 0->1, this allows a true lerp of all ranges.
 			/// </summary>
@@ -2561,6 +2584,15 @@ namespace ExtensionMethods {
 	/// Extensions for numerical values.
 	/// </summary>
 	#region ===== Numericals =====
+		public static T CoinFlip<T>(T i, T f) {
+			float rand = Random.Range(0, 2);
+            
+			return rand.ToInt() < 1 ? i : f;
+		}
+
+		public static int Sign(this float f) => MathF.Sign(f);
+		public static int Sign(this int f) => MathF.Sign(f);
+
 		public static int ToInt(this float f) => Mathf.RoundToInt(f);
 		public static int ToIntCeil(this float f) => Mathf.CeilToInt(f);
 		public static int ToIntFloor(this float f) => Mathf.FloorToInt(f);

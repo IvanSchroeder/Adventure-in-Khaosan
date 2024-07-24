@@ -145,7 +145,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
+        y: 16
         width: 8
         height: 8
       alignment: 0
@@ -170,7 +170,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 8
-        y: 0
+        y: 16
         width: 8
         height: 8
       alignment: 0
@@ -194,7 +194,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 16
-        y: 0
+        y: 16
         width: 8
         height: 8
       alignment: 0
@@ -219,7 +219,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 24
-        y: 0
+        y: 16
         width: 8
         height: 8
       alignment: 0
@@ -244,7 +244,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 32
-        y: 0
+        y: 16
         width: 8
         height: 8
       alignment: 0
@@ -268,7 +268,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 40
-        y: 0
+        y: 16
         width: 8
         height: 8
       alignment: 0
@@ -292,7 +292,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 48
-        y: 0
+        y: 16
         width: 8
         height: 8
       alignment: 0
@@ -316,7 +316,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 56
-        y: 0
+        y: 16
         width: 8
         height: 8
       alignment: 0
@@ -340,8 +340,8 @@ TextureImporter:
       name: Tileset_Colliders_8
       rect:
         serializedVersion: 2
-        x: 64
-        y: 0
+        x: 0
+        y: 8
         width: 8
         height: 8
       alignment: 0
@@ -351,8 +351,8 @@ TextureImporter:
       physicsShape:
       - - {x: -4, y: -4}
         - {x: 4, y: -4}
-        - {x: 4, y: 0}
-        - {x: -4, y: 0}
+        - {x: 4, y: -1}
+        - {x: -4, y: -1}
       tessellationDetail: 0
       bones: []
       spriteID: 0ea1404479a35554a82e24a2e07e431f
@@ -365,8 +365,8 @@ TextureImporter:
       name: Tileset_Colliders_9
       rect:
         serializedVersion: 2
-        x: 72
-        y: 0
+        x: 8
+        y: 8
         width: 8
         height: 8
       alignment: 0
@@ -374,8 +374,8 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape:
-      - - {x: 0, y: -4}
-        - {x: 0, y: 4}
+      - - {x: -1, y: -4}
+        - {x: -1, y: 4}
         - {x: -4, y: 4}
         - {x: -4, y: -4}
       tessellationDetail: 0
@@ -390,8 +390,8 @@ TextureImporter:
       name: Tileset_Colliders_10
       rect:
         serializedVersion: 2
-        x: 80
-        y: 0
+        x: 16
+        y: 8
         width: 8
         height: 8
       alignment: 0
@@ -400,8 +400,8 @@ TextureImporter:
       outline: []
       physicsShape:
       - - {x: -4, y: 4}
-        - {x: -4, y: 0}
-        - {x: 4, y: 0}
+        - {x: -4, y: 1}
+        - {x: 4, y: 1}
         - {x: 4, y: 4}
       tessellationDetail: 0
       bones: []
@@ -415,8 +415,8 @@ TextureImporter:
       name: Tileset_Colliders_11
       rect:
         serializedVersion: 2
-        x: 88
-        y: 0
+        x: 24
+        y: 8
         width: 8
         height: 8
       alignment: 0
@@ -424,8 +424,8 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape:
-      - - {x: 0, y: 4}
-        - {x: 0, y: -4}
+      - - {x: 1, y: 4}
+        - {x: 1, y: -4}
         - {x: 4, y: -4}
         - {x: 4, y: 4}
       tessellationDetail: 0
@@ -440,8 +440,8 @@ TextureImporter:
       name: Tileset_Colliders_12
       rect:
         serializedVersion: 2
-        x: 96
-        y: 0
+        x: 32
+        y: 8
         width: 8
         height: 8
       alignment: 0
@@ -452,9 +452,9 @@ TextureImporter:
       - - {x: -4, y: 4}
         - {x: -4, y: -4}
         - {x: 4, y: -4}
-        - {x: 4, y: 0}
-        - {x: 0, y: 0}
-        - {x: 0, y: 4}
+        - {x: 4, y: -1}
+        - {x: -1, y: -1}
+        - {x: -1, y: 4}
       tessellationDetail: 0
       bones: []
       spriteID: 1b246fb9fc272894a87d317bc7ad17e6
@@ -467,8 +467,8 @@ TextureImporter:
       name: Tileset_Colliders_13
       rect:
         serializedVersion: 2
-        x: 104
-        y: 0
+        x: 40
+        y: 8
         width: 8
         height: 8
       alignment: 0
@@ -478,9 +478,9 @@ TextureImporter:
       physicsShape:
       - - {x: -4, y: 4}
         - {x: -4, y: -4}
-        - {x: 0, y: -4}
-        - {x: 0, y: 0}
-        - {x: 4, y: 0}
+        - {x: -1, y: -4}
+        - {x: -1, y: 1}
+        - {x: 4, y: 1}
         - {x: 4, y: 4}
       tessellationDetail: 0
       bones: []
@@ -494,8 +494,8 @@ TextureImporter:
       name: Tileset_Colliders_14
       rect:
         serializedVersion: 2
-        x: 112
-        y: 0
+        x: 48
+        y: 8
         width: 8
         height: 8
       alignment: 0
@@ -504,9 +504,9 @@ TextureImporter:
       outline: []
       physicsShape:
       - - {x: -4, y: 4}
-        - {x: -4, y: 0}
-        - {x: 0, y: 0}
-        - {x: 0, y: -4}
+        - {x: -4, y: 1}
+        - {x: 1, y: 1}
+        - {x: 1, y: -4}
         - {x: 4, y: -4}
         - {x: 4, y: 4}
       tessellationDetail: 0
@@ -521,7 +521,134 @@ TextureImporter:
       name: Tileset_Colliders_15
       rect:
         serializedVersion: 2
-        x: 120
+        x: 56
+        y: 8
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape:
+      - - {x: 1, y: 4}
+        - {x: 1, y: -1}
+        - {x: -4, y: -1}
+        - {x: -4, y: -4}
+        - {x: 4, y: -4}
+        - {x: 4, y: 4}
+      tessellationDetail: 0
+      bones: []
+      spriteID: be9517297c0739943b309b43314f607e
+      internalID: -425971348
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tileset_Colliders_16
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 8
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape:
+      - - {x: -4, y: -1}
+        - {x: -4, y: -4}
+        - {x: -1, y: -4}
+        - {x: -1, y: -1}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 436fc9c2d56012b43942b3fdc7bedf7d
+      internalID: 1452063554
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tileset_Colliders_17
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 8
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape:
+      - - {x: 1, y: -4}
+        - {x: 1, y: -1}
+        - {x: 4, y: -1}
+        - {x: 4, y: -4}
+      tessellationDetail: 0
+      bones: []
+      spriteID: bb738edb845c2bf4f8efd8932f917cf0
+      internalID: -571292026
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tileset_Colliders_18
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 8
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape:
+      - - {x: -4, y: 1}
+        - {x: -4, y: 4}
+        - {x: -1, y: 4}
+        - {x: -1, y: 1}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 91a92da4c3d08384c9a36b3fc4ff9c45
+      internalID: -773280599
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tileset_Colliders_19
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 8
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape:
+      - - {x: 1, y: 1}
+        - {x: 1, y: 4}
+        - {x: 4, y: 4}
+        - {x: 4, y: 1}
+      tessellationDetail: 0
+      bones: []
+      spriteID: ecef0b674ea22c74e8aa7b110549fdf4
+      internalID: -461459260
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tileset_Colliders_20
+      rect:
+        serializedVersion: 2
+        x: 0
         y: 0
         width: 8
         height: 8
@@ -530,16 +657,197 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape:
-      - - {x: 0, y: 4}
-        - {x: 0, y: 0}
-        - {x: -4, y: 0}
+      - - {x: -3, y: -1}
+        - {x: -3, y: -4}
+        - {x: 3, y: -4}
+        - {x: 3, y: -1}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 56b529fed1dc0724a88ee8a53697cb62
+      internalID: 420267821
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tileset_Colliders_21
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 0
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape:
+      - - {x: -4, y: -3}
+        - {x: -1, y: -3}
+        - {x: -1, y: 3}
+        - {x: -4, y: 3}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 784bfbfcd38c5e341b193a571e4fb4e7
+      internalID: -870018958
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tileset_Colliders_22
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 0
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape:
+      - - {x: -3, y: 4}
+        - {x: -3, y: 1}
+        - {x: 3, y: 1}
+        - {x: 3, y: 4}
+      tessellationDetail: 0
+      bones: []
+      spriteID: f01cf1c27637f594ab53c4021af14958
+      internalID: -1645344201
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tileset_Colliders_23
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 0
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape:
+      - - {x: 1, y: 3}
+        - {x: 1, y: -3}
+        - {x: 4, y: -3}
+        - {x: 4, y: 3}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9098b8a7f67860148a31e9c17d9ca497
+      internalID: 405111013
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tileset_Colliders_24
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 0
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape:
+      - - {x: -4, y: 3}
         - {x: -4, y: -4}
-        - {x: 4, y: -4}
+        - {x: 3, y: -4}
+        - {x: 3, y: -1}
+        - {x: -1, y: -1}
+        - {x: -1, y: 3}
+      tessellationDetail: 0
+      bones: []
+      spriteID: de5350a82300a9e49be31383d45c8834
+      internalID: 1204001475
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tileset_Colliders_25
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 0
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape:
+      - - {x: -4, y: 4}
+        - {x: -4, y: -3}
+        - {x: -1, y: -3}
+        - {x: -1, y: 1}
+        - {x: 3, y: 1}
+        - {x: 3, y: 4}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3b625083280ae114b94c0b47d8dd09cf
+      internalID: 1885178639
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tileset_Colliders_26
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 0
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape:
+      - - {x: -3, y: 4}
+        - {x: -3, y: 1}
+        - {x: 1, y: 1}
+        - {x: 1, y: -3}
+        - {x: 4, y: -3}
         - {x: 4, y: 4}
       tessellationDetail: 0
       bones: []
-      spriteID: be9517297c0739943b309b43314f607e
-      internalID: -425971348
+      spriteID: 35c9f5b959a641044a28ed685c0526b1
+      internalID: 1064992323
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tileset_Colliders_27
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 0
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape:
+      - - {x: 1, y: 3}
+        - {x: 1, y: -1}
+        - {x: -3, y: -1}
+        - {x: -3, y: -4}
+        - {x: 4, y: -4}
+        - {x: 4, y: 3}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 544e3fe223912ad4da77f84a58dc4c8b
+      internalID: -1334251529
       vertices: []
       indices: 
       edges: []
@@ -563,7 +871,19 @@ TextureImporter:
       Tileset_Colliders_13: -1281030059
       Tileset_Colliders_14: -1528459200
       Tileset_Colliders_15: -425971348
+      Tileset_Colliders_16: 1452063554
+      Tileset_Colliders_17: -571292026
+      Tileset_Colliders_18: -773280599
+      Tileset_Colliders_19: -461459260
       Tileset_Colliders_2: 1286900866
+      Tileset_Colliders_20: 420267821
+      Tileset_Colliders_21: -870018958
+      Tileset_Colliders_22: -1645344201
+      Tileset_Colliders_23: 405111013
+      Tileset_Colliders_24: 1204001475
+      Tileset_Colliders_25: 1885178639
+      Tileset_Colliders_26: 1064992323
+      Tileset_Colliders_27: -1334251529
       Tileset_Colliders_3: 986814503
       Tileset_Colliders_4: 200654386
       Tileset_Colliders_5: 620543747

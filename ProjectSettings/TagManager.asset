@@ -19,11 +19,11 @@ TagManager:
   - Particles
   - Enemy
   - Damageable
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Interactor
+  - Interactable
+  - NPC
+  - Other
+  - InvisibleCollision
   - 
   - 
   - 
@@ -46,6 +46,9 @@ TagManager:
     locked: 0
   - name: Ground
     uniqueID: 1301517053
+    locked: 0
+  - name: Midground
+    uniqueID: 2887158391
     locked: 0
   - name: Foreground
     uniqueID: 4109460159

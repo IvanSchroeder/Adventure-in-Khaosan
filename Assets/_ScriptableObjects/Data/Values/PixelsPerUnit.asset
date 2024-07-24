@@ -13,3 +13,6 @@ MonoBehaviour:
   m_Name: PixelsPerUnit
   m_EditorClassIdentifier: 
   _value: 8
+  _defaultValue: 8
+  resetsOnEnable: 0
+  resetsOnDisable: 0

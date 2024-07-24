@@ -13,3 +13,6 @@ MonoBehaviour:
   m_Name: PlatformDisabledDelay
   m_EditorClassIdentifier: 
   _value: 0.3
+  _defaultValue: 0.3
+  resetsOnEnable: 0
+  resetsOnDisable: 0

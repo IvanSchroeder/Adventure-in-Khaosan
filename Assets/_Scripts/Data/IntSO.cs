@@ -5,4 +5,11 @@ using UnityEngine;
 
 [CreateAssetMenu(menuName = "Data/Int Data")]
 public class IntSO : ValueSO<int> {
+    public override void OnEnable() {
+        if (resetsOnEnable) Value = Default;
+    }
+
+    public override void OnDisable() {
+        if (resetsOnDisable) Value = Default;
+    }
 }
