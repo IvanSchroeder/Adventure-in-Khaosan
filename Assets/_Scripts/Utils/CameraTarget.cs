@@ -68,48 +68,4 @@ public class CameraTarget : MonoBehaviour {
         bool target = (transform.position == TargetPosition);
         return target;
     }
-
-    // public void OffsetTargetTowards(Vector3 position, float distance = 0f, bool offsetOffCenter = false, float delay = 0f) {
-    //     if (offsetOffCenter) TargetPosition = CameraCenter.position + (position * distance);
-    //     else TargetPosition = position;
-
-    //     Debug.Log("Is Offseting");
-
-    //     LerpDelay = delay;
-
-    //     DistanceToTarget = Vector3.Distance(transform.position, TargetPosition);
-
-    //     bool reachedTarget = CheckIfReachedTarget();
-
-    //     if (!IsLerping && !reachedTarget) {
-    //         Debug.Log("Started Lerping");
-    //         cameraOffsetCoroutine = StartCoroutine(CameraOffsetRoutine());
-    //     }
-    // }
-
-    // private IEnumerator CameraOffsetRoutine() {
-    //     float elapsedTime = 0f;
-
-    //     // yield return new WaitForSeconds(LerpDelay);
-    //     IsLerping = true;
-
-    //     while (DistanceToTarget > DistanceThreshold) {
-    //         Debug.Log("Is Lerping");
-    //         transform.position = Vector3.MoveTowards(transform.position, TargetPosition, LerpSpeed * Time.deltaTime);
-    //         elapsedTime += Time.deltaTime;
-    //         DistanceToTarget = Vector3.Distance(transform.position, TargetPosition);
-            
-    //         yield return null;
-    //     }
-
-    //     if (DistanceToTarget <= DistanceThreshold) { 
-    //         DistanceToTarget = 0f;
-    //         transform.position = TargetPosition;
-    //     }
-
-    //     Debug.Log("Finished Lerping");
-    //     IsLerping = false;
-
-    //     yield return null;
-    // }
 }

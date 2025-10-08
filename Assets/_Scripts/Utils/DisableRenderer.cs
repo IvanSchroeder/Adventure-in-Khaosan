@@ -9,14 +9,6 @@ public class DisableRenderer : MonoBehaviour {
     public bool disableOnStart = false;
     public bool isDisabled = false;
 
-    private void OnEnable() {
-        WorldMapManager.OnWorldMapLoaded += Disable;
-    }
-
-    private void OnDisable() {
-        WorldMapManager.OnWorldMapLoaded -= Disable;
-    }
-
     private void Awake() {
         if (rend == null) rend = this.GetComponent<Renderer>();
     }
